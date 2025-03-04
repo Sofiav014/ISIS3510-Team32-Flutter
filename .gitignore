@@ -76,3 +76,5 @@ local.properties
 Podfile.lock
 pubspec.lock
 yarn.lock
+.env
+android/app/google-services.json
