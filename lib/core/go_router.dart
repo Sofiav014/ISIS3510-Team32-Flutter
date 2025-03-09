@@ -27,5 +27,21 @@ final router = GoRouter(
         path: '/home',
         pageBuilder: (context, state) => buildPageWithNoTransition(
             context: context, state: state, child: const HomeView())),
+    // GoRoute(
+    //     path: '/search',
+    //     pageBuilder: (context, state) => buildPageWithNoTransition(
+    //         context: context, state: state, child: const SearchView())),
+    // GoRoute(
+    //     path: '/calendar',
+    //     pageBuilder: (context, state) => buildPageWithNoTransition(
+    //         context: context, state: state, child: const CalendarView())),
+    // GoRoute(
+    //     path: '/add',
+    //     pageBuilder: (context, state) => buildPageWithNoTransition(
+    //         context: context, state: state, child: const AddView())),
+    // GoRoute(
+    //     path: '/profile',
+    //     pageBuilder: (context, state) => buildPageWithNoTransition(
+    //         context: context, state: state, child: const ProfileView())),
   ],
 );

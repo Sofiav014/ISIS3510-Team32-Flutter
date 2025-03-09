@@ -1,10 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
-//import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart';
 
-class BottomNavigationWidget extends StatelessWidget {
+class BottomNavigationWidget extends StatefulWidget {
   const BottomNavigationWidget({super.key});
 
+  @override
+  BottomNavigationWidgetState createState() => BottomNavigationWidgetState();
+}
+
+class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
+  int _selectedIndex = 2;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    switch (index) {
+      // case 0:
+      //   context.go('/search');
+      //   break;
+      // case 1:
+      //   context.go('/calendar');
+      //   break;
+      case 2:
+        context.go('/home');
+        break;
+      // case 3:
+      //   context.go('/add');
+      //   break;
+      // case 4:
+      //   context.go('/profile');
+      //   break;
+    }
+  }
+
+  
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
@@ -13,38 +45,62 @@ class BottomNavigationWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           IconButton(
-            icon: const Icon(Icons.search_outlined, color: AppColors.primary),
-            //onPressed: () => context.go('/search'),
+            icon: SvgPicture.asset(
+              _selectedIndex == 0
+                  ? 'lib/assets/icons/navbar/search-selected.svg'
+                  : 'lib/assets/icons/navbar/search.svg',
+              color: AppColors.primary,
+            ),
             onPressed: () {
+              _onItemTapped(0);
               // Search logic
             },
           ),
           IconButton(
-            icon: const Icon(Icons.calendar_month_outlined,
-                color: AppColors.primary),
-            //onPressed: () => context.go('/my-bookings'),
+            icon: SvgPicture.asset(
+              _selectedIndex == 1
+                  ? 'lib/assets/icons/navbar/calendar-selected.svg'
+                  : 'lib/assets/icons/navbar/calendar.svg',
+              color: AppColors.primary,
+            ),
             onPressed: () {
+              _onItemTapped(1);
               // Bookings logic
             },
           ),
           IconButton(
-            icon: const Icon(Icons.home_outlined, color: AppColors.primary),
-            //onPressed: () => context.go('/home'),
+            icon: SvgPicture.asset(
+              _selectedIndex == 2
+                  ? 'lib/assets/icons/navbar/home-selected.svg'
+                  : 'lib/assets/icons/navbar/home.svg',
+              color: AppColors.primary,
+            ),
             onPressed: () {
+              _onItemTapped(2);
               // Home logic
             },
           ),
           IconButton(
-            icon: const Icon(Icons.add_box_outlined, color: AppColors.primary),
-            //onPressed: () => context.go('/add-booking'),
+            icon: SvgPicture.asset(
+              _selectedIndex == 3
+                  ? 'lib/assets/icons/navbar/add-selected.svg'
+                  : 'lib/assets/icons/navbar/add.svg',
+              color: AppColors.primary,
+            ),
             onPressed: () {
+              _onItemTapped(3);
               // Add logic
             },
           ),
           IconButton(
-            icon: const Icon(Icons.person_outline, color: AppColors.primary),
-            //onPressed: () => context.go('/profile'),
+            icon: SvgPicture.asset(
+              _selectedIndex == 4
+                  ? 'lib/assets/icons/navbar/profile-selected.svg'
+                  : 'lib/assets/icons/navbar/profile.svg',
+              color: AppColors.primary,
+            ),
             onPressed: () {
+              _onItemTapped(4);
               // Profile logic
             },
           ),
