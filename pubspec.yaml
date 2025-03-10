@@ -72,23 +72,10 @@ flutter:
     - .env
     # Bottom Navigation Bar Icons
     #  - selected
-    - lib\assets\icons\navbar\search-selected.svg
-    - lib\assets\icons\navbar\add-selected.svg
-    - lib\assets\icons\navbar\calendar-selected.svg
-    - lib\assets\icons\navbar\home-selected.svg
-    - lib\assets\icons\navbar\profile-selected.svg
-    # - unselected
-    - lib\assets\icons\navbar\search.svg
-    - lib\assets\icons\navbar\add.svg
-    - lib\assets\icons\navbar\calendar.svg
-    - lib\assets\icons\navbar\home.svg
-    - lib\assets\icons\navbar\profile.svg
-    # Home Icons
-    - lib\assets\icons\location.svg
-    - lib\assets\icons\sport_logo.svg
-    - lib\assets\icons\location_star.svg
-    - lib\assets\icons\clock.svg
-    - lib\assets\icons\people.svg
+    - assets/icons/
+    - assets/icons/navbar/
+    
+    
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

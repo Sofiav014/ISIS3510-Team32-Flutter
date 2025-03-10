@@ -1,3 +1,5 @@
+// ignore_for_file: no_leading_underscores_for_local_identifiers
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -17,7 +19,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       LoadHomeData event, Emitter<HomeState> emit) async {
     emit(HomeLoading());
     try {
-      final firestore = FirebaseService.instance.firestore;
+      final FirebaseFirestore _firestore = FirebaseService.instance.firestore;
 
       // 1. Get User ID from event
       final userId = event.userId;
@@ -29,7 +31,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       // 2. Fetch User Data
       DocumentSnapshot userDoc =
-          await firestore.collection('users').doc(userId).get();
+          await _firestore.collection('users').doc(userId).get();
 
       if (!userDoc.exists) {
         emit(const HomeError('User not found.'));
@@ -39,7 +41,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       UserModel user = await UserModel.fromDocumentSnapshot(userDoc);
 
       // 3. Fetch Upcoming Bookings (All)
-      QuerySnapshot allSnapshot = await firestore
+      QuerySnapshot allSnapshot = await _firestore
           .collection('bookings')
           .where('start_time', isGreaterThan: DateTime.now())
           .orderBy('start_time')
