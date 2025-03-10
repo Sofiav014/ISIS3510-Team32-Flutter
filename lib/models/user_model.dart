@@ -5,7 +5,7 @@ import 'venue_model.dart';
 class UserModel {
   final String id;
   final String name;
-  final String age;
+  final int age;
   final String sex;
   final List<SportModel> sportsLiked;
   final List<VenueModel> venuesLiked;
@@ -51,14 +51,14 @@ class UserModel {
       return UserModel(
         id: doc.id,
         name: doc['name'] ?? '',
-        age: doc['age'] ?? '',
+        age: doc['age'] ?? 0,
         sex: doc['sex'] ?? '',
         sportsLiked: sportsLiked,
         venuesLiked: venuesLiked,
       );
     } catch (e) {
       print('Error loading UserModel: $e');
-      throw e; // Re-throw to handle errors elsewhere
+      rethrow; // Re-throw to handle errors elsewhere
     }
   }
 }
