@@ -31,10 +31,7 @@ class VenueModel {
       rating: (json['rating'] ?? 0.0).toDouble(),
       image: json['image'] ?? '',
       cords: json['cords'] ?? const GeoPoint(0, 0),
-      sport: json['sport'] != null
-          ? SportModel.fromJson(json['sport'] as Map<String, dynamic>)
-          : SportModel(
-              id: '', name: '', logo: ''), // Provide a default SportModel
+      sport: SportModel.fromJson(json['sport']),
       bookings: (json['bookings'] as List? ?? [])
           .map((booking) =>
               BookingModel.fromJson(booking as Map<String, dynamic>))
