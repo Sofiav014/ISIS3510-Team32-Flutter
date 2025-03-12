@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'core/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:isis3510_team32_flutter/core/go_router.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_cubit.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'core/firebase_options.dart';
@@ -15,14 +17,21 @@ Future main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  final authCubit = AuthCubit();
+
+  runApp(
+      BlocProvider.value(value: authCubit, child: MyApp(authCubit: authCubit)));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final AuthCubit authCubit;
+
+  const MyApp({super.key, required this.authCubit});
 
   @override
   Widget build(BuildContext context) {
+    final router = setupRouter(authCubit);
+
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Navigation',
