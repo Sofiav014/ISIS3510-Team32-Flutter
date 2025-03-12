@@ -36,7 +36,6 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
     }
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
@@ -47,8 +46,8 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
           IconButton(
             icon: SvgPicture.asset(
               _selectedIndex == 0
-                  ? 'lib/assets/icons/navbar/search-selected.svg'
-                  : 'lib/assets/icons/navbar/search.svg',
+                  ? 'assets/icons/navbar/search-selected.svg'
+                  : 'assets/icons/navbar/search.svg',
               color: AppColors.primary,
             ),
             onPressed: () {
@@ -59,8 +58,8 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
           IconButton(
             icon: SvgPicture.asset(
               _selectedIndex == 1
-                  ? 'lib/assets/icons/navbar/calendar-selected.svg'
-                  : 'lib/assets/icons/navbar/calendar.svg',
+                  ? 'assets/icons/navbar/calendar-selected.svg'
+                  : 'assets/icons/navbar/calendar.svg',
               color: AppColors.primary,
             ),
             onPressed: () {
@@ -71,8 +70,8 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
           IconButton(
             icon: SvgPicture.asset(
               _selectedIndex == 2
-                  ? 'lib/assets/icons/navbar/home-selected.svg'
-                  : 'lib/assets/icons/navbar/home.svg',
+                  ? 'assets/icons/navbar/home-selected.svg'
+                  : 'assets/icons/navbar/home.svg',
               color: AppColors.primary,
             ),
             onPressed: () {
@@ -83,8 +82,8 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
           IconButton(
             icon: SvgPicture.asset(
               _selectedIndex == 3
-                  ? 'lib/assets/icons/navbar/add-selected.svg'
-                  : 'lib/assets/icons/navbar/add.svg',
+                  ? 'assets/icons/navbar/add-selected.svg'
+                  : 'assets/icons/navbar/add.svg',
               color: AppColors.primary,
             ),
             onPressed: () {
@@ -95,8 +94,8 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
           IconButton(
             icon: SvgPicture.asset(
               _selectedIndex == 4
-                  ? 'lib/assets/icons/navbar/profile-selected.svg'
-                  : 'lib/assets/icons/navbar/profile.svg',
+                  ? 'assets/icons/navbar/profile-selected.svg'
+                  : 'assets/icons/navbar/profile.svg',
               color: AppColors.primary,
             ),
             onPressed: () {
