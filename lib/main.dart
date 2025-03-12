@@ -10,12 +10,12 @@ Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
-  for (var app in Firebase.apps) {
-    await app.delete();
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      name: 'sporthub-flutter-client',
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   }
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 
   final authCubit = AuthCubit();
 
