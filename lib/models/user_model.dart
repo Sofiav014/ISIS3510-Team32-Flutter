@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'booking_model.dart';
 import 'sport_model.dart';
 import 'venue_model.dart';
@@ -41,9 +43,30 @@ class UserModel {
     );
   }
 
+  factory UserModel.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    return UserModel(
+      id: snapshot['id'] ?? '',
+      name: snapshot['name'] ?? '',
+      age: snapshot['age'] ?? 0,
+      sex: snapshot['sex'] ?? '',
+      sportsLiked: (snapshot['sports_liked'] as List? ?? [])
+          .map((sport) => SportModel.fromJson(sport))
+          .toList(),
+      venuesLiked: (snapshot['venues_liked'] as List? ?? [])
+          .map((venue) => VenueModel.fromJson(venue))
+          .toList(),
+      bookings: (snapshot['bookings'] as List? ?? [])
+          .map((booking) => BookingModel.fromJson(booking))
+          .toList(),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
-      'id': id ,
+      'id': id,
       'name': name,
       'age': age,
       'sex': sex,
@@ -51,5 +74,9 @@ class UserModel {
       'venues_liked': venuesLiked.map((venue) => venue.toJson()).toList(),
       'bookings': bookings.map((b) => b.toJson()).toList(),
     };
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return toJson();
   }
 }
