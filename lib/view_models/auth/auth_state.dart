@@ -7,4 +7,9 @@ class AuthState {
   final UserModel? userModel;
 
   AuthState({this.isAuthenticated = false, this.user, this.userModel});
+
+  @override
+  String toString() {
+    return "AuthState{\nisAuthenticated: $isAuthenticated,\nuser: $user,\nuserModel: $userModel\n}";
+  }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:isis3510_team32_flutter/view_models/auth/auth_cubit.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
 import '../views/home_view.dart';
@@ -18,14 +18,14 @@ CustomTransitionPage buildPageWithNoTransition<T>({
   );
 }
 
-GoRouter setupRouter(AuthCubit authCubit) {
-  final authNotifier = AuthRouterNotifier(authCubit);
+GoRouter setupRouter(AuthBloc authBloc) {
+  final authNotifier = AuthRouterNotifier(authBloc);
 
   return GoRouter(
     initialLocation: '/login',
     refreshListenable: authNotifier,
     redirect: (context, state) {
-      final isAuthenticated = authCubit.state.isAuthenticated;
+      final isAuthenticated = authBloc.state.isAuthenticated;
       final isLoginRoute = state.matchedLocation == '/login';
 
       if (!isAuthenticated && !isLoginRoute) {

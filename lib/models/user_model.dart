@@ -79,4 +79,9 @@ class UserModel {
   Map<String, dynamic> toFirestore() {
     return toJson();
   }
+
+  @override
+  String toString() {
+    return "UserModel{${toJson()}}";
+  }
 }
