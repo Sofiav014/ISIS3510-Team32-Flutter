@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_cubit.dart';
 
+
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
@@ -22,6 +23,7 @@ class HomeView extends StatelessWidget {
           ],
         ),
       ),
+      bottomNavigationBar: const BottomNavigationWidget(),
     );
   }
 }
