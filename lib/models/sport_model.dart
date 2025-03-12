@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class SportModel {
   final String id;
   final String name;
@@ -7,11 +5,19 @@ class SportModel {
 
   SportModel({required this.id, required this.name, required this.logo});
 
-  static Future<SportModel> fromDocumentSnapshot(DocumentSnapshot doc) async {
+  factory SportModel.fromJson(Map<String, dynamic> json) {
     return SportModel(
-      id: doc.id,
-      name: doc['name'] ?? '',
-      logo: doc['logo'] ?? '',
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      logo: json['logo'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'logo': logo,
+    };
   }
 }

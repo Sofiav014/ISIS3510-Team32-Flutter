@@ -29,47 +29,53 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         return;
       }
 
-      // 2. Fetch User Data
-      DocumentSnapshot userDoc =
-          await _firestore.collection('users').doc(userId).get();
+      // 2. Get User data
+      final userDoc = await _firestore.collection('users').doc(userId).get();
 
       if (!userDoc.exists) {
         emit(const HomeError('User not found.'));
         return;
       }
 
-      UserModel user = await UserModel.fromDocumentSnapshot(userDoc);
+      final userDocData = userDoc.data();
 
-      // 3. Fetch Upcoming Bookings (All)
-      QuerySnapshot allSnapshot = await _firestore
+      UserModel? user;
+
+      if (userDocData == null) {
+        emit(const HomeError('User not found.'));
+        return;
+      }
+
+      user = UserModel.fromJson(userDocData);
+
+      // 3. Get Bookings data
+      final upcomingBookings = user.bookings
+          .where((booking) => booking.startTime.isAfter(DateTime.now()))
+          .toList();
+
+      final userBookingsId =
+          upcomingBookings.map((booking) => booking.id).toList();
+
+      final recommendedBookingsQuery = await _firestore
           .collection('bookings')
-          .where('start_time', isGreaterThan: DateTime.now())
-          .orderBy('start_time')
+          .where('venue.sport.id',
+              whereIn: user.sportsLiked.map((sport) => sport.id).toList())
+          .limit(
+              10) // Increase the limit to ensure we have enough results to filter
           .get();
 
-      List<BookingModel> allBookings = await Future.wait(allSnapshot.docs
-          .map((doc) => BookingModel.fromDocumentSnapshot(doc)));
-
-      // 4. Upcoming Bookings from user
-      List<BookingModel> upcomingBookings = allBookings.where((booking) {
-        return booking.users.any((userRef) => userRef.id == userId);
-      }).toList();
-
-      // 5. Fetch Recommended Bookings by user's liked sports (not already joined)
-      List<String> likedSportIds =
-          user.sportsLiked.map((sport) => sport.id).toList();
-
-      List<BookingModel> recommendedBookings = allBookings.where((booking) {
-        return likedSportIds.contains(booking.venue.sport.id) &&
-            !upcomingBookings.map((match) => match.id).contains(booking.id);
-      }).toList();
+      final recommendedBookings = recommendedBookingsQuery.docs
+          .map((doc) => BookingModel.fromJson(doc.data()))
+          .where((booking) => !userBookingsId.contains(booking.id))
+          .where((booking) => booking.users.length < booking.maxUsers)
+          .take(3) // Limit the final results to 3
+          .toList();
 
       emit(HomeLoaded(
           upcomingBookings: upcomingBookings,
           recommendedBookings: recommendedBookings));
     } catch (e) {
       emit(HomeError('Failed to load home data: $e'));
-      print('Error: $e');
     }
   }
 }

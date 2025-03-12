@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'user_model.dart';
 import 'venue_model.dart';
 
 class BookingModel {
@@ -7,47 +6,53 @@ class BookingModel {
   final int maxUsers;
   final DateTime startTime;
   final DateTime endTime;
-  final List<UserModel> users;
   final VenueModel venue;
+  final List<UserReference> users;
 
-  BookingModel(
-      {required this.id,
-      required this.maxUsers,
-      required this.startTime,
-      required this.endTime,
-      required this.users,
-      required this.venue});
+  BookingModel({
+    required this.id,
+    required this.maxUsers,
+    required this.startTime,
+    required this.endTime,
+    required this.venue,
+    required this.users,
+  });
 
-  static Future<BookingModel> fromDocumentSnapshot(DocumentSnapshot doc) async {
-    try {
-      List<UserModel> users = [];
-      for (var userRef in doc['users']) {
-        DocumentSnapshot userDoc = await userRef.get();
-        if (userDoc.exists) {
-          users.add(await UserModel.fromDocumentSnapshot(userDoc));
-        } else {
-          print('User document not found: ${userRef.id}');
-        }
-      }
+  factory BookingModel.fromJson(Map<String, dynamic> json) {
+    return BookingModel(
+      id: json['id'] ?? '',
+      maxUsers: json['max_users'] ?? 0,
+      startTime: (json['start_time'] as Timestamp).toDate(),
+      endTime: (json['end_time'] as Timestamp).toDate(),
+      venue: VenueModel.fromJson(json['venue']),
+      users: (json['users'] as List? ?? [])
+          .map((user) => UserReference.fromJson(user))
+          .toList(),
+    );
+  }
 
-      DocumentSnapshot venueDoc = await doc['venue'].get();
-      if (venueDoc.exists) {
-        VenueModel venue = await VenueModel.fromDocumentSnapshot(venueDoc);
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'max_users': maxUsers,
+      'start_time': Timestamp.fromDate(startTime),
+      'end_time': Timestamp.fromDate(endTime),
+      'venue': venue.toJson(),
+      'users': users.map((user) => user.toJson()).toList(),
+    };
+  }
+}
 
-        return BookingModel(
-            id: doc.id,
-            maxUsers: doc['max_users'],
-            startTime: doc['start_time'].toDate(),
-            endTime: doc['end_time'].toDate(),
-            users: users,
-            venue: venue);
-      } else {
-        print('Venue document not found: ${doc['venue'].id}');
-        throw Exception("Venue document not found");
-      }
-    } catch (e) {
-      print('Error loading BookingModel: $e');
-      rethrow; // Re-throw the exception to be handled elsewhere
-    }
+class UserReference {
+  final String id;
+
+  UserReference({required this.id});
+
+  factory UserReference.fromJson(Map<String, dynamic> json) {
+    return UserReference(id: json['id']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id};
   }
 }
