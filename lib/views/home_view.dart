@@ -9,7 +9,6 @@ import 'package:isis3510_team32_flutter/widgets/recommended_booking_card_widget.
 
 class HomeView extends StatelessWidget {
   final String userId;
-
   const HomeView({super.key, required this.userId});
 
   @override
@@ -79,7 +78,7 @@ class HomeView extends StatelessWidget {
             const Center(
               child: Text(
                 'No upcoming bookings',
-                style: TextStyle(fontSize: 16, color: AppColors.primaryDark),
+                style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             )
           else

@@ -48,9 +48,8 @@ GoRouter setupRouter(AuthCubit authCubit) {
           pageBuilder: (context, state) => buildPageWithNoTransition(
               context: context,
               state: state,
-              child: const HomeView(
-                userId:
-                    'DM1xP0TG8jMlIlxGyTRPojB7CM23', // TODO: Replace with actual user ID
+              child: HomeView(
+                userId: authCubit.state.user?.uid ?? '',
               ))),
     ],
   );
