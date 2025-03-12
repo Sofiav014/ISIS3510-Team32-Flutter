@@ -75,17 +75,25 @@ class HomeView extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            height: 200,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: upcomingBookings.length,
-              itemBuilder: (context, index) {
-                return UpcomingBookingCardWidget(
-                    booking: upcomingBookings[index]);
-              },
+          if (upcomingBookings.isEmpty)
+            const Center(
+              child: Text(
+                'No upcoming bookings',
+                style: TextStyle(fontSize: 16, color: AppColors.primaryDark),
+              ),
+            )
+          else
+            SizedBox(
+              height: 200,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: upcomingBookings.length,
+                itemBuilder: (context, index) {
+                  return UpcomingBookingCardWidget(
+                      booking: upcomingBookings[index]);
+                },
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -107,15 +115,23 @@ class HomeView extends StatelessWidget {
             ),
           ),
         ),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: recommendedBookings.length,
-          itemBuilder: (context, index) {
-            return RecommendedBookingCardWidget(
-                booking: recommendedBookings[index]);
-          },
-        ),
+        if (recommendedBookings.isEmpty)
+          const Center(
+            child: Text(
+              'No recommended bookings',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          )
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: recommendedBookings.length,
+            itemBuilder: (context, index) {
+              return RecommendedBookingCardWidget(
+                  booking: recommendedBookings[index]);
+            },
+          ),
       ],
     );
   }
