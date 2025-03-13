@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';

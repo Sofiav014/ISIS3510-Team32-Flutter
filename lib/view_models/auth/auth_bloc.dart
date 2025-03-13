@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/models/user_model.dart';
 import 'package:isis3510_team32_flutter/repositories/auth_repository.dart';
@@ -29,6 +28,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthChangeModelEvent>((event, emit) {
       emit(AuthState(
         isAuthenticated: event.user != null,
+        hasModel: event.userModel != null,
         user: event.user,
         userModel: event.userModel,
       ));
@@ -46,6 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
       emit(AuthState(
         isAuthenticated: state.user != null,
+        hasModel: state.userModel != null,
         user: state.user,
         userModel: userModel,
       ));

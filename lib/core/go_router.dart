@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
+import 'package:isis3510_team32_flutter/views/initiation_view.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
 import '../views/home_view.dart';
 
@@ -26,10 +27,19 @@ GoRouter setupRouter(AuthBloc authBloc) {
     refreshListenable: authNotifier,
     redirect: (context, state) {
       final isAuthenticated = authBloc.state.isAuthenticated;
+      final hasModel = authBloc.state.hasModel;
       final isLoginRoute = state.matchedLocation == '/login';
 
       if (!isAuthenticated && !isLoginRoute) {
         return '/login';
+      }
+
+      if (isAuthenticated && isLoginRoute) {
+        if (hasModel) {
+          return '/login';
+        } else {
+          return '/initiation';
+        }
       }
 
       if (isAuthenticated && isLoginRoute) {
@@ -47,6 +57,10 @@ GoRouter setupRouter(AuthBloc authBloc) {
           path: '/home',
           pageBuilder: (context, state) => buildPageWithNoTransition(
               context: context, state: state, child: const HomeView())),
+      GoRoute(
+          path: '/initiation',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context, state: state, child: const InitiationView())),
     ],
   );
 }

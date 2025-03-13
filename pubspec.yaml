@@ -75,6 +75,7 @@ flutter:
   # Bottom Navigation Bar Icons
     #  - selected
     - assets/icons/navbar/
+    - assets/icons/initiation/
     - assets/icons/
 
   #   - images/a_dot_burr.jpeg
