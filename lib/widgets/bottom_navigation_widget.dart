@@ -38,9 +38,9 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
       // case 3:
       //   context.go('/add');
       //   break;
-      // case 4:
-      //   context.go('/profile');
-      //   break;
+      case 4:
+        context.go('/profile');
+        break;
     }
   }
 

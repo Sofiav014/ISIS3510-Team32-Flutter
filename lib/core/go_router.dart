@@ -4,6 +4,7 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_cubit.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
 import 'package:isis3510_team32_flutter/views/home_view.dart';
+import 'package:isis3510_team32_flutter/views/profile_view.dart';
 
 CustomTransitionPage buildPageWithNoTransition<T>({
   required BuildContext context,
@@ -51,6 +52,10 @@ GoRouter setupRouter(AuthCubit authCubit) {
               child: HomeView(
                 userId: authCubit.state.user?.uid ?? '',
               ))),
+      GoRoute(
+          path: '/profile',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context, state: state, child: const ProfileView())),
     ],
   );
 }
