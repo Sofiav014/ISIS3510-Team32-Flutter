@@ -33,10 +33,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         userModel: event.userModel,
       ));
     });
-
-    on<AuthCreateModelEvent>((event, emit) async =>
-        await authRepository.uploadUser(event.userModel));
-
+    on<AuthCreateModelEvent>((event, emit) async {
+      await authRepository.uploadUser(event.userModel);
+      emit(AuthState(
+        isAuthenticated: state.user != null,
+        hasModel: true,
+        user: state.user,
+        userModel: event.userModel,
+      ));
+    });
     on<AuthRefreshModelEvent>((event, emit) async {
       UserModel? userModel;
       final user = state.user;
@@ -51,7 +56,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         userModel: userModel,
       ));
     });
-
-    on<AuthLogOutEvent>((event, emit) async => await _auth.signOut());
+    on<AuthLogOutEvent>((event, emit) async {
+      await _auth.signOut();
+      emit(AuthState(
+          isAuthenticated: false,
+          hasModel: false,
+          user: null,
+          userModel: null));
+    });
   }
 }

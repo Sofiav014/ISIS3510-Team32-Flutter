@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
+import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/core/bloc_observer.dart';
 import 'package:isis3510_team32_flutter/core/go_router.dart';
 import 'package:isis3510_team32_flutter/repositories/auth_repository.dart';
@@ -66,6 +67,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Flutter Navigation',
           theme: ThemeData(
+            primaryColor: AppColors.primary,
             primarySwatch: Colors.blue,
           ),
           routerConfig: router,

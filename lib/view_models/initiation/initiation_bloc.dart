@@ -8,13 +8,32 @@ class InitiationBloc extends Bloc<InitiationEvent, InitiationState> {
       emit(state.copyWith(name: event.name));
     });
     on<InitiationAgeEvent>((event, emit) {
-      emit(state.copyWith(age: event.age));
+      emit(state.copyWith(birthDate: event.birthDate));
     });
     on<InitiationGenderEvent>((event, emit) {
-      emit(state.copyWith(sex: event.gender));
+      emit(state.copyWith(gender: event.gender));
     });
-    on<InitiationSportsEvent>((event, emit) {
-      emit(state.copyWith(sportsLiked: event.sportsLiked));
+    on<InitiationAddSportEvent>((event, emit) {
+      emit(state.copyWith(
+        sportsLiked: [...state.sportsLiked, event.sportLiked],
+      ));
+    });
+    on<InitiationRemoveSportEvent>((event, emit) {
+      emit(state.copyWith(
+        sportsLiked: [...state.sportsLiked]
+            .where((sport) => sport.id != event.sportId)
+            .toList(),
+      ));
+    });
+    on<InitiationNextStepEvent>((event, emit) {
+      if (state.currentStep < 3) {
+        emit(state.copyWith(currentStep: state.currentStep + 1));
+      }
+    });
+    on<InitiationPreviousStepEvent>((event, emit) {
+      if (state.currentStep > 0) {
+        emit(state.copyWith(currentStep: state.currentStep - 1));
+      }
     });
   }
 }

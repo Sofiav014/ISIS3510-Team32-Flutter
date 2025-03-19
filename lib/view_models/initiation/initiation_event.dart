@@ -2,14 +2,18 @@ import 'package:isis3510_team32_flutter/models/sport_model.dart';
 
 abstract class InitiationEvent {}
 
+class InitiationNextStepEvent extends InitiationEvent {}
+
+class InitiationPreviousStepEvent extends InitiationEvent {}
+
 class InitiationNameEvent extends InitiationEvent {
   String name;
   InitiationNameEvent(this.name);
 }
 
 class InitiationAgeEvent extends InitiationEvent {
-  int age;
-  InitiationAgeEvent(this.age);
+  DateTime birthDate;
+  InitiationAgeEvent(this.birthDate);
 }
 
 class InitiationGenderEvent extends InitiationEvent {
@@ -17,7 +21,14 @@ class InitiationGenderEvent extends InitiationEvent {
   InitiationGenderEvent(this.gender);
 }
 
-class InitiationSportsEvent extends InitiationEvent {
-  List<SportModel> sportsLiked;
-  InitiationSportsEvent(this.sportsLiked);
+class InitiationAddSportEvent extends InitiationEvent {
+  SportModel sportLiked;
+  InitiationAddSportEvent(this.sportLiked);
 }
+
+class InitiationRemoveSportEvent extends InitiationEvent {
+  String sportId;
+  InitiationRemoveSportEvent(this.sportId);
+}
+
+class InitiationSubmitEvent extends InitiationEvent {}

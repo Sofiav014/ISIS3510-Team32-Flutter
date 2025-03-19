@@ -7,8 +7,8 @@ import 'venue_model.dart';
 class UserModel {
   final String id;
   final String name;
-  final int age;
-  final String sex;
+  final DateTime birthDate;
+  final String gender;
   final List<SportModel> sportsLiked;
   final List<VenueModel> venuesLiked;
   final List<BookingModel> bookings;
@@ -16,8 +16,8 @@ class UserModel {
   UserModel({
     required this.id,
     required this.name,
-    required this.age,
-    required this.sex,
+    required this.birthDate,
+    required this.gender,
     List<SportModel>? sportsLiked,
     List<VenueModel>? venuesLiked,
     List<BookingModel>? bookings,
@@ -29,8 +29,8 @@ class UserModel {
     return UserModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      age: json['age'] ?? 0,
-      sex: json['sex'] ?? '',
+      birthDate: json['birth_date'] ?? DateTime.utc(0),
+      gender: json['sex'] ?? '',
       sportsLiked: (json['sports_liked'] as List? ?? [])
           .map((sport) => SportModel.fromJson(sport))
           .toList(),
@@ -50,8 +50,9 @@ class UserModel {
     return UserModel(
       id: snapshot['id'] ?? '',
       name: snapshot['name'] ?? '',
-      age: snapshot['age'] ?? 0,
-      sex: snapshot['sex'] ?? '',
+      birthDate:
+          (snapshot['birth_date'] as Timestamp?)?.toDate() ?? DateTime.utc(0),
+      gender: snapshot['sex'] ?? '',
       sportsLiked: (snapshot['sports_liked'] as List? ?? [])
           .map((sport) => SportModel.fromJson(sport))
           .toList(),
@@ -68,8 +69,8 @@ class UserModel {
     return {
       'id': id,
       'name': name,
-      'age': age,
-      'sex': sex,
+      'birth_date': birthDate,
+      'sex': gender,
       'sports_liked': sportsLiked.map((sport) => sport.toJson()).toList(),
       'venues_liked': venuesLiked.map((venue) => venue.toJson()).toList(),
       'bookings': bookings.map((b) => b.toJson()).toList(),

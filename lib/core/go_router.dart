@@ -28,7 +28,8 @@ GoRouter setupRouter(AuthBloc authBloc) {
     redirect: (context, state) {
       final isAuthenticated = authBloc.state.isAuthenticated;
       final hasModel = authBloc.state.hasModel;
-      final isLoginRoute = state.matchedLocation == '/login';
+      final isLoginRoute = state.matchedLocation == '/login' ||
+          state.matchedLocation == '/initiation';
 
       if (!isAuthenticated && !isLoginRoute) {
         return '/login';
@@ -36,14 +37,10 @@ GoRouter setupRouter(AuthBloc authBloc) {
 
       if (isAuthenticated && isLoginRoute) {
         if (hasModel) {
-          return '/login';
+          return '/home';
         } else {
           return '/initiation';
         }
-      }
-
-      if (isAuthenticated && isLoginRoute) {
-        return '/home';
       }
 
       return null;

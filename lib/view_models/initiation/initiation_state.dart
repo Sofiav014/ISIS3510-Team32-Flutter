@@ -2,25 +2,32 @@ import 'package:isis3510_team32_flutter/models/sport_model.dart';
 
 class InitiationState {
   String? name;
-  int? age;
-  String? sex;
+  DateTime? birthDate;
+  String? gender;
   List<SportModel> sportsLiked = [];
+  int currentStep;
 
-  InitiationState(
-      {this.name, this.age, this.sex, List<SportModel>? sportsLiked})
-      : sportsLiked = sportsLiked ?? [];
+  InitiationState({
+    this.name,
+    this.birthDate,
+    this.gender,
+    List<SportModel>? sportsLiked,
+    this.currentStep = 0,
+  }) : sportsLiked = sportsLiked ?? [];
 
   InitiationState copyWith({
     String? name,
-    int? age,
-    String? sex,
+    DateTime? birthDate,
+    String? gender,
     List<SportModel>? sportsLiked,
+    int? currentStep,
   }) {
     return InitiationState(
       name: name ?? this.name,
-      age: age ?? this.age,
-      sex: sex ?? this.sex,
+      birthDate: birthDate ?? this.birthDate,
+      gender: gender ?? this.gender,
       sportsLiked: sportsLiked ?? this.sportsLiked,
+      currentStep: currentStep ?? this.currentStep,
     );
   }
 }
