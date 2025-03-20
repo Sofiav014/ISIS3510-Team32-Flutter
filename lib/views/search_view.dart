@@ -28,7 +28,7 @@ class SearchView extends StatelessWidget {
                     leading: Image.network(sport.imageUrl),
                     title: Text(sport.name),
                     onTap: () {
-                      print('Sport tapped: ${sport.imageUrl}');
+                      print('Sport tapped: ${sport.name}');
                     },
                   ),
                 );
