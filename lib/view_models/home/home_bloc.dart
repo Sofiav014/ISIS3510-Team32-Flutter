@@ -26,7 +26,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       LoadHomeData event, Emitter<HomeState> emit) async {
     emit(HomeLoading());
     try {
-
       final AuthState authState = authBloc.state;
       final UserModel? user = authState.userModel;
 
@@ -37,11 +36,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       final upcomingBookings = homeRepository.getUpcomingBookings(user);
 
-      final recommendedBookings = await homeRepository.getRecommendedBookings(user);
+      final recommendedBookings =
+          await homeRepository.getRecommendedBookings(user);
+
+      final popularityReport = await homeRepository.popularityReport(user);
+
+      print('Popularity Report: $popularityReport');
 
       emit(HomeLoaded(
           upcomingBookings: upcomingBookings,
-          recommendedBookings: recommendedBookings));
+          recommendedBookings: recommendedBookings,
+          popularityReport: popularityReport));
     } catch (e) {
       emit(HomeError('Failed to load home data: $e'));
     }

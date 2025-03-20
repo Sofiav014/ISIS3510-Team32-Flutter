@@ -52,12 +52,42 @@ class HomeView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          // _buildPopularityReport(state.popularityReport),
           _buildUpcomingBookingsSection(state.upcomingBookings),
           _buildBookingsToJoinSection(state.recommendedBookings),
         ],
       ),
     );
   }
+
+  // Widget _buildPopularityReport(Map<String, dynamic> popularityReport) {
+  //   return Padding(
+  //     padding: const EdgeInsets.all(16.0),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: <Widget>[
+  //         const Text(
+  //           'Popularity Report',
+  //           style: TextStyle(
+  //               fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary),
+  //         ),
+  //         const SizedBox(height: 10),
+  //         Text(
+  //           'Most booked sport: ${popularityReport['most_booked_sport'].name}',
+  //           style: const TextStyle(fontSize: 16),
+  //         ),
+  //         Text(
+  //           'Most booked venue: ${popularityReport['most_booked_venue'].name}',
+  //           style: const TextStyle(fontSize: 16),
+  //         ),
+  //         Text(
+  //           'Most played sport: ${popularityReport['most_played_sport'].name}',
+  //           style: const TextStyle(fontSize: 16),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildUpcomingBookingsSection(List<BookingModel> upcomingBookings) {
     return Padding(
