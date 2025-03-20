@@ -1,17 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
+import 'package:isis3510_team32_flutter/view_models/search_view_model.dart';
+import 'package:isis3510_team32_flutter/models/sport.dart';
 
 class SearchView extends StatelessWidget {
   const SearchView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Search View')), //Optional AppBar
-      body: const Center(
-        child: SizedBox.shrink(), // Or any other empty widget
+    return ChangeNotifierProvider(
+      create: (context) => SearchViewModel(),
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Search View')),
+        body: Consumer<SearchViewModel>(
+          builder: (context, viewModel, child) {
+            if (viewModel.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+
+            return ListView.builder(
+              itemCount: viewModel.sports.length,
+              itemBuilder: (context, index) {
+                Sport sport = viewModel.sports[index];
+                return Card(
+                  child: ListTile(
+                    leading: Image.network(sport.imageUrl),
+                    title: Text(sport.name),
+                    onTap: () {
+                      print('Sport tapped: ${sport.imageUrl}');
+                    },
+                  ),
+                );
+              },
+            );
+          },
+        ),
+        bottomNavigationBar: const BottomNavigationWidget(),
       ),
-      bottomNavigationBar: const BottomNavigationWidget(),
     );
   }
 }
