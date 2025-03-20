@@ -14,7 +14,7 @@ class HomeLoading extends HomeState {}
 class HomeLoaded extends HomeState {
   final List<BookingModel> upcomingBookings;
   final List<BookingModel> recommendedBookings;
-  final List<Object> popularityReport;
+  final Map<String, dynamic> popularityReport;
 
   const HomeLoaded(
       {required this.upcomingBookings,

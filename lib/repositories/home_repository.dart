@@ -32,7 +32,7 @@ class HomeRepository {
         .toList();
   }
 
-  Future<List<Object>> popularityReport(UserModel user) async {
+  Future<Map<String, dynamic>> popularityReport(UserModel user) async {
     final metadata =
         await _firestore.collection('metadata').doc('metadata').get();
 
@@ -58,7 +58,11 @@ class HomeRepository {
         VenueModel.fromJson((await mostBookedVenueDoc).data() ?? {});
 
     if (user.bookings.isEmpty) {
-      return [mostBookedSportModel, mostBookedVenueModel, ""];
+      return {
+        'mostBookedSport': mostBookedSportModel,
+        'mostBookedVenue': mostBookedVenueModel,
+        'mostPlayedSport': null
+      };
     }
 
     var mostPlayedSport = user.bookings.first.venue.sport;
@@ -73,6 +77,12 @@ class HomeRepository {
       }
     }
 
-    return [mostBookedSportModel, mostBookedVenueModel, mostPlayedSport];
+    print("aaaaaaa ${mostBookedVenueModel.name}");
+
+    return {
+      'mostBookedSport': mostBookedSportModel,
+      'mostBookedVenue': mostBookedVenueModel,
+      'mostPlayedSport': mostPlayedSport
+    };
   }
 }
