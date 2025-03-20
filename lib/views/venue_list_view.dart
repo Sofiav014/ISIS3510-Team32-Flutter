@@ -13,7 +13,7 @@ class VenueListView extends StatelessWidget {
       body: Center(
         child: Text('Places for sport ID: $sportId'),
       ),
-      bottomNavigationBar: const BottomNavigationWidget(), // Add BottomNavigationBar
+      bottomNavigationBar: const BottomNavigationWidget(selectedIndex: 0), // Add BottomNavigationBar
     );
   }
 }
