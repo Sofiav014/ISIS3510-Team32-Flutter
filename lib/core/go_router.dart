@@ -54,11 +54,15 @@ GoRouter setupRouter(AuthBloc authBloc) {
       GoRoute(
           path: '/home',
           pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context, state: state, child: HomeView(userId: authBloc.state.user?.uid ?? ''))),
+              context: context, state: state, child: HomeView())),
       GoRoute(
           path: '/initiation',
           pageBuilder: (context, state) => buildPageWithNoTransition(
               context: context, state: state, child: const InitiationView())),
+      GoRoute(
+          path: '/profile',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context, state: state, child: const ProfileView())),
     ],
   );
 }

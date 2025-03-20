@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:isis3510_team32_flutter/view_models/auth/auth_cubit.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 
 class ProfileView extends StatelessWidget {
@@ -8,7 +9,7 @@ class ProfileView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authCubit = context.read<AuthCubit>();
+    final authBloc = context.read<AuthBloc>();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile Screen')),
@@ -17,7 +18,7 @@ class ProfileView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             ElevatedButton(
-              onPressed: () => authCubit.signOut(),
+              onPressed: () => authBloc.add(AuthLogOutEvent()),
               child: const Text('Sign out'),
             ),
           ],
