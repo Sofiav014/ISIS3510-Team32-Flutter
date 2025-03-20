@@ -68,7 +68,7 @@ GoRouter setupRouter(AuthBloc authBloc) {
           return buildPageWithNoTransition(
             context: context,
             state: state,
-            child: VenueListView(sportId: sportId),
+            child: VenueListView(sportName: sportId),
           );
         },
       ),
