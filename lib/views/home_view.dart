@@ -7,17 +7,18 @@ import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/upcoming_booking_card_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/recommended_booking_card_widget.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
-
+import 'package:isis3510_team32_flutter/repositories/booking_repository.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authBloc = context.read<AuthBloc>();
-    final userId = authBloc.state.user?.uid ?? '';
     return BlocProvider(
-      create: (context) => HomeBloc()..add(LoadHomeData(userId)),
+      create: (context) => HomeBloc(
+          authBloc: context.read<AuthBloc>(),
+          bookingRepository: BookingRepository())
+        ..add(const LoadHomeData()),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('SportHub',

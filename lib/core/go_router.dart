@@ -54,7 +54,7 @@ GoRouter setupRouter(AuthBloc authBloc) {
       GoRoute(
           path: '/home',
           pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context, state: state, child: HomeView())),
+              context: context, state: state, child: const HomeView())),
       GoRoute(
           path: '/initiation',
           pageBuilder: (context, state) => buildPageWithNoTransition(

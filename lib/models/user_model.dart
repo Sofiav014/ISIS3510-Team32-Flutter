@@ -47,11 +47,11 @@ class UserModel {
     SnapshotOptions? options,
   ) {
     return UserModel(
-      id: snapshot['id'] ?? '',
+      id: snapshot.id,
       name: snapshot['name'] ?? '',
       birthDate:
           (snapshot['birth_date'] as Timestamp?)?.toDate() ?? DateTime.utc(0),
-      gender: snapshot['sex'] ?? '',
+      gender: snapshot['gender'] ?? '',
       sportsLiked: (snapshot['sports_liked'] as List? ?? [])
           .map((sport) => SportModel.fromJson(sport))
           .toList(),

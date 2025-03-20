@@ -1,18 +1,24 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:isis3510_team32_flutter/models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/user_model.dart';
-import 'package:isis3510_team32_flutter/core/firebase_service.dart';
-
+import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
+import 'package:isis3510_team32_flutter/repositories/booking_repository.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
-  HomeBloc() : super(HomeInitial()) {
+  final AuthBloc authBloc;
+  final BookingRepository bookingRepository;
+
+  HomeBloc({
+    required this.authBloc,
+    required this.bookingRepository,
+  }) : super(HomeInitial()) {
     on<LoadHomeData>(_onLoadHomeData);
   }
 
@@ -20,57 +26,18 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       LoadHomeData event, Emitter<HomeState> emit) async {
     emit(HomeLoading());
     try {
-      final FirebaseFirestore _firestore = FirebaseService.instance.firestore;
 
-      // 1. Get User ID from event
-      final userId = event.userId;
+      final AuthState authState = authBloc.state;
+      final UserModel? user = authState.userModel;
 
-      if (userId.isEmpty) {
-        emit(const HomeError('User ID is missing.'));
+      if (user == null) {
+        emit(const HomeError('User not found or not authenticated.'));
         return;
       }
 
-      // 2. Get User data
-      final userDoc = await _firestore.collection('users').doc(userId).get();
+      final upcomingBookings = bookingRepository.getUpcomingBookings(user);
 
-      if (!userDoc.exists) {
-        emit(const HomeError('User not found.'));
-        return;
-      }
-
-      final userDocData = userDoc.data();
-
-      UserModel? user;
-
-      if (userDocData == null) {
-        emit(const HomeError('User not found.'));
-        return;
-      }
-
-      user = UserModel.fromJson(userDocData);
-
-      // 3. Get Bookings data
-      final upcomingBookings = user.bookings
-          .where((booking) => booking.startTime.isAfter(DateTime.now()))
-          .toList();
-
-      final userBookingsId =
-          upcomingBookings.map((booking) => booking.id).toList();
-
-      final recommendedBookingsQuery = await _firestore
-          .collection('bookings')
-          .where('venue.sport.id',
-              whereIn: user.sportsLiked.map((sport) => sport.id).toList())
-          .limit(
-              10) // Increase the limit to ensure we have enough results to filter
-          .get();
-
-      final recommendedBookings = recommendedBookingsQuery.docs
-          .map((doc) => BookingModel.fromJson(doc.data()))
-          .where((booking) => !userBookingsId.contains(booking.id))
-          .where((booking) => booking.users.length < booking.maxUsers)
-          .take(3) // Limit the final results to 3
-          .toList();
+      final recommendedBookings = await bookingRepository.getRecommendedBookings(user);
 
       emit(HomeLoaded(
           upcomingBookings: upcomingBookings,
