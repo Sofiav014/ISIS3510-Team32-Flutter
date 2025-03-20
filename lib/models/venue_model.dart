@@ -8,9 +8,9 @@ class VenueModel {
   final String locationName;
   final double rating;
   final String image;
-  final GeoPoint cords;
+  final GeoPoint coords;
   final SportModel sport;
-  final List<BookingModel>? bookings;
+  final List<BookingModel> bookings;
 
   VenueModel({
     required this.id,
@@ -18,9 +18,9 @@ class VenueModel {
     required this.locationName,
     required this.rating,
     required this.image,
-    required this.cords,
+    required this.coords,
     required this.sport,
-    this.bookings,
+    required this.bookings,
   });
 
   factory VenueModel.fromJson(Map<String, dynamic> json) {
@@ -30,9 +30,28 @@ class VenueModel {
       locationName: json['location_name'] ?? '',
       rating: (json['rating'] ?? 0.0).toDouble(),
       image: json['image'] ?? '',
-      cords: json['cords'] ?? const GeoPoint(0, 0),
+      coords: json['coords'] ?? const GeoPoint(0, 0),
       sport: SportModel.fromJson(json['sport']),
       bookings: (json['bookings'] as List? ?? [])
+          .map((booking) =>
+              BookingModel.fromJson(booking as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  factory VenueModel.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    return VenueModel(
+      id: snapshot.id,
+      name: snapshot['name'] ?? '',
+      locationName: snapshot['location_name'] ?? '',
+      rating: (snapshot['rating'] ?? 0.0).toDouble(),
+      image: snapshot['image'] ?? '',
+      coords: snapshot['coords'] ?? const GeoPoint(0, 0),
+      sport: SportModel.fromJson(snapshot['sport']),
+      bookings: (snapshot['bookings'] as List? ?? [])
           .map((booking) =>
               BookingModel.fromJson(booking as Map<String, dynamic>))
           .toList(),
@@ -46,9 +65,14 @@ class VenueModel {
       'location_name': locationName,
       'rating': rating,
       'image': image,
-      'cords': cords,
+      'coords': coords,
       'sport': sport.toJson(),
-      'bookings': bookings?.map((b) => b.toJson()).toList(),
+      'bookings': bookings.map((b) => b.toJson()).toList(),
     };
   }
+
+  Map<String, dynamic> toFirestore() {
+    return toJson();
+  }
 }
+

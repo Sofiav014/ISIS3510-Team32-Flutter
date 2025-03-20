@@ -2,7 +2,7 @@ part of 'home_bloc.dart';
 
 abstract class HomeState extends Equatable {
   const HomeState();
-  
+
   @override
   List<Object> get props => [];
 }
@@ -14,11 +14,16 @@ class HomeLoading extends HomeState {}
 class HomeLoaded extends HomeState {
   final List<BookingModel> upcomingBookings;
   final List<BookingModel> recommendedBookings;
+  final Map<String, dynamic> popularityReport;
 
-  const HomeLoaded({required this.upcomingBookings, required this.recommendedBookings});
+  const HomeLoaded(
+      {required this.upcomingBookings,
+      required this.recommendedBookings,
+      required this.popularityReport});
 
   @override
-  List<Object> get props => [upcomingBookings, recommendedBookings];
+  List<Object> get props =>
+      [upcomingBookings, recommendedBookings, popularityReport];
 }
 
 class HomeError extends HomeState {
