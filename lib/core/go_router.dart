@@ -4,7 +4,8 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
 import 'package:isis3510_team32_flutter/views/initiation_view.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
-import '../views/home_view.dart';
+import 'package:isis3510_team32_flutter/views/home_view.dart';
+import 'package:isis3510_team32_flutter/views/profile_view.dart';
 
 CustomTransitionPage buildPageWithNoTransition<T>({
   required BuildContext context,
@@ -53,11 +54,15 @@ GoRouter setupRouter(AuthBloc authBloc) {
       GoRoute(
           path: '/home',
           pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context, state: state, child: const HomeView())),
+              context: context, state: state, child: HomeView())),
       GoRoute(
           path: '/initiation',
           pageBuilder: (context, state) => buildPageWithNoTransition(
               context: context, state: state, child: const InitiationView())),
+      GoRoute(
+          path: '/profile',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context, state: state, child: const ProfileView())),
     ],
   );
 }

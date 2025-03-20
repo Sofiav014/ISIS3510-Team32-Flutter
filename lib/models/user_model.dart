@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'booking_model.dart';
 import 'sport_model.dart';
 import 'venue_model.dart';
@@ -29,7 +28,7 @@ class UserModel {
     return UserModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      birthDate: json['birth_date'] ?? DateTime.utc(0),
+      birthDate: (json['birth_date'] as Timestamp).toDate(),
       gender: json['sex'] ?? '',
       sportsLiked: (json['sports_liked'] as List? ?? [])
           .map((sport) => SportModel.fromJson(sport))

@@ -4,14 +4,22 @@ import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:go_router/go_router.dart';
 
 class BottomNavigationWidget extends StatefulWidget {
-  const BottomNavigationWidget({super.key});
+  final int selectedIndex; // Add selectedIndex parameter
+
+  const BottomNavigationWidget({super.key, required this.selectedIndex});
 
   @override
   BottomNavigationWidgetState createState() => BottomNavigationWidgetState();
 }
 
 class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
-  int _selectedIndex = 2;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex; // Initialize with parameter value
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -30,9 +38,9 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
       // case 3:
       //   context.go('/add');
       //   break;
-      // case 4:
-      //   context.go('/profile');
-      //   break;
+      case 4:
+        context.go('/profile');
+        break;
     }
   }
 
@@ -52,7 +60,6 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
             ),
             onPressed: () {
               _onItemTapped(0);
-              // Search logic
             },
           ),
           IconButton(
@@ -64,7 +71,6 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
             ),
             onPressed: () {
               _onItemTapped(1);
-              // Bookings logic
             },
           ),
           IconButton(
@@ -76,7 +82,6 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
             ),
             onPressed: () {
               _onItemTapped(2);
-              // Home logic
             },
           ),
           IconButton(
@@ -88,7 +93,6 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
             ),
             onPressed: () {
               _onItemTapped(3);
-              // Add logic
             },
           ),
           IconButton(
@@ -100,7 +104,6 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
             ),
             onPressed: () {
               _onItemTapped(4);
-              // Profile logic
             },
           ),
         ],
