@@ -18,8 +18,8 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
       _selectedIndex = index;
     });
     switch (index) {
-      // case 0:
-      //   context.go('/search');
+       case 0:
+         context.go('/search');
       //   break;
       // case 1:
       //   context.go('/calendar');
