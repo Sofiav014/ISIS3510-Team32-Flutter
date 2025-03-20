@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:isis3510_team32_flutter/view_models/auth/auth_cubit.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
+import 'package:isis3510_team32_flutter/views/initiation_view.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
 import 'package:isis3510_team32_flutter/views/home_view.dart';
 import 'package:isis3510_team32_flutter/views/profile_view.dart';
@@ -19,22 +20,28 @@ CustomTransitionPage buildPageWithNoTransition<T>({
   );
 }
 
-GoRouter setupRouter(AuthCubit authCubit) {
-  final authNotifier = AuthRouterNotifier(authCubit);
+GoRouter setupRouter(AuthBloc authBloc) {
+  final authNotifier = AuthRouterNotifier(authBloc);
 
   return GoRouter(
     initialLocation: '/login',
     refreshListenable: authNotifier,
     redirect: (context, state) {
-      final isAuthenticated = authCubit.state.isAuthenticated;
-      final isLoginRoute = state.matchedLocation == '/login';
+      final isAuthenticated = authBloc.state.isAuthenticated;
+      final hasModel = authBloc.state.hasModel;
+      final isLoginRoute = state.matchedLocation == '/login' ||
+          state.matchedLocation == '/initiation';
 
       if (!isAuthenticated && !isLoginRoute) {
         return '/login';
       }
 
       if (isAuthenticated && isLoginRoute) {
-        return '/home';
+        if (hasModel) {
+          return '/home';
+        } else {
+          return '/initiation';
+        }
       }
 
       return null;
@@ -47,15 +54,11 @@ GoRouter setupRouter(AuthCubit authCubit) {
       GoRoute(
           path: '/home',
           pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context,
-              state: state,
-              child: HomeView(
-                userId: authCubit.state.user?.uid ?? '',
-              ))),
+              context: context, state: state, child: HomeView(userId: authBloc.state.user?.uid ?? ''))),
       GoRoute(
-          path: '/profile',
+          path: '/initiation',
           pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context, state: state, child: const ProfileView())),
+              context: context, state: state, child: const InitiationView())),
     ],
   );
 }

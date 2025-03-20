@@ -8,7 +8,7 @@ class VenueModel {
   final String locationName;
   final double rating;
   final String image;
-  final GeoPoint coords;
+  final GeoPoint cords;
   final SportModel sport;
   final List<BookingModel>? bookings;
 
@@ -18,7 +18,7 @@ class VenueModel {
     required this.locationName,
     required this.rating,
     required this.image,
-    required this.coords,
+    required this.cords,
     required this.sport,
     this.bookings,
   });
@@ -30,7 +30,7 @@ class VenueModel {
       locationName: json['location_name'] ?? '',
       rating: (json['rating'] ?? 0.0).toDouble(),
       image: json['image'] ?? '',
-      coords: json['coords'] ?? const GeoPoint(0, 0),
+      cords: json['cords'] ?? const GeoPoint(0, 0),
       sport: SportModel.fromJson(json['sport']),
       bookings: (json['bookings'] as List? ?? [])
           .map((booking) =>
@@ -46,7 +46,7 @@ class VenueModel {
       'location_name': locationName,
       'rating': rating,
       'image': image,
-      'coords': coords,
+      'cords': cords,
       'sport': sport.toJson(),
       'bookings': bookings?.map((b) => b.toJson()).toList(),
     };

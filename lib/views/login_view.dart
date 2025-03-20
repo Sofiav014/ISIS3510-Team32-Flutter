@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/widgets/google_sign_in_widget.dart';
 
 class LoginView extends StatelessWidget {
@@ -7,7 +8,7 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      backgroundColor: Color(0xFF60508C),
+      backgroundColor: AppColors.primary,
       body: Stack(
         children: [
           Center(

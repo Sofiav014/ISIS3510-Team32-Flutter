@@ -7,7 +7,7 @@ class BookingModel {
   final DateTime startTime;
   final DateTime endTime;
   final VenueModel venue;
-  final List<String> users;
+  final List<UserReference> users;
 
   BookingModel({
     required this.id,
@@ -26,7 +26,7 @@ class BookingModel {
       endTime: (json['end_time'] as Timestamp).toDate(),
       venue: VenueModel.fromJson(json['venue']),
       users: (json['users'] as List? ?? [])
-          .map((user) => user as String)
+          .map((user) => UserReference.fromJson(user))
           .toList(),
     );
   }
@@ -38,7 +38,21 @@ class BookingModel {
       'start_time': Timestamp.fromDate(startTime),
       'end_time': Timestamp.fromDate(endTime),
       'venue': venue.toJson(),
-      'users': users,
+      'users': users.map((user) => user.toJson()).toList(),
     };
+  }
+}
+
+class UserReference {
+  final String id;
+
+  UserReference({required this.id});
+
+  factory UserReference.fromJson(Map<String, dynamic> json) {
+    return UserReference(id: json['id']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id};
   }
 }
