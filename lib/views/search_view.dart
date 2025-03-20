@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/view_models/search_view_model.dart';
 import 'package:isis3510_team32_flutter/models/sport.dart';
+import 'package:go_router/go_router.dart';
 
 class SearchView extends StatelessWidget {
   const SearchView({super.key});
@@ -28,7 +29,7 @@ class SearchView extends StatelessWidget {
                     leading: Image.network(sport.imageUrl),
                     title: Text(sport.name),
                     onTap: () {
-                      print('Sport tapped: ${sport.name}');
+                      context.go('/venue_list/${sport.id}');
                     },
                   ),
                 );

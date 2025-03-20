@@ -4,6 +4,7 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_cubit.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
 import 'package:isis3510_team32_flutter/views/search_view.dart';
+import 'package:isis3510_team32_flutter/views/venue_list_view.dart';
 import '../views/home_view.dart';
 
 CustomTransitionPage buildPageWithNoTransition<T>({
@@ -52,6 +53,17 @@ GoRouter setupRouter(AuthCubit authCubit) {
           path: '/search',
           pageBuilder: (context, state) => buildPageWithNoTransition(
               context: context, state: state, child: const SearchView())),
+      GoRoute(
+        path: '/venue_list/:sportId',
+        pageBuilder: (context, state) {
+          final sportId = state.pathParameters['sportId']!;
+          return buildPageWithNoTransition(
+            context: context,
+            state: state,
+            child: VenueListView(sportId: sportId),
+          );
+        },
+      ),
     ],
   );
 }
