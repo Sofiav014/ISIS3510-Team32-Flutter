@@ -6,18 +6,18 @@ import 'package:isis3510_team32_flutter/models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/user_model.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
-import 'package:isis3510_team32_flutter/repositories/booking_repository.dart';
+import 'package:isis3510_team32_flutter/repositories/home_repository.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final AuthBloc authBloc;
-  final BookingRepository bookingRepository;
+  final HomeRepository homeRepository;
 
   HomeBloc({
     required this.authBloc,
-    required this.bookingRepository,
+    required this.homeRepository,
   }) : super(HomeInitial()) {
     on<LoadHomeData>(_onLoadHomeData);
   }
@@ -35,9 +35,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         return;
       }
 
-      final upcomingBookings = bookingRepository.getUpcomingBookings(user);
+      final upcomingBookings = homeRepository.getUpcomingBookings(user);
 
-      final recommendedBookings = await bookingRepository.getRecommendedBookings(user);
+      final recommendedBookings = await homeRepository.getRecommendedBookings(user);
 
       emit(HomeLoaded(
           upcomingBookings: upcomingBookings,

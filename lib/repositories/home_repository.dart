@@ -3,7 +3,7 @@ import 'package:isis3510_team32_flutter/models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/user_model.dart';
 import 'package:isis3510_team32_flutter/core/firebase_service.dart';
 
-class BookingRepository {
+class HomeRepository {
   final FirebaseFirestore _firestore = FirebaseService.instance.firestore;
 
   Future<List<BookingModel>> getRecommendedBookings(UserModel user) async {

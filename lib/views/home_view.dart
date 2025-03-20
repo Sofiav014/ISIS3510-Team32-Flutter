@@ -7,7 +7,7 @@ import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/upcoming_booking_card_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/recommended_booking_card_widget.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
-import 'package:isis3510_team32_flutter/repositories/booking_repository.dart';
+import 'package:isis3510_team32_flutter/repositories/home_repository.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -16,8 +16,7 @@ class HomeView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => HomeBloc(
-          authBloc: context.read<AuthBloc>(),
-          bookingRepository: BookingRepository())
+          authBloc: context.read<AuthBloc>(), homeRepository: HomeRepository())
         ..add(const LoadHomeData()),
       child: Scaffold(
         appBar: AppBar(
