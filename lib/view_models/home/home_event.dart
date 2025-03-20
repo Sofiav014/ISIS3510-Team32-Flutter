@@ -8,9 +8,8 @@ sealed class HomeEvent extends Equatable {
 }
 
 final class LoadHomeData extends HomeEvent {
-  final String userId;
-  const LoadHomeData(this.userId);
+  const LoadHomeData();
 
   @override
-  List<Object> get props => [userId];
+  List<Object> get props => [];
 }

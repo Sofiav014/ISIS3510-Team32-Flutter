@@ -4,20 +4,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/models/booking_model.dart';
 import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
+import 'package:isis3510_team32_flutter/widgets/sport_popularity_report_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/upcoming_booking_card_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/recommended_booking_card_widget.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
-
+import 'package:isis3510_team32_flutter/repositories/home_repository.dart';
+import 'package:isis3510_team32_flutter/widgets/venue_popularity_report_widget.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final authBloc = context.read<AuthBloc>();
-    final userId = authBloc.state.user?.uid ?? '';
     return BlocProvider(
-      create: (context) => HomeBloc()..add(LoadHomeData(userId)),
+      create: (context) => HomeBloc(
+          authBloc: context.read<AuthBloc>(), homeRepository: HomeRepository())
+        ..add(const LoadHomeData()),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('SportHub',
@@ -52,6 +54,7 @@ class HomeView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          _buildPopularityReport(state.popularityReport),
           _buildUpcomingBookingsSection(state.upcomingBookings),
           _buildBookingsToJoinSection(state.recommendedBookings),
         ],
@@ -59,17 +62,17 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildUpcomingBookingsSection(List<BookingModel> upcomingBookings) {
+  Widget _buildPopularityReport(Map<String, dynamic> popularityReport) {
     return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
+      padding: const EdgeInsets.only(left: 8.0, top: 8.0, bottom: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           const Padding(
-            padding: EdgeInsets.all(16.0),
+            padding: EdgeInsets.symmetric(vertical: 8.0),
             child: Center(
               child: Text(
-                'Your upcoming bookings',
+                'Popularity Report',
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -77,27 +80,69 @@ class HomeView extends StatelessWidget {
               ),
             ),
           ),
-          if (upcomingBookings.isEmpty)
-            const Center(
-              child: Text(
-                'No upcoming bookings',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            )
-          else
-            SizedBox(
-              height: 200,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: upcomingBookings.length,
-                itemBuilder: (context, index) {
-                  return UpcomingBookingCardWidget(
-                      booking: upcomingBookings[index]);
-                },
-              ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: <Widget>[
+                if (popularityReport['mostBookedSport'] != null)
+                  SportPopularityReportCardWidget(
+                    sport: popularityReport['mostBookedSport'],
+                    title: 'Most Booked Sport Overall',
+                  ),
+                if (popularityReport['mostBookedVenue'] != null)
+                  VenuePopularityReportCardWidget(
+                    venue: popularityReport['mostBookedVenue'],
+                    title: 'Best Rated Overall',
+                  ),
+                if (popularityReport['mostPlayedSport'] != null)
+                  SportPopularityReportCardWidget(
+                    sport: popularityReport['mostPlayedSport'],
+                    title: 'Most Played by You',
+                  ),
+              ],
             ),
+          ),
         ],
       ),
+    );
+  }
+
+  Widget _buildUpcomingBookingsSection(List<BookingModel> upcomingBookings) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Center(
+            child: Text(
+              'Your upcoming bookings',
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary),
+            ),
+          ),
+        ),
+        if (upcomingBookings.isEmpty)
+          const Center(
+            child: Text(
+              'No upcoming bookings',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          )
+        else
+          SizedBox(
+            height: 200,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: upcomingBookings.length,
+              itemBuilder: (context, index) {
+                return UpcomingBookingCardWidget(
+                    booking: upcomingBookings[index]);
+              },
+            ),
+          ),
+      ],
     );
   }
 
@@ -106,7 +151,7 @@ class HomeView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         const Padding(
-          padding: EdgeInsets.all(16.0),
+          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
           child: Center(
             child: Text(
               'Bookings you may want to join',
