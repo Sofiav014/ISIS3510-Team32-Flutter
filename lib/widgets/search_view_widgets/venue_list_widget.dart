@@ -24,9 +24,12 @@ class VenueListWidget extends StatelessWidget {
           children: <Widget>[
             ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-              child: Image.network(
-                venue.image, // Use venue.image
-                fit: BoxFit.cover,
+              child: AspectRatio(
+                aspectRatio: 16 / 9, // Adjust the aspect ratio as needed
+                child: Image.network(
+                  venue.image, // Use venue.image
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Positioned(

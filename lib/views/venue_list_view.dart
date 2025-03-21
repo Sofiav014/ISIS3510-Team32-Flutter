@@ -5,6 +5,7 @@ import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/venue_list_view_model.dart';
 import 'package:isis3510_team32_flutter/models/venue_model.dart';
 import 'package:isis3510_team32_flutter/widgets/search_view_widgets/venue_list_widget.dart';
+import 'package:go_router/go_router.dart';
 
 class VenueListView extends StatelessWidget {
   final String sportName;
@@ -17,6 +18,12 @@ class VenueListView extends StatelessWidget {
       create: (context) => VenueViewModel(sportName),
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+            onPressed: () {
+              context.go('/search');
+            },
+          ),
           title: const Text('Venue List',
               style: TextStyle(
                   color: AppColors.primary, fontWeight: FontWeight.w600)),

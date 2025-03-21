@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:isis3510_team32_flutter/models/booking_model.dart';
-import 'package:isis3510_team32_flutter/models/sport_model.dart';
 import 'package:isis3510_team32_flutter/models/user_model.dart';
 import 'package:isis3510_team32_flutter/models/venue_model.dart';
 import 'package:isis3510_team32_flutter/core/firebase_service.dart';
