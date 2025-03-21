@@ -29,7 +29,7 @@ class UserModel {
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       birthDate: (json['birth_date'] as Timestamp).toDate(),
-      gender: json['sex'] ?? '',
+      gender: json['gender'] ?? '',
       sportsLiked: (json['sports_liked'] as List? ?? [])
           .map((sport) => SportModel.fromJson(sport))
           .toList(),
@@ -69,7 +69,7 @@ class UserModel {
       'id': id,
       'name': name,
       'birth_date': birthDate,
-      'sex': gender,
+      'gender': gender,
       'sports_liked': sportsLiked.map((sport) => sport.toJson()).toList(),
       'venues_liked': venuesLiked.map((venue) => venue.toJson()).toList(),
       'bookings': bookings.map((b) => b.toJson()).toList(),
