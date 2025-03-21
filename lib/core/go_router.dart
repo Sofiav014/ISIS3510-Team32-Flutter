@@ -4,6 +4,8 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
 import 'package:isis3510_team32_flutter/views/initiation_view.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
+import 'package:isis3510_team32_flutter/views/search_view.dart';
+import 'package:isis3510_team32_flutter/views/venue_list_view.dart';
 import 'package:isis3510_team32_flutter/views/home_view.dart';
 import 'package:isis3510_team32_flutter/views/profile_view.dart';
 
@@ -55,6 +57,21 @@ GoRouter setupRouter(AuthBloc authBloc) {
           path: '/home',
           pageBuilder: (context, state) => buildPageWithNoTransition(
               context: context, state: state, child: const HomeView())),
+      GoRoute(
+          path: '/search',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context, state: state, child: const SearchView())),
+      GoRoute(
+        path: '/venue_list/:sportId',
+        pageBuilder: (context, state) {
+          final sportId = state.pathParameters['sportId']!;
+          return buildPageWithNoTransition(
+            context: context,
+            state: state,
+            child: VenueListView(sportName: sportId),
+          );
+        },
+      ),
       GoRoute(
           path: '/initiation',
           pageBuilder: (context, state) => buildPageWithNoTransition(
