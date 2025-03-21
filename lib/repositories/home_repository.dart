@@ -37,29 +37,31 @@ class HomeRepository {
         await _firestore.collection('metadata').doc('metadata').get();
 
     final data = metadata.data() ?? {};
-    Map<String, dynamic> sportsBookings = data['sports_bookings'] ?? {};
-
+    
     Map<String, dynamic> venuesBookings = data['venues_bookings'] ?? {};
-
-    var mostBookedSport =
-        sportsBookings.entries.reduce((a, b) => a.value > b.value ? a : b);
+  
     var mostBookedVenue =
-        venuesBookings.entries.reduce((a, b) => a.value > b.value ? a : b);
-
-    final mostBookedSportDoc =
-        _firestore.collection('sports').doc(mostBookedSport.key).get();
+      venuesBookings.entries.reduce((a, b) => a.value > b.value ? a : b);
+    
     final mostBookedVenueDoc =
-        _firestore.collection('venues').doc(mostBookedVenue.key).get();
+      _firestore.collection('venues').doc(mostBookedVenue.key).get();
+    
+    final highestRatedVenueDoc = await _firestore
+      .collection('venues')
+      .orderBy('rating', descending: true)
+      .limit(1)
+      .get();
 
     // to json (Model)
-    final mostBookedSportModel =
-        SportModel.fromJson((await mostBookedSportDoc).data() ?? {});
     final mostBookedVenueModel =
-        VenueModel.fromJson((await mostBookedVenueDoc).data() ?? {});
+      VenueModel.fromJson((await mostBookedVenueDoc).data() ?? {});
+    
+    final highestRatedVenueModel = VenueModel.fromJson(highestRatedVenueDoc.docs.first.data());
+    
 
     if (user.bookings.isEmpty) {
       return {
-        'mostBookedSport': mostBookedSportModel,
+        'highestRatedVenue': highestRatedVenueModel,
         'mostBookedVenue': mostBookedVenueModel,
         'mostPlayedSport': null
       };
@@ -77,10 +79,8 @@ class HomeRepository {
       }
     }
 
-    print("aaaaaaa ${mostBookedVenueModel.name}");
-
     return {
-      'mostBookedSport': mostBookedSportModel,
+      'highestRatedVenue': highestRatedVenueModel,
       'mostBookedVenue': mostBookedVenueModel,
       'mostPlayedSport': mostPlayedSport
     };

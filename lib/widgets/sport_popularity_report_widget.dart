@@ -32,13 +32,14 @@ class SportPopularityReportCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 150.0,
+      height: 170.0,
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
         color: AppColors.lightPurple,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,

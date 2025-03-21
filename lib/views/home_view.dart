@@ -84,20 +84,20 @@ class HomeView extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: <Widget>[
-                if (popularityReport['mostBookedSport'] != null)
-                  SportPopularityReportCardWidget(
-                    sport: popularityReport['mostBookedSport'],
-                    title: 'Most Booked Sport Overall',
-                  ),
-                if (popularityReport['mostBookedVenue'] != null)
+                if (popularityReport['highestRatedVenue'] != null)
                   VenuePopularityReportCardWidget(
-                    venue: popularityReport['mostBookedVenue'],
+                    venue: popularityReport['highestRatedVenue'],
                     title: 'Best Rated Overall',
                   ),
                 if (popularityReport['mostPlayedSport'] != null)
                   SportPopularityReportCardWidget(
                     sport: popularityReport['mostPlayedSport'],
                     title: 'Most Played by You',
+                  ),
+                if (popularityReport['mostBookedVenue'] != null)
+                  VenuePopularityReportCardWidget(
+                    venue: popularityReport['mostBookedVenue'],
+                    title: 'Most Booked Overall',
                   ),
               ],
             ),
