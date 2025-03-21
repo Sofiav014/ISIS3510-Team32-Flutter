@@ -22,7 +22,7 @@ class SportButtonWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.primary.withAlpha(990),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
@@ -42,15 +42,17 @@ class SportButtonWidget extends StatelessWidget {
               imageAsset,
               width: size,
               height: size,
-              color: AppColors.primary,
+              color: Colors.white,
             ),
             const SizedBox(
               height: 15,
             ),
             Text(text,
                 style: const TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold))
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)
+            )
           ],
         ),
       ),

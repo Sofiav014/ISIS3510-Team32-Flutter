@@ -4,6 +4,7 @@ import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/venue_list_view_model.dart';
 import 'package:isis3510_team32_flutter/models/venue_model.dart';
+import 'package:isis3510_team32_flutter/widgets/search_view_widgets/venue_list_widget.dart';
 
 class VenueListView extends StatelessWidget {
   final String sportName;
@@ -33,9 +34,7 @@ class VenueListView extends StatelessWidget {
               itemCount: viewModel.venues.length,
               itemBuilder: (context, index) {
                 VenueModel venue = viewModel.venues[index];
-                return ListTile(
-                  title: Text(venue.name),
-                );
+                return VenueListWidget(venue: venue); // Use VenueListWidget
               },
             );
           },

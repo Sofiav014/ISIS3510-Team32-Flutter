@@ -7,7 +7,7 @@ Map<String, SportModel> initiationSports = {
       logo: "assets/icons/initiation/basketball-logo.svg"),
   "Soccer": SportModel(
       id: "2",
-      name: "Soccer",
+      name: "Football",
       logo: "assets/icons/initiation/football-logo.svg"),
   "Volleyball": SportModel(
       id: "3",
