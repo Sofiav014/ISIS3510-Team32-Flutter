@@ -1,5 +1,3 @@
-// ignore_for_file: no_leading_underscores_for_local_identifiers
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:isis3510_team32_flutter/models/booking_model.dart';
@@ -40,8 +38,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           await homeRepository.getRecommendedBookings(user);
 
       final popularityReport = await homeRepository.popularityReport(user);
-
-      print('Popularity Report: $popularityReport');
 
       emit(HomeLoaded(
           upcomingBookings: upcomingBookings,

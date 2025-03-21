@@ -1,20 +1,20 @@
 import 'package:isis3510_team32_flutter/models/sport_model.dart';
 
 Map<String, SportModel> initiationSports = {
-  "Basketball": SportModel(
-      id: "1",
+  "basketball": SportModel(
+      id: "basketball",
       name: "Basketball",
       logo: "assets/icons/initiation/basketball-logo.svg"),
-  "Soccer": SportModel(
-      id: "2",
+  "football": SportModel(
+      id: "football",
       name: "Football",
       logo: "assets/icons/initiation/football-logo.svg"),
-  "Volleyball": SportModel(
-      id: "3",
+  "volleyball": SportModel(
+      id: "volleyball",
       name: "Volleyball",
       logo: "assets/icons/initiation/volleyball-logo.svg"),
-  "Tennis": SportModel(
-      id: "4",
+  "tennis": SportModel(
+      id: "tennis",
       name: "Tennis",
       logo: "assets/icons/initiation/tennis-logo.svg"),
 };
