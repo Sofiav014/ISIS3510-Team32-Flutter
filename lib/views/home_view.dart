@@ -89,9 +89,9 @@ class HomeView extends StatelessWidget {
                     sport: popularityReport['mostBookedSport'],
                     title: 'Most Booked Sport Overall',
                   ),
-                if (popularityReport['mostBookedVenue'] != null)
+                if (popularityReport['highestRatedVenue'] != null)
                   VenuePopularityReportCardWidget(
-                    venue: popularityReport['mostBookedVenue'],
+                    venue: popularityReport['highestRatedVenue'],
                     title: 'Best Rated Overall',
                   ),
                 if (popularityReport['mostPlayedSport'] != null)
