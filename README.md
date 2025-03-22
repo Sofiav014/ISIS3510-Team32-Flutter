@@ -16,6 +16,7 @@ This project requires a `.env` file for Firebase configuration.
     APP_ID=
     MESSAGING_SENDER_ID=
     PROJECT_ID=
+    DATA_BASE_URL=
     STORAGE_BUCKET=
     ```
 
