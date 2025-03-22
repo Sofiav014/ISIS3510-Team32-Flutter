@@ -78,6 +78,7 @@ flutter:
     # Bottom Navigation Bar Icons
     #  - selected
     - assets/icons/
+    - assets/images/
     - assets/icons/navbar/
     - assets/icons/initiation/
 

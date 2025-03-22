@@ -7,20 +7,30 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       backgroundColor: AppColors.primary,
       body: Stack(
         children: [
-          Center(
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage('assets/images/login-background.png'),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          const Center(
             child: Text(
               "Sporthub",
               style: TextStyle(
                   color: Colors.white,
-                  fontSize: 64,
+                  fontSize: 72,
                   fontWeight: FontWeight.bold),
             ),
           ),
-          Positioned(
+          const Positioned(
             left: 70,
             right: 70,
             bottom: 220,
