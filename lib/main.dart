@@ -1,5 +1,6 @@
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -27,6 +28,8 @@ Future main() async {
 
   await FirebaseAppCheck.instance
       .activate(androidProvider: AndroidProvider.playIntegrity);
+
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
 
   Bloc.observer = AppBlocObserver();
 
