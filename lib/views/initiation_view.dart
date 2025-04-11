@@ -325,7 +325,7 @@ class InitiationSportView extends StatelessWidget {
 
     final gridRowLength = isHorizontal ? 4 : 2;
     final double imageSize = isHorizontal ? 48 : 96;
-    final double textSize = isHorizontal ? 0 : 24;
+    final double textSize = isHorizontal ? 0 : 16;
     final double iconSpacing = isHorizontal ? 0 : 4;
     final double spacingBetweenQuestion = isHorizontal ? 32 : 64;
 
