@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
@@ -131,6 +132,10 @@ class InitiationNameView extends StatelessWidget {
                 width: 256,
                 child: TextFormField(
                   controller: controller,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(35),
+                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z ]'))
+                  ],
                 ),
               ),
             ],
