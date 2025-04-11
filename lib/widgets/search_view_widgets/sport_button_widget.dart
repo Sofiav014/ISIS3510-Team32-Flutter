@@ -35,8 +35,9 @@ class SportButtonWidget extends StatelessWidget {
         context.go('/venue_list/${sport.name}');
       },
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             SvgPicture.asset(
               imageAsset,
@@ -44,15 +45,21 @@ class SportButtonWidget extends StatelessWidget {
               height: size,
               color: Colors.white,
             ),
-            const SizedBox(
-              height: 15,
-            ),
-            Text(text,
-                style: const TextStyle(
+            const SizedBox(height: 10),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(
+                  text,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white)
-            )
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ],
         ),
       ),
