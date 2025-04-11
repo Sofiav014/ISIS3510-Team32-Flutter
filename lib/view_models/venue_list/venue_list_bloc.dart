@@ -36,7 +36,7 @@ class VenueListBloc extends Bloc<VenueListEvent, VenueListState> {
 
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        emit(const VenueListError('Location permissions are denied.'));
+        emit(VenueListLoaded(venues: venueList));
         return;
       }
 
