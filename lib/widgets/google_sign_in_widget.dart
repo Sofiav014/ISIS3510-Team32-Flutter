@@ -29,7 +29,7 @@ class GoogleSignInButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SignInButton(
       Buttons.google,
-      text: "Login/Sign in with Google",
+      text: "Sign in with Google",
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onPressed: () async {
         signInWithGoogle();
