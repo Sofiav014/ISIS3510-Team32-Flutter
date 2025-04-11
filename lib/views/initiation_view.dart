@@ -18,6 +18,12 @@ class InitiationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final aspectRatio = size.width / size.height;
+
+    final isHorizontal = aspectRatio > 1.2;
+    final double topPadding = isHorizontal ? 16 : 144;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -36,14 +42,14 @@ class InitiationView extends StatelessWidget {
         body: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.only(
-              top: 144,
+              top: topPadding,
               left: 16,
               right: 16,
               bottom: MediaQuery.of(context).viewInsets.bottom + 16,
             ),
             child: SizedBox(
               height: MediaQuery.of(context).size.height -
-                  144 -
+                  topPadding -
                   MediaQuery.of(context).padding.top -
                   MediaQuery.of(context).padding.bottom -
                   32,
@@ -81,64 +87,74 @@ class InitiationNameView extends StatelessWidget {
   Widget build(BuildContext context) {
     final initiationBloc = context.read<InitiationBloc>();
     final authBloc = context.read<AuthBloc>();
+    final size = MediaQuery.of(context).size;
+    final aspectRatio = size.width / size.height;
+
+    final isHorizontal = aspectRatio > 1.2;
+    final double spacingBetweenButton = isHorizontal ? 32 : 128;
+    final double spacingBetweenQuestion = isHorizontal ? 32 : 64;
+
     final TextEditingController controller =
         TextEditingController(text: authBloc.state.user!.displayName ?? "");
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const Text(
-              "Let us begin with a couple of questions",
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Text(
+                "Let us begin with a couple of questions",
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(
-              height: 64,
-            ),
-            const Text(
-              "What is your name?",
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 20,
+              SizedBox(
+                height: spacingBetweenQuestion,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(
-              height: 128,
-            ),
-            SizedBox(
-              width: 256,
-              child: TextFormField(
-                controller: controller,
+              const Text(
+                "What is your name?",
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 20,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
+              SizedBox(
+                height: spacingBetweenButton,
+              ),
+              SizedBox(
+                width: 256,
+                child: TextFormField(
+                  controller: controller,
+                ),
+              ),
+            ],
           ),
-          onPressed: () {
-            initiationBloc.add(InitiationNameEvent(controller.text));
-            initiationBloc.add(InitiationNextStepEvent());
-          },
-          child: const Text(
-            "Continue",
-            style: TextStyle(color: Colors.white),
-          ),
-        )
-      ],
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
+            ),
+            onPressed: () {
+              initiationBloc.add(InitiationNameEvent(controller.text));
+              initiationBloc.add(InitiationNextStepEvent());
+            },
+            child: const Text(
+              "Continue",
+              style: TextStyle(color: Colors.white),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
@@ -149,6 +165,13 @@ class InititationGenderView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initiationBloc = context.read<InitiationBloc>();
+
+    final size = MediaQuery.of(context).size;
+    final aspectRatio = size.width / size.height;
+
+    final isHorizontal = aspectRatio > 1.2;
+    final double spacingBetweenButton = isHorizontal ? 32 : 128;
+    final double spacingBetweenQuestion = isHorizontal ? 32 : 64;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -162,8 +185,8 @@ class InititationGenderView extends StatelessWidget {
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(
-          height: 64,
+        SizedBox(
+          height: spacingBetweenQuestion,
         ),
         const Text(
           "What gender do you identify with?",
@@ -173,8 +196,8 @@ class InititationGenderView extends StatelessWidget {
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(
-          height: 128,
+        SizedBox(
+          height: spacingBetweenButton,
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -220,13 +243,20 @@ class InititationAgeView extends StatelessWidget {
   Widget build(BuildContext context) {
     final initiationBloc = context.read<InitiationBloc>();
 
+    final size = MediaQuery.of(context).size;
+    final aspectRatio = size.width / size.height;
+
+    final isHorizontal = aspectRatio > 1.2;
+    final double spacingBetweenButton = isHorizontal ? 32 : 128;
+    final double spacingBetweenQuestion = isHorizontal ? 32 : 64;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Column(
+        Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
+            const Text(
               "Great! Now, let’s move on to the next question",
               style: TextStyle(
                 color: AppColors.primary,
@@ -236,9 +266,9 @@ class InititationAgeView extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             SizedBox(
-              height: 64,
+              height: spacingBetweenQuestion,
             ),
-            Text(
+            const Text(
               "When were you born?",
               style: TextStyle(
                 color: AppColors.primary,
@@ -247,9 +277,9 @@ class InititationAgeView extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             SizedBox(
-              height: 128,
+              height: spacingBetweenButton,
             ),
-            InitiationDatePicker(),
+            const InitiationDatePicker(),
           ],
         ),
         BlocBuilder<InitiationBloc, InitiationState>(
@@ -288,98 +318,124 @@ class InitiationSportView extends StatelessWidget {
     final initiationBloc = context.read<InitiationBloc>();
     final authBloc = context.read<AuthBloc>();
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const Text(
-              "We want to know you better",
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+    final size = MediaQuery.of(context).size;
+    final aspectRatio = size.width / size.height;
+
+    final isHorizontal = aspectRatio > 1.2;
+
+    final gridRowLength = isHorizontal ? 4 : 2;
+    final double imageSize = isHorizontal ? 48 : 96;
+    final double textSize = isHorizontal ? 0 : 16;
+    final double iconSpacing = isHorizontal ? 0 : 4;
+    final double spacingBetweenQuestion = isHorizontal ? 32 : 64;
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              const Text(
+                "We want to know you better",
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(
-              height: 64,
-            ),
-            const Text(
-              "Choose the sports you are interested in",
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 20,
+              SizedBox(
+                height: spacingBetweenQuestion,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(
-              height: 32,
-            ),
-            SizedBox(
-              width: 320,
-              child: GridView.count(
-                crossAxisCount: 2, // Creates a grid with 2 columns
-                shrinkWrap:
-                    true, // Use this if the grid is inside another scrollable widget
-                mainAxisSpacing: 10.0, // Spacing between rows
-                crossAxisSpacing: 10.0, // Spacing between columns
-                padding: const EdgeInsets.all(
-                    10.0), // Padding around the entire grid
-                children: [
-                  InitiationIconSelectionToggle(
-                    text: "Basketball",
-                    imageAsset: "assets/icons/initiation/basketball-logo.svg",
-                    sport: initiationSports["basketball"]!,
-                    size: 96,
-                  ),
-                  InitiationIconSelectionToggle(
-                    text: "Football",
-                    imageAsset: "assets/icons/initiation/football-logo.svg",
-                    sport: initiationSports["football"]!,
-                    size: 96,
-                  ),
-                  InitiationIconSelectionToggle(
-                    text: "Volleyball",
-                    imageAsset: "assets/icons/initiation/volleyball-logo.svg",
-                    sport: initiationSports["volleyball"]!,
-                    size: 96,
-                  ),
-                  InitiationIconSelectionToggle(
-                    text: "Tennis",
-                    imageAsset: "assets/icons/initiation/tennis-logo.svg",
-                    sport: initiationSports["tennis"]!,
-                    size: 96,
-                  ),
-                ],
+              const Text(
+                "Choose the sports you are interested in",
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 20,
+                ),
+                textAlign: TextAlign.center,
               ),
-            )
-          ],
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
+              const SizedBox(
+                height: 32,
+              ),
+              SizedBox(
+                width: 320,
+                child: GridView.count(
+                  crossAxisCount: gridRowLength,
+                  shrinkWrap: true,
+                  mainAxisSpacing: 10.0, // Spacing between rows
+                  crossAxisSpacing: 10.0, // Spacing between columns
+                  padding: const EdgeInsets.all(
+                      10.0), // Padding around the entire grid
+                  children: [
+                    InitiationIconSelectionToggle(
+                      text: "Basketball",
+                      imageAsset: "assets/icons/initiation/basketball-logo.svg",
+                      sport: initiationSports["basketball"]!,
+                      size: imageSize,
+                      spacing: iconSpacing,
+                      textSize: textSize,
+                    ),
+                    InitiationIconSelectionToggle(
+                      text: "Football",
+                      imageAsset: "assets/icons/initiation/football-logo.svg",
+                      sport: initiationSports["football"]!,
+                      size: imageSize,
+                      spacing: iconSpacing,
+                      textSize: textSize,
+                    ),
+                    InitiationIconSelectionToggle(
+                      text: "Volleyball",
+                      imageAsset: "assets/icons/initiation/volleyball-logo.svg",
+                      sport: initiationSports["volleyball"]!,
+                      size: imageSize,
+                      spacing: iconSpacing,
+                      textSize: textSize,
+                    ),
+                    InitiationIconSelectionToggle(
+                      text: "Tennis",
+                      imageAsset: "assets/icons/initiation/tennis-logo.svg",
+                      sport: initiationSports["tennis"]!,
+                      spacing: iconSpacing,
+                      size: imageSize,
+                      textSize: textSize,
+                    ),
+                  ],
+                ),
+              )
+            ],
           ),
-          onPressed: () {
-            authBloc.add(AuthCreateModelEvent(UserModel(
-              id: authBloc.state.user!.uid,
-              name: initiationBloc.state.name!,
-              birthDate: initiationBloc.state.birthDate!,
-              gender: initiationBloc.state.gender!,
-              sportsLiked: initiationBloc.state.sportsLiked,
-            )));
-          },
-          child: const Text(
-            "Continue",
-            style: TextStyle(color: Colors.white),
-          ),
-        )
-      ],
+          BlocBuilder<InitiationBloc, InitiationState>(
+              builder: (context, state) {
+            return ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
+              ),
+              onPressed: state.sportsLiked.isNotEmpty
+                  ? () {
+                      authBloc.add(AuthCreateModelEvent(UserModel(
+                        id: authBloc.state.user!.uid,
+                        name: initiationBloc.state.name!,
+                        birthDate: initiationBloc.state.birthDate!,
+                        gender: initiationBloc.state.gender!,
+                        sportsLiked: initiationBloc.state.sportsLiked,
+                      )));
+                    }
+                  : null,
+              child: const Text(
+                "Continue",
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          })
+        ],
+      ),
     );
   }
 }
