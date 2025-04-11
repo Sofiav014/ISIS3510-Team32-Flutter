@@ -134,7 +134,8 @@ class InitiationNameView extends StatelessWidget {
                   controller: controller,
                   inputFormatters: [
                     LengthLimitingTextInputFormatter(35),
-                    FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z ]'))
+                    FilteringTextInputFormatter.allow(
+                        RegExp(r"[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ '\-]"))
                   ],
                 ),
               ),
