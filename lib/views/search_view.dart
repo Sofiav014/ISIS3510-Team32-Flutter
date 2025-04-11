@@ -52,20 +52,26 @@ class SearchView extends StatelessWidget {
   }
 
   Widget _buildSportButtons(List<SportModel> sports) {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      mainAxisSpacing: 10.0,
-      crossAxisSpacing: 10.0,
-      padding: const EdgeInsets.all(20.0),
-      children: sports.map((sport) {
-        return SportButtonWidget(
-          text: sport.name,
-          imageAsset: sport.logo,
-          sport: sport,
-          size: 110,
-        );
-      }).toList(),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics:
+              const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling
+          mainAxisSpacing: 10.0,
+          crossAxisSpacing: 10.0,
+          children: sports.map((sport) {
+            return SportButtonWidget(
+              text: sport.name,
+              imageAsset: sport.logo,
+              sport: sport,
+              size: 110,
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 }
