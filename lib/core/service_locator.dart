@@ -9,7 +9,9 @@ import 'package:isis3510_team32_flutter/core/bloc_observer.dart';
 import 'package:isis3510_team32_flutter/core/firebase_options.dart';
 import 'package:isis3510_team32_flutter/core/go_router.dart';
 import 'package:isis3510_team32_flutter/repositories/auth_repository.dart';
+import 'package:isis3510_team32_flutter/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
 
 final sl = GetIt.instance;
@@ -54,12 +56,15 @@ Future<void> _setupExternalDependencies() async {
 void _setupRepositories() {
   // Register AuthRepository as a singleton
   sl.registerSingleton<AuthRepository>(AuthRepository());
+  sl.registerSingleton<ConnectivityRepository>(ConnectivityRepository());
 }
 
 void _setupBlocs() {
   // Register BLoCs
   sl.registerSingleton<AuthBloc>(AuthBloc(sl<AuthRepository>()));
   sl.registerSingleton<InitiationBloc>(InitiationBloc());
+  sl.registerSingleton<ConnectivityBloc>(
+      ConnectivityBloc(sl<ConnectivityRepository>()));
 }
 
 void _setupRouter() {

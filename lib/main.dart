@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/core/service_locator.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
 
 Future main() async {
@@ -24,10 +25,11 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (_) => sl<AuthBloc>()),
         BlocProvider(create: (_) => sl<InitiationBloc>()),
+        BlocProvider(create: (_) => sl<ConnectivityBloc>()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Navigation',
+        title: 'Sportshub Flutter Application',
         theme: ThemeData(
           primaryColor: AppColors.primary,
           primarySwatch: Colors.blue,
