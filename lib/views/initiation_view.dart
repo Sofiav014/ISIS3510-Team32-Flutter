@@ -10,6 +10,8 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_event.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_state.dart';
+import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/loading/loading_event.dart';
 import 'package:isis3510_team32_flutter/widgets/initiation_date_picker_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/icon_selection_button_widget.dart';
 
@@ -352,6 +354,7 @@ class InitiationSportView extends StatelessWidget {
   Widget build(BuildContext context) {
     final initiationBloc = context.read<InitiationBloc>();
     final authBloc = context.read<AuthBloc>();
+    final loadingBloc = context.read<LoadingBloc>();
 
     final size = MediaQuery.of(context).size;
     final aspectRatio = size.width / size.height;
@@ -453,14 +456,20 @@ class InitiationSportView extends StatelessWidget {
                     const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
               ),
               onPressed: state.sportsLiked.isNotEmpty
-                  ? () {
-                      authBloc.add(AuthCreateModelEvent(UserModel(
-                        id: authBloc.state.user!.uid,
-                        name: initiationBloc.state.name!,
-                        birthDate: initiationBloc.state.birthDate!,
-                        gender: initiationBloc.state.gender!,
-                        sportsLiked: initiationBloc.state.sportsLiked,
-                      )));
+                  ? () async {
+                      loadingBloc.add(ShowLoadingEvent());
+                      authBloc.add(
+                        AuthCreateModelEvent(
+                          UserModel(
+                            id: authBloc.state.user!.uid,
+                            name: initiationBloc.state.name!,
+                            birthDate: initiationBloc.state.birthDate!,
+                            gender: initiationBloc.state.gender!,
+                            sportsLiked: initiationBloc.state.sportsLiked,
+                          ),
+                        ),
+                      );
+                      loadingBloc.add(HideLoadingEvent());
                     }
                   : null,
               child: const Text(

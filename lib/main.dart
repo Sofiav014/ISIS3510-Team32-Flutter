@@ -6,6 +6,8 @@ import 'package:isis3510_team32_flutter/core/service_locator.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
+import 'package:isis3510_team32_flutter/widgets/loading_overlay_widget.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,15 +28,19 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<AuthBloc>()),
         BlocProvider(create: (_) => sl<InitiationBloc>()),
         BlocProvider(create: (_) => sl<ConnectivityBloc>()),
+        BlocProvider(create: (_) => sl<LoadingBloc>()),
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        title: 'Sportshub Flutter Application',
+        title: 'Flutter Navigation',
         theme: ThemeData(
           primaryColor: AppColors.primary,
           primarySwatch: Colors.blue,
         ),
         routerConfig: sl<GoRouter>(),
+        builder: (context, child) {
+          return LoadingOverlayWidget(child: child ?? const SizedBox());
+        },
       ),
     );
   }
