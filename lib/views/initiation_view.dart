@@ -109,6 +109,8 @@ class _InitiationNameViewState extends State<InitiationNameView> {
   @override
   Widget build(BuildContext context) {
     final initiationBloc = context.read<InitiationBloc>();
+    final authBloc = context.read<AuthBloc>();
+
     final size = MediaQuery.of(context).size;
     final aspectRatio = size.width / size.height;
     final isHorizontal = aspectRatio > 1.2;
