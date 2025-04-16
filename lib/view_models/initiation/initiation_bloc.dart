@@ -42,10 +42,12 @@ class InitiationBloc extends HydratedBloc<InitiationEvent, InitiationState> {
   InitiationState? fromJson(Map<String, dynamic> json) {
     return InitiationState(
       name: json['name'] as String?,
-      birthDate: json['birthDate']
-          as DateTime?, // or DateTime.parse if it's a DateTime
+      birthDate: DateTime.parse(json['birthDate']),
       gender: json['gender'] as String?,
-      sportsLiked: List<SportModel>.from(json['sportsLiked'] ?? []),
+      sportsLiked: (json['sportsLiked'] as List<dynamic>?)
+              ?.map((e) => SportModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
       currentStep: json['currentStep'] as int,
     );
   }
@@ -54,9 +56,10 @@ class InitiationBloc extends HydratedBloc<InitiationEvent, InitiationState> {
   Map<String, dynamic>? toJson(InitiationState state) {
     return {
       'name': state.name,
-      'birthDate': state.birthDate,
+      'birthDate': state.birthDate?.toIso8601String(),
       'gender': state.gender,
-      'sportsLiked': state.sportsLiked,
+      'sportsLiked':
+          state.sportsLiked.map((sportLiked) => sportLiked.toJson()).toList(),
       'currentStep': state.currentStep,
     };
   }

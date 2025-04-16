@@ -35,6 +35,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     });
     on<AuthCreateModelEvent>((event, emit) async {
       await authRepository.uploadUser(event.userModel);
+      event.completer.complete();
+
       emit(AuthState(
         isAuthenticated: state.user != null,
         hasModel: true,
