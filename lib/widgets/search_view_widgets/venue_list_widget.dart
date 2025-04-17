@@ -112,7 +112,7 @@ class VenueListWidget extends StatelessWidget {
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            venue.sport.name,
+                            venue.distance ?? 'Distance not available',
                             style: const TextStyle(
                               color: AppColors.primaryNeutral,
                               fontSize: 13,
