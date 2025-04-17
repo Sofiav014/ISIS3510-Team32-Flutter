@@ -29,7 +29,9 @@ Future main() async {
   await FirebaseAppCheck.instance
       .activate(androidProvider: AndroidProvider.playIntegrity);
 
-  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  FlutterError.onError = (FlutterErrorDetails details) async {
+    FirebaseCrashlytics.instance.recordFlutterFatalError(details);
+  };
 
   Bloc.observer = AppBlocObserver();
 
