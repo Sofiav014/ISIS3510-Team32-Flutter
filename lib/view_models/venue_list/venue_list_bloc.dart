@@ -36,6 +36,9 @@ class VenueListBloc extends Bloc<VenueListEvent, VenueListState> {
 
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
+        venueList = venueList.map((venue) {
+          return venue.copyWith(distance: 'Distance not available');
+        }).toList();
         emit(VenueListLoaded(venues: venueList));
         return;
       }
@@ -44,11 +47,14 @@ class VenueListBloc extends Bloc<VenueListEvent, VenueListState> {
           desiredAccuracy: LocationAccuracy.high);
       GeoPoint userLocation = GeoPoint(position.latitude, position.longitude);
 
-      venueList.sort((a, b) {
-        double distanceA = _calculateDistance(userLocation, a.coords);
-        double distanceB = _calculateDistance(userLocation, b.coords);
-        return distanceA.compareTo(distanceB);
-      });
+      venueList = venueList.map((venue) {
+        double distance = _calculateDistance(userLocation, venue.coords);
+        return venue.copyWith(
+            distance: '${distance.toStringAsFixed(2)} km away');
+      }).toList();
+
+      venueList.sort((a, b) => a.distance!.compareTo(b.distance!));
+
       emit(VenueListLoaded(venues: venueList));
     } catch (e) {
       emit(VenueListError('Failed to load search data: $e'));
@@ -61,7 +67,7 @@ class VenueListBloc extends Bloc<VenueListEvent, VenueListState> {
     double lonA = pA.longitude * pi / 180;
     double lonB = pB.longitude * pi / 180;
 
-    double earthRadius = 6378 * 1000;
+    double earthRadius = 6378.0;
 
     return earthRadius *
         acos(cos(latA) * cos(latB) * cos(lonB - lonA) + sin(latA) * sin(latB));
