@@ -27,6 +27,11 @@ class ConnectivityBloc extends Bloc<ConnectivityEvent, ConnectivityState> {
           ? ConnectivityOnlineState()
           : ConnectivityOfflineState());
     });
+    on<ConnectivityRequestedFetchEvent>((event, emit) async {
+      emit(await repository.hasInternet
+          ? ConnectivityOnlineState()
+          : ConnectivityOfflineState());
+    });
   }
 
   @override
@@ -35,4 +40,3 @@ class ConnectivityBloc extends Bloc<ConnectivityEvent, ConnectivityState> {
     return super.close();
   }
 }
-
