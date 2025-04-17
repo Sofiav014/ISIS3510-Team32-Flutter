@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
@@ -15,6 +16,9 @@ class VenueListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseCrashlytics.instance
+        .setCustomKey('screen', '$sportName Venue List View');
+
     return BlocProvider(
       create: (context) => VenueListBloc(
           sportName: sportName, venueRepository: VenueRepository())
