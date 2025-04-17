@@ -81,85 +81,109 @@ class InitiationView extends StatelessWidget {
   }
 }
 
-class InitiationNameView extends StatelessWidget {
+class InitiationNameView extends StatefulWidget {
   const InitiationNameView({super.key});
+
+  @override
+  State<InitiationNameView> createState() => _InitiationNameViewState();
+}
+
+class _InitiationNameViewState extends State<InitiationNameView> {
+  late TextEditingController _nameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final initiationBloc = context.read<InitiationBloc>();
-    final authBloc = context.read<AuthBloc>();
     final size = MediaQuery.of(context).size;
     final aspectRatio = size.width / size.height;
-
     final isHorizontal = aspectRatio > 1.2;
     final double spacingBetweenButton = isHorizontal ? 32 : 128;
     final double spacingBetweenQuestion = isHorizontal ? 32 : 64;
 
-    final TextEditingController controller =
-        TextEditingController(text: authBloc.state.user!.displayName ?? "");
+    final displayName =
+        context.select((AuthBloc bloc) => bloc.state.user?.displayName ?? "");
+
+    // Set controller text if it's empty and displayName is available
+    if (_nameController.text.isEmpty && displayName.isNotEmpty) {
+      _nameController.text = displayName;
+    }
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Text(
-                "Let us begin with a couple of questions",
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
+      child: Form(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text(
+                  "Let us begin with a couple of questions",
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: spacingBetweenQuestion,
-              ),
-              const Text(
-                "What is your name?",
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 20,
+                SizedBox(
+                  height: spacingBetweenQuestion,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: spacingBetweenButton,
-              ),
-              SizedBox(
-                width: 256,
-                child: TextFormField(
-                  controller: controller,
-                  inputFormatters: [
-                    LengthLimitingTextInputFormatter(35),
-                    FilteringTextInputFormatter.allow(
-                        RegExp(r"[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ '\-]"))
-                  ],
+                const Text(
+                  "What is your name?",
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 20,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              ),
-            ],
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
-              ),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
+                SizedBox(
+                  height: spacingBetweenButton,
+                ),
+                SizedBox(
+                  width: 256,
+                  child: TextFormField(
+                    controller: _nameController,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(35),
+                      FilteringTextInputFormatter.allow(
+                          RegExp(r"[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ '\-]"))
+                    ],
+                  ),
+                ),
+              ],
             ),
-            onPressed: () {
-              initiationBloc.add(InitiationNameEvent(controller.text));
-              initiationBloc.add(InitiationNextStepEvent());
-            },
-            child: const Text(
-              "Continue",
-              style: TextStyle(color: Colors.white),
-            ),
-          )
-        ],
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
+              ),
+              onPressed: () {
+                initiationBloc.add(InitiationNameEvent(_nameController.text));
+                initiationBloc.add(InitiationNextStepEvent());
+              },
+              child: const Text(
+                "Continue",
+                style: TextStyle(color: Colors.white),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
