@@ -36,13 +36,17 @@ class InitiationBloc extends HydratedBloc<InitiationEvent, InitiationState> {
         emit(state.copyWith(currentStep: state.currentStep - 1));
       }
     });
+    on<InitiationClearEvent>((event, emit) {
+      emit(InitiationState());
+    });
   }
 
   @override
   InitiationState? fromJson(Map<String, dynamic> json) {
     return InitiationState(
       name: json['name'] as String?,
-      birthDate: DateTime.parse(json['birthDate']),
+      birthDate:
+          json['birthDate'] != null ? DateTime.parse(json['birthDate']) : null,
       gender: json['gender'] as String?,
       sportsLiked: (json['sportsLiked'] as List<dynamic>?)
               ?.map((e) => SportModel.fromJson(e as Map<String, dynamic>))
