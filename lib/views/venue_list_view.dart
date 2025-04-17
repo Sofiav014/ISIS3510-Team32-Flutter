@@ -14,10 +14,18 @@ class VenueListView extends StatelessWidget {
 
   const VenueListView({super.key, required this.sportName});
 
+  String _formatSportName(String name) {
+    return name.toLowerCase().split(' ').map((word) {
+      return word[0].toUpperCase() + word.substring(1);
+    }).join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final formattedSportName = _formatSportName(sportName);
+
     FirebaseCrashlytics.instance
-        .setCustomKey('screen', '$sportName Venue List View');
+        .setCustomKey('screen', '$formattedSportName Venues View');
 
     return BlocProvider(
       create: (context) => VenueListBloc(
@@ -31,8 +39,8 @@ class VenueListView extends StatelessWidget {
               context.go('/search');
             },
           ),
-          title: const Text('Venue List',
-              style: TextStyle(
+          title: Text('$formattedSportName Venues',
+              style: const TextStyle(
                   color: AppColors.primary, fontWeight: FontWeight.w600)),
           centerTitle: true,
           shadowColor: AppColors.primaryLight,
