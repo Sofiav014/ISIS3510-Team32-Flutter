@@ -11,6 +11,7 @@ class VenueModel {
   final GeoPoint coords;
   final SportModel sport;
   final List<BookingModel> bookings;
+  final String? distance;
 
   VenueModel({
     required this.id,
@@ -21,7 +22,32 @@ class VenueModel {
     required this.coords,
     required this.sport,
     required this.bookings,
+    this.distance,
   });
+
+  VenueModel copyWith({
+    String? id,
+    String? name,
+    String? locationName,
+    double? rating,
+    String? image,
+    GeoPoint? coords,
+    SportModel? sport,
+    List<BookingModel>? bookings,
+    String? distance,
+  }) {
+    return VenueModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      locationName: locationName ?? this.locationName,
+      rating: rating ?? this.rating,
+      image: image ?? this.image,
+      coords: coords ?? this.coords,
+      sport: sport ?? this.sport,
+      bookings: bookings ?? this.bookings,
+      distance: distance ?? this.distance,
+    );
+  }
 
   factory VenueModel.fromJson(Map<String, dynamic> json) {
     return VenueModel(
@@ -75,4 +101,3 @@ class VenueModel {
     return toJson();
   }
 }
-

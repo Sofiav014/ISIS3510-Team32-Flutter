@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
@@ -13,8 +14,19 @@ class VenueListView extends StatelessWidget {
 
   const VenueListView({super.key, required this.sportName});
 
+  String _formatSportName(String name) {
+    return name.toLowerCase().split(' ').map((word) {
+      return word[0].toUpperCase() + word.substring(1);
+    }).join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
+    final formattedSportName = _formatSportName(sportName);
+
+    FirebaseCrashlytics.instance
+        .setCustomKey('screen', '$formattedSportName Venues View');
+
     return BlocProvider(
       create: (context) => VenueListBloc(
           sportName: sportName, venueRepository: VenueRepository())
@@ -27,8 +39,8 @@ class VenueListView extends StatelessWidget {
               context.go('/search');
             },
           ),
-          title: const Text('Venue List',
-              style: TextStyle(
+          title: Text('$formattedSportName Venues',
+              style: const TextStyle(
                   color: AppColors.primary, fontWeight: FontWeight.w600)),
           centerTitle: true,
           shadowColor: AppColors.primaryLight,

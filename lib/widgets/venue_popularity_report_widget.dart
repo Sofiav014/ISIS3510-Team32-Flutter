@@ -17,7 +17,7 @@ class VenuePopularityReportCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 150.0,
-      height: 170.0,
+      height: 200.0,
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -29,16 +29,18 @@ class VenuePopularityReportCardWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+              Flexible(
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 10.0),
               SvgPicture.asset(
@@ -47,14 +49,38 @@ class VenuePopularityReportCardWidget extends StatelessWidget {
                 height: 30.0,
               ),
               const SizedBox(height: 10.0),
-              Text(
-                venue.name,
-                style: const TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.white,
+              Flexible(
+                child: Text(
+                  venue.name,
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 5.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.star,
+                    color: Colors.white,
+                    size: 16.0,
+                  ),
+                  const SizedBox(width: 4.0),
+                  Text(
+                    venue.rating.toString(),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 14.0,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

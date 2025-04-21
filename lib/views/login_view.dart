@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/widgets/google_sign_in_widget.dart';
@@ -7,6 +8,15 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseCrashlytics.instance.setCustomKey('screen', 'Login View');
+
+    final size = MediaQuery.of(context).size;
+    final aspectRatio = size.width / size.height;
+
+    final isHorizontal = aspectRatio > 1.2;
+
+    final double bottomDistance = isHorizontal ? 60 : 220;
+
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Stack(
@@ -30,11 +40,11 @@ class LoginView extends StatelessWidget {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          const Positioned(
+          Positioned(
             left: 70,
             right: 70,
-            bottom: 220,
-            child: GoogleSignInButton(),
+            bottom: bottomDistance,
+            child: const GoogleSignInButton(),
           )
         ],
       ),

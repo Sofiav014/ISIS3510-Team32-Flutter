@@ -11,12 +11,16 @@ class InitiationIconSelectionToggle extends StatelessWidget {
   final String text;
   final String imageAsset;
   final double size;
+  final double textSize;
+  final double spacing;
   final SportModel sport;
 
   const InitiationIconSelectionToggle({
     required this.text,
     required this.imageAsset,
     required this.size,
+    required this.textSize,
+    required this.spacing,
     required this.sport,
     super.key,
   });
@@ -60,10 +64,13 @@ class InitiationIconSelectionToggle extends StatelessWidget {
                 height: size,
                 color: AppColors.primary,
               ),
-              const SizedBox(
-                height: 4,
+              SizedBox(
+                height: spacing,
               ),
-              Text(text)
+              Text(
+                text,
+                style: TextStyle(fontSize: textSize),
+              )
             ],
           ),
         ),

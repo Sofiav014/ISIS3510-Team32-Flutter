@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/search_view_widgets/sport_button_widget.dart';
@@ -11,6 +12,8 @@ class SearchView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseCrashlytics.instance.setCustomKey('screen', 'Search View');
+
     return BlocProvider(
       create: (context) => SearchBloc()..add(const LoadSearchData()),
       child: Scaffold(
@@ -52,20 +55,26 @@ class SearchView extends StatelessWidget {
   }
 
   Widget _buildSportButtons(List<SportModel> sports) {
-    return GridView.count(
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      mainAxisSpacing: 10.0,
-      crossAxisSpacing: 10.0,
-      padding: const EdgeInsets.all(20.0),
-      children: sports.map((sport) {
-        return SportButtonWidget(
-          text: sport.name,
-          imageAsset: sport.logo,
-          sport: sport,
-          size: 110,
-        );
-      }).toList(),
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics:
+              const NeverScrollableScrollPhysics(), // Prevent GridView from scrolling
+          mainAxisSpacing: 10.0,
+          crossAxisSpacing: 10.0,
+          children: sports.map((sport) {
+            return SportButtonWidget(
+              text: sport.name,
+              imageAsset: sport.logo,
+              sport: sport,
+              size: 110,
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 }

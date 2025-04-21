@@ -81,7 +81,8 @@ class HomeRepository {
     return {
       'highestRatedVenue': highestRatedVenueModel,
       'mostBookedVenue': mostBookedVenueModel,
-      'mostPlayedSport': mostPlayedSport
+      'mostPlayedSport': mostPlayedSport,
+      'mostPlayedSportCount': mostPlayedSportCount
     };
   }
 }

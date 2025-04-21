@@ -6,12 +6,13 @@ import 'package:isis3510_team32_flutter/models/sport_model.dart';
 class SportPopularityReportCardWidget extends StatelessWidget {
   final SportModel sport;
   final String title;
+  final int sportPlayedCount;
 
-  const SportPopularityReportCardWidget({
-    super.key,
-    required this.sport,
-    required this.title,
-  });
+  const SportPopularityReportCardWidget(
+      {super.key,
+      required this.sport,
+      required this.title,
+      required this.sportPlayedCount});
 
   String getSportLogo(String sportId) {
     switch (sportId) {
@@ -32,7 +33,7 @@ class SportPopularityReportCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 150.0,
-      height: 170.0,
+      height: 200.0,
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
@@ -68,6 +69,16 @@ class SportPopularityReportCardWidget extends StatelessWidget {
                   fontSize: 16.0,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 10.0),
+              Text(
+                'Played $sportPlayedCount time(s)',
+                style: const TextStyle(
+                  fontSize: 12.0,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
               ),
