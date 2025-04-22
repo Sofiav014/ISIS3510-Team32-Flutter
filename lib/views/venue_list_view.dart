@@ -8,28 +8,43 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/venue_list/venue_list_bloc.dart';
 import 'package:isis3510_team32_flutter/repositories/venue_repository.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 
-class VenueListView extends StatelessWidget {
+class VenueListView extends StatefulWidget {
   final String sportName;
 
   const VenueListView({super.key, required this.sportName});
 
-  String _formatSportName(String name) {
-    return name.toLowerCase().split(' ').map((word) {
-      return word[0].toUpperCase() + word.substring(1);
-    }).join(' ');
+  @override
+  VenueListViewState createState() => VenueListViewState();
+}
+
+class VenueListViewState extends State<VenueListView> {
+  @override
+  void initState() {
+    super.initState();
+    BackButtonInterceptor.add((stopDefaultButtonEvent, routeInfo) {
+      context.go('/search');
+      return true; // Prevent default back button behavior
+    });
+  }
+
+  @override
+  void dispose() {
+    BackButtonInterceptor.remove((stopDefaultButtonEvent, routeInfo) => true);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final formattedSportName = _formatSportName(sportName);
+    final formattedSportName = _formatSportName(widget.sportName);
 
     FirebaseCrashlytics.instance
         .setCustomKey('screen', '$formattedSportName Venues View');
 
     return BlocProvider(
       create: (context) => VenueListBloc(
-          sportName: sportName, venueRepository: VenueRepository())
+          sportName: widget.sportName, venueRepository: VenueRepository())
         ..add(const LoadVenueListData()),
       child: Scaffold(
         appBar: AppBar(
@@ -62,6 +77,12 @@ class VenueListView extends StatelessWidget {
         bottomNavigationBar: const BottomNavigationWidget(selectedIndex: 0),
       ),
     );
+  }
+
+  String _formatSportName(String name) {
+    return name.toLowerCase().split(' ').map((word) {
+      return word[0].toUpperCase() + word.substring(1);
+    }).join(' ');
   }
 
   Widget _buildVenueListContent(VenueListLoaded state) {
