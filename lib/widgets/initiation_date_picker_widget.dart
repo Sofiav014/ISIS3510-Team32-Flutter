@@ -39,9 +39,9 @@ class InitiationDatePicker extends StatelessWidget {
           BuildContext context, InitiationBloc initiationBloc) async =>
       showDatePicker(
         context: context,
-        initialDate: DateTime.now().subtract(const Duration(days: 365 * 7)),
-        firstDate: DateTime(DateTime.now().year - 120),
-        lastDate: DateTime.now().subtract(const Duration(days: 365 * 7)),
+        initialDate: DateTime.now().subtract(const Duration(days: 365 * 14)),
+        firstDate: DateTime(DateTime.now().year - 100),
+        lastDate: DateTime.now().subtract(const Duration(days: 365 * 14)),
       ).then((DateTime? selected) {
         if (selected != null && selected != initiationBloc.state.birthDate) {
           initiationBloc.add(InitiationAgeEvent(selected));
