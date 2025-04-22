@@ -12,7 +12,6 @@ import 'package:isis3510_team32_flutter/widgets/recommended_booking_card_widget.
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/repositories/home_repository.dart';
 import 'package:isis3510_team32_flutter/widgets/venue_popularity_report_widget.dart';
-import 'package:another_flushbar/flushbar.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
 
 class HomeView extends StatelessWidget {
@@ -245,7 +244,7 @@ class HomeView extends StatelessWidget {
         Center(
           child: Text(
             isOffline
-                ? 'No recommended bookings available if offline.'
+                ? 'No recommended bookings available while offline.'
                 : 'No recommended bookings',
             style: const TextStyle(fontSize: 16, color: Colors.grey),
           ),
