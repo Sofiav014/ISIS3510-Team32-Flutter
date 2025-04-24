@@ -89,9 +89,11 @@ class HomeView extends StatelessWidget {
               children: <Widget>[
                 if (popularityReport['highestRatedVenue'] != null)
                   VenuePopularityReportCardWidget(
-                    venue: popularityReport['highestRatedVenue'],
-                    title: 'Best Rated Overall',
-                  ),
+                      venue: popularityReport['highestRatedVenue'],
+                      title: 'Best Rated Overall',
+                      subtitle: popularityReport['highestRatedVenue']
+                          .rating
+                          .toString()),
                 if (popularityReport['mostPlayedSport'] != null)
                   SportPopularityReportCardWidget(
                     sport: popularityReport['mostPlayedSport'],
@@ -102,6 +104,8 @@ class HomeView extends StatelessWidget {
                   VenuePopularityReportCardWidget(
                     venue: popularityReport['mostBookedVenue'],
                     title: 'Most Booked Overall',
+                    subtitle:
+                        "${popularityReport['mostBookedVenue'].bookings.length.toString()} bookings",
                   ),
               ],
             ),
