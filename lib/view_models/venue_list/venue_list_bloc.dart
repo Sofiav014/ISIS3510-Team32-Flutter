@@ -28,6 +28,18 @@ class VenueListBloc extends Bloc<VenueListEvent, VenueListState> {
         return;
       }
 
+      bool isLocationServiceEnabled =
+          await Geolocator.isLocationServiceEnabled();
+
+      if (!isLocationServiceEnabled) {
+        venueList = venueList.map((venue) {
+          return venue.copyWith(distance: 'Distance not available');
+        }).toList();
+
+        emit(VenueListLoaded(venues: venueList));
+        return;
+      }
+
       LocationPermission permission = await Geolocator.checkPermission();
 
       if (permission == LocationPermission.denied) {
