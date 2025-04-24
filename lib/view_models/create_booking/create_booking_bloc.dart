@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:isis3510_team32_flutter/models/venue_model.dart';
-import 'package:isis3510_team32_flutter/repositories/booking_repository.dart';
+import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/create_booking/create_booking_event.dart';
 import 'package:isis3510_team32_flutter/view_models/create_booking/create_booking_state.dart';

@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/core/bloc_observer.dart';
 import 'package:isis3510_team32_flutter/core/go_router.dart';
-import 'package:isis3510_team32_flutter/repositories/auth_repository.dart';
+import 'package:isis3510_team32_flutter/models/repositories/auth_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
 import 'package:provider/provider.dart';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
+import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/create_booking/create_booking_bloc.dart';
-import 'package:isis3510_team32_flutter/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/create_booking/create_booking_event.dart';
 import 'package:isis3510_team32_flutter/view_models/create_booking/create_booking_state.dart';
 import 'package:isis3510_team32_flutter/widgets/create_booking_view/date_picker_widget.dart';

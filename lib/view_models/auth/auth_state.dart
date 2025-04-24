@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:isis3510_team32_flutter/models/user_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 
 class AuthState {
   final bool isAuthenticated;
