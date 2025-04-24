@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/create_booking/create_booking_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/create_booking/create_booking_event.dart';
@@ -12,36 +13,36 @@ class TimeSlotSelectorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<CreateBookingBloc>();
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        const Text(
-          "Select Time Slot:",
-          style: TextStyle(
-            fontSize: 20,
-            color: AppColors.primary,
-            fontWeight: FontWeight.bold,
+    return BlocBuilder<CreateBookingBloc, CreateBookingState>(
+      builder: (context, state) {
+        return FutureBuilder<List<String>>(
+          future: bloc.bookingRepository.getAvailableTimesID(
+            bloc.venueId,
+            state.date ?? DateTime.now(),
           ),
-        ),
-        const SizedBox(height: 8),
-        BlocBuilder<CreateBookingBloc, CreateBookingState>(
-          builder: (context, state) {
-            return FutureBuilder<List<String>>(
-              future: bloc.bookingRepository.getAvailableTimesID(
-                bloc.venueId,
-                state.date ?? DateTime.now(),
-              ),
-              builder: (context, snapshot) {
-                final timeSlots = snapshot.data ?? [];
+          builder: (context, snapshot) {
+            final timeSlots = snapshot.data ?? [];
 
-                return SingleChildScrollView(
-                  scrollDirection:
-                      Axis.horizontal, // Enable horizontal scrolling
-                  child: Row(
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Wrap(
-                        spacing: 8, // Horizontal spacing between items
-                        runSpacing: 8, // Vertical spacing between rows
+                      GridView.count(
+                        shrinkWrap: true,
+                        crossAxisCount: 3,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 2.8, // more compact ratio
+                        physics: const NeverScrollableScrollPhysics(),
                         children: timeSlots.map((slot) {
                           final isSelected = state.timeSlot == slot;
 
@@ -50,37 +51,90 @@ class TimeSlotSelectorWidget extends StatelessWidget {
                               bloc.add(CreateBookingTimeSlotEvent(slot));
                             },
                             child: Container(
+                              alignment: Alignment.center,
                               padding: const EdgeInsets.symmetric(
-                                vertical: 12,
-                                horizontal: 16,
-                              ),
+                                  vertical: 6, horizontal: 6),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? AppColors.primary
-                                    : AppColors.lightPurple,
-                                borderRadius: BorderRadius.circular(8),
+                                    ? AppColors.primaryNeutral
+                                    : const Color(0xFFFCD7B6),
+                                borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(
                                 slot,
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : AppColors.contrast900,
-                                  fontWeight: FontWeight.bold,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ),
                           );
                         }).toList(),
                       ),
+                      const SizedBox(height: 20),
+                      Row(
+                        children: [
+                          SvgPicture.asset(
+                            "assets/icons/people.svg",
+                            height: 20,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(width: 8),
+                          const Text(
+                            "Number of Players",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        height: 40,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryNeutral,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<int>(
+                            value: state.maxUsers,
+                            hint: const Text("Select number"),
+                            isExpanded: true,
+                            iconSize: 20,
+                            style: const TextStyle(fontSize: 14),
+                            items: List.generate(12, (index) => index + 1)
+                                .map((num) => DropdownMenuItem<int>(
+                                      value: num,
+                                      child: Text(
+                                        num.toString(),
+                                        style: const TextStyle(
+                                          color: AppColors
+                                              .primary, // color visible sobre blanco
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ))
+                                .toList(),
+                            onChanged: (num) {
+                              if (num != null) {
+                                bloc.add(CreateBookingMaxUsersEvent(num));
+                              }
+                            },
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                );
-              },
+                ),
+              ],
             );
           },
-        ),
-      ],
+        );
+      },
     );
   }
 }

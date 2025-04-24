@@ -30,7 +30,7 @@ class DatePickerWidget extends StatelessWidget {
             return CalendarDatePicker(
               initialDate: state.date ?? DateTime.now(),
               firstDate: DateTime.now(),
-              lastDate: DateTime.now().add(const Duration(days: 30)),
+              lastDate: DateTime.now().add(const Duration(days: 60)),
               onDateChanged: (selectedDate) {
                 bloc.add(CreateBookingDateEvent(selectedDate));
               },
