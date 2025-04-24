@@ -1,7 +1,7 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
-import 'package:isis3510_team32_flutter/widgets/search_view_widgets/sport_button_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/search_view/sport_button_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/search/search_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

@@ -80,6 +80,17 @@ GoRouter setupRouter(AuthBloc authBloc) {
           path: '/profile',
           pageBuilder: (context, state) => buildPageWithNoTransition(
               context: context, state: state, child: const ProfileView())),
+      // GoRoute(
+      //   path: '/create_booking/:venueId',
+      //   pageBuilder: (context, state) {
+      //     final venueId = state.pathParameters['venueId']!;
+      //     return buildPageWithNoTransition(
+      //       context: context,
+      //       state: state,
+      //       child: CreateBookingView(VenueId: venueId),
+      //     );
+      //   },
+      // ),
     ],
   );
 }

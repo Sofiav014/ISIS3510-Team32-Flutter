@@ -10,10 +10,10 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_event.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_state.dart';
-import 'package:isis3510_team32_flutter/widgets/initiation_date_picker_widget.dart';
-import 'package:isis3510_team32_flutter/widgets/icon_selection_button_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/initiation_view/initiation_date_picker_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/initiation_view/icon_selection_button_widget.dart';
 
-import '../widgets/initiation_icon_toggle_button_widget.dart';
+import '../widgets/initiation_view/initiation_icon_toggle_button_widget.dart';
 
 class InitiationView extends StatelessWidget {
   const InitiationView({super.key});
