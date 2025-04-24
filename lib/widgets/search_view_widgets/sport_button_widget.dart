@@ -32,7 +32,7 @@ class SportButtonWidget extends StatelessWidget {
         ),
       ),
       onPressed: () {
-        context.go('/venue_list/${sport.name}');
+        context.push('/venue_list/${sport.name}');
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),

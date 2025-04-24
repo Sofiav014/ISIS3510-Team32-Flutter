@@ -8,50 +8,35 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/venue_list/venue_list_bloc.dart';
 import 'package:isis3510_team32_flutter/repositories/venue_repository.dart';
-import 'package:back_button_interceptor/back_button_interceptor.dart';
 
-class VenueListView extends StatefulWidget {
+class VenueListView extends StatelessWidget {
   final String sportName;
 
   const VenueListView({super.key, required this.sportName});
 
-  @override
-  VenueListViewState createState() => VenueListViewState();
-}
-
-class VenueListViewState extends State<VenueListView> {
-  @override
-  void initState() {
-    super.initState();
-    BackButtonInterceptor.add((stopDefaultButtonEvent, routeInfo) {
-      context.go('/search');
-      return true; // Prevent default back button behavior
-    });
-  }
-
-  @override
-  void dispose() {
-    BackButtonInterceptor.remove((stopDefaultButtonEvent, routeInfo) => true);
-    super.dispose();
+  String _formatSportName(String name) {
+    return name.toLowerCase().split(' ').map((word) {
+      return word[0].toUpperCase() + word.substring(1);
+    }).join(' ');
   }
 
   @override
   Widget build(BuildContext context) {
-    final formattedSportName = _formatSportName(widget.sportName);
+    final formattedSportName = _formatSportName(sportName);
 
     FirebaseCrashlytics.instance
         .setCustomKey('screen', '$formattedSportName Venues View');
 
     return BlocProvider(
       create: (context) => VenueListBloc(
-          sportName: widget.sportName, venueRepository: VenueRepository())
+          sportName: sportName, venueRepository: VenueRepository())
         ..add(const LoadVenueListData()),
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.primary),
             onPressed: () {
-              context.go('/search');
+              context.push('/search');
             },
           ),
           title: Text('$formattedSportName Venues',
@@ -77,12 +62,6 @@ class VenueListViewState extends State<VenueListView> {
         bottomNavigationBar: const BottomNavigationWidget(selectedIndex: 0),
       ),
     );
-  }
-
-  String _formatSportName(String name) {
-    return name.toLowerCase().split(' ').map((word) {
-      return word[0].toUpperCase() + word.substring(1);
-    }).join(' ');
   }
 
   Widget _buildVenueListContent(VenueListLoaded state) {

@@ -51,7 +51,6 @@ class VenueListBloc extends Bloc<VenueListEvent, VenueListState> {
         venueList = venueList.map((venue) {
           return venue.copyWith(distance: 'Distance not available');
         }).toList();
-
         emit(VenueListLoaded(venues: venueList));
         return;
       }
