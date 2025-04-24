@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
+import 'package:isis3510_team32_flutter/views/create_booking_view.dart';
 import 'package:isis3510_team32_flutter/views/initiation_view.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
 import 'package:isis3510_team32_flutter/views/search_view.dart';
@@ -80,17 +81,17 @@ GoRouter setupRouter(AuthBloc authBloc) {
           path: '/profile',
           pageBuilder: (context, state) => buildPageWithNoTransition(
               context: context, state: state, child: const ProfileView())),
-      // GoRoute(
-      //   path: '/create_booking/:venueId',
-      //   pageBuilder: (context, state) {
-      //     final venueId = state.pathParameters['venueId']!;
-      //     return buildPageWithNoTransition(
-      //       context: context,
-      //       state: state,
-      //       child: CreateBookingView(VenueId: venueId),
-      //     );
-      //   },
-      // ),
+      GoRoute(
+        path: '/create_booking/:venueId',
+        pageBuilder: (context, state) {
+          final venueId = state.pathParameters['venueId']!;
+          return buildPageWithNoTransition(
+            context: context,
+            state: state,
+            child: CreateBookingView(venueId: venueId),
+          );
+        },
+      ),
     ],
   );
 }
