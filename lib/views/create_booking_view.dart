@@ -57,7 +57,6 @@ class _CreateBookingContent extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     context.pop();
-                    context.pop();
                   },
                   child: const Text('OK'),
                 ),
@@ -65,7 +64,6 @@ class _CreateBookingContent extends StatelessWidget {
             ),
           ).then((_) {
             // Handle actions when the dialog is dismissed by tapping outside
-            context.pop();
             context.pop();
           });
         } else if (state.success == false) {
@@ -83,7 +81,6 @@ class _CreateBookingContent extends StatelessWidget {
                 TextButton(
                   onPressed: () {
                     context.pop();
-                    context.pop();
                   },
                   child: const Text('OK'),
                 ),
@@ -91,7 +88,6 @@ class _CreateBookingContent extends StatelessWidget {
             ),
           ).then((_) {
             // Handle actions when the dialog is dismissed by tapping outside
-            context.pop();
             context.pop();
           });
         }
