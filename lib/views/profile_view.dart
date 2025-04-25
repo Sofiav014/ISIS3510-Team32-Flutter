@@ -8,6 +8,9 @@ import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
+import 'package:isis3510_team32_flutter/view_models/theme/theme_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/theme/theme_event.dart';
+import 'package:isis3510_team32_flutter/view_models/theme/theme_state.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 
 class ProfileView extends StatelessWidget {
@@ -268,15 +271,18 @@ class ProfileCardLightModeSwitchWidget extends StatelessWidget {
             ],
           ),
           const Spacer(),
-          Transform.scale(
-            scale: 0.7,
-            child: Switch.adaptive(
-              activeColor: AppColors.primary,
-              activeTrackColor: AppColors.lighterPurple,
-              value: true,
-              onChanged: (_) {},
-            ),
-          )
+          BlocBuilder<ThemeBloc, ThemeState>(builder: (context, state) {
+            return Transform.scale(
+              scale: 0.7,
+              child: Switch.adaptive(
+                activeColor: AppColors.primary,
+                activeTrackColor: AppColors.lighterPurple,
+                value: state is ThemeLightState,
+                onChanged: (_) =>
+                    context.read<ThemeBloc>().add(ThemeSwitchEvent()),
+              ),
+            );
+          })
         ],
       ),
     );
