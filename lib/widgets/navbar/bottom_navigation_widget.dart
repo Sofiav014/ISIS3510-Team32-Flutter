@@ -19,9 +19,9 @@ class BottomNavigationWidget extends StatelessWidget {
       case 0:
         context.push('/search');
         break;
-      case 1:
-        context.push('/create_booking/11CMLfj0esWbBZjM9eCL');
-        break;
+      // case 1:
+      //   context.push('/calendar');
+      //   break;
       case 2:
         context.push('/home');
         break;

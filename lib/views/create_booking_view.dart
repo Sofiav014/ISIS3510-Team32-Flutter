@@ -43,9 +43,12 @@ class _CreateBookingContent extends StatelessWidget {
     return BlocListener<CreateBookingBloc, CreateBookingState>(
       listener: (context, state) {
         if (state.success == true) {
+          loadingBloc.add(HideLoadingEvent());
           // Show success popup and navigate to home view
           showDialog(
             context: context,
+            barrierDismissible:
+                true, // Allows dismissing the dialog by tapping outside
             builder: (context) => AlertDialog(
               title: const Text('Booking Created'),
               content:
@@ -53,17 +56,25 @@ class _CreateBookingContent extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () {
-                    context.push('/home'); // Navigate to home view
+                    context.pop();
+                    context.pop();
                   },
                   child: const Text('OK'),
                 ),
               ],
             ),
-          );
+          ).then((_) {
+            // Handle actions when the dialog is dismissed by tapping outside
+            context.pop();
+            context.pop();
+          });
         } else if (state.success == false) {
+          loadingBloc.add(HideLoadingEvent());
           // Show failure popup
           showDialog(
             context: context,
+            barrierDismissible:
+                true, // Allows dismissing the dialog by tapping outside
             builder: (context) => AlertDialog(
               title: const Text('Booking Failed'),
               content:
@@ -78,7 +89,11 @@ class _CreateBookingContent extends StatelessWidget {
                 ),
               ],
             ),
-          );
+          ).then((_) {
+            // Handle actions when the dialog is dismissed by tapping outside
+            context.pop();
+            context.pop();
+          });
         }
       },
       child: Scaffold(
@@ -94,16 +109,16 @@ class _CreateBookingContent extends StatelessWidget {
           shadowColor: AppColors.primaryLight,
           elevation: 1,
         ),
-        body: const SafeArea(
+        body: SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                DatePickerWidget(),
-                TimeSlotSelectorWidget(),
-                SizedBox(height: 24),
-                _CreateBookingButton(),
+                const DatePickerWidget(),
+                const TimeSlotSelectorWidget(),
+                const SizedBox(height: 24),
+                _CreateBookingButton(loadingBloc: loadingBloc),
               ],
             ),
           ),
@@ -117,7 +132,9 @@ class _CreateBookingContent extends StatelessWidget {
 }
 
 class _CreateBookingButton extends StatelessWidget {
-  const _CreateBookingButton();
+  final LoadingBloc loadingBloc;
+
+  const _CreateBookingButton({required this.loadingBloc});
 
   @override
   Widget build(BuildContext context) {
@@ -135,6 +152,7 @@ class _CreateBookingButton extends StatelessWidget {
           child: ElevatedButton(
             onPressed: isEnabled
                 ? () async {
+                    loadingBloc.add(ShowLoadingEvent());
                     createBookingBloc.add(CreateBookingSubmitEvent());
                   }
                 : null,
