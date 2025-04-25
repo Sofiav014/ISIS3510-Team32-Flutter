@@ -14,3 +14,18 @@ void showFailedToAuthenticateError(BuildContext context) {
     duration: const Duration(seconds: 5),
   ).show(context);
 }
+
+void showNoConnectionError(BuildContext context) {
+  Flushbar(
+    title: "No Internet Connection",
+    message:
+        "Please check your internet connection. The app may be displaying outdated data.",
+    icon: const Icon(
+      Icons.warning,
+      size: 16,
+      color: Colors.orangeAccent,
+    ),
+    leftBarIndicatorColor: Colors.orangeAccent,
+    duration: const Duration(seconds: 5),
+  ).show(context);
+}

@@ -33,3 +33,19 @@ class HomeError extends HomeState {
   @override
   List<Object> get props => [error];
 }
+
+class HomeOfflineLoaded extends HomeState {
+  final List<BookingModel>? cachedUpcomingBookings;
+  final Map<String, dynamic>? cachedPopularityReport;
+
+  const HomeOfflineLoaded({
+    this.cachedUpcomingBookings,
+    this.cachedPopularityReport,
+  });
+
+  @override
+  List<Object> get props => [
+        cachedUpcomingBookings ?? [],
+        cachedPopularityReport ?? {},
+      ];
+}

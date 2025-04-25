@@ -19,11 +19,17 @@ class BookingModel {
   });
 
   factory BookingModel.fromJson(Map<String, dynamic> json) {
+    final venueJson = json['venue'];
+    final coords = venueJson?['coords'];
     return BookingModel(
       id: json['id'] ?? '',
       maxUsers: json['max_users'] ?? 0,
-      startTime: (json['start_time'] as Timestamp).toDate(),
-      endTime: (json['end_time'] as Timestamp).toDate(),
+      startTime: json['start_time'] is Timestamp
+          ? (json['start_time'] as Timestamp).toDate()
+          : DateTime.parse(json['start_time'] as String),
+      endTime: json['end_time'] is Timestamp
+          ? (json['end_time'] as Timestamp).toDate()
+          : DateTime.parse(json['end_time'] as String),
       venue: VenueModel.fromJson(json['venue'] ??
           {
             'id': '',
@@ -31,7 +37,12 @@ class BookingModel {
             'location_name': '',
             'rating': 0.0,
             'image': '',
-            'coords': const GeoPoint(0, 0),
+            'coords': coords is GeoPoint
+                ? coords
+                : GeoPoint(
+                    (coords?['latitude'] ?? 0.0) as double,
+                    (coords?['longitude'] ?? 0.0) as double,
+                  ),
             'sport': {
               'id': '',
               'name': '',
@@ -67,6 +78,17 @@ class BookingModel {
       'start_time': Timestamp.fromDate(startTime),
       'end_time': Timestamp.fromDate(endTime),
       'venue': venue.toJson(),
+      'users': users,
+    };
+  }
+
+  Map<String, dynamic> toJsonSerializable() {
+    return {
+      'id': id,
+      'max_users': maxUsers,
+      'start_time': startTime.toIso8601String(),
+      'end_time': endTime.toIso8601String(),
+      'venue': venue.toJsonSerializable(),
       'users': users,
     };
   }
