@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:isis3510_team32_flutter/models/venue_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 
 class VenueRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -25,7 +25,7 @@ class VenueRepository {
   Future<VenueModel?> getVenueById(String venueId) async {
     try {
       DocumentSnapshot documentSnapshot =
-      await _firestore.collection('venues').doc(venueId).get();
+          await _firestore.collection('venues').doc(venueId).get();
 
       if (documentSnapshot.exists) {
         return VenueModel.fromJson(
@@ -38,5 +38,4 @@ class VenueRepository {
       return null;
     }
   }
-
 }

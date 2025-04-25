@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:isis3510_team32_flutter/models/venue_model.dart';
-import 'package:isis3510_team32_flutter/repositories/venue_repository.dart';
+import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
+import 'package:isis3510_team32_flutter/models/repositories/venue_repository.dart';
 
 part 'venue_detail_event.dart';
 part 'venue_detail_state.dart';

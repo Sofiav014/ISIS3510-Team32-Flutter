@@ -1,45 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:isis3510_team32_flutter/core/app_colors.dart';
 
-class BottomNavigationWidget extends StatefulWidget {
-  final int selectedIndex; // Add selectedIndex parameter
+class BottomNavigationWidget extends StatelessWidget {
+  final int selectedIndex;
 
-  const BottomNavigationWidget({super.key, required this.selectedIndex});
+  const BottomNavigationWidget({
+    super.key,
+    required this.selectedIndex,
+  });
 
-  @override
-  BottomNavigationWidgetState createState() => BottomNavigationWidgetState();
-}
-
-class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
-  late int _selectedIndex;
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedIndex = widget.selectedIndex; // Initialize with parameter value
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  void _onItemTapped(BuildContext context, int index) {
+    if (index == selectedIndex && index != 0) {
+      return;
+    }
     switch (index) {
-       case 0:
-         context.go('/search');
-      //   break;
+      case 0:
+        context.push('/search');
+        break;
       // case 1:
-      //   context.go('/calendar');
+      //   context.push('/calendar');
       //   break;
       case 2:
-        context.go('/home');
+        context.push('/home');
         break;
       // case 3:
-      //   context.go('/add');
+      //   context.push('/add');
       //   break;
       case 4:
-        context.go('/profile');
+        context.push('/profile');
         break;
     }
   }
@@ -53,58 +43,48 @@ class BottomNavigationWidgetState extends State<BottomNavigationWidget> {
         children: [
           IconButton(
             icon: SvgPicture.asset(
-              _selectedIndex == 0
+              selectedIndex == 0
                   ? 'assets/icons/navbar/search-selected.svg'
                   : 'assets/icons/navbar/search.svg',
               color: AppColors.primary,
             ),
-            onPressed: () {
-              _onItemTapped(0);
-            },
+            onPressed: () => _onItemTapped(context, 0),
           ),
           IconButton(
             icon: SvgPicture.asset(
-              _selectedIndex == 1
+              selectedIndex == 1
                   ? 'assets/icons/navbar/calendar-selected.svg'
                   : 'assets/icons/navbar/calendar.svg',
               color: AppColors.primary,
             ),
-            onPressed: () {
-              _onItemTapped(1);
-            },
+            onPressed: () => _onItemTapped(context, 1),
           ),
           IconButton(
             icon: SvgPicture.asset(
-              _selectedIndex == 2
+              selectedIndex == 2
                   ? 'assets/icons/navbar/home-selected.svg'
                   : 'assets/icons/navbar/home.svg',
               color: AppColors.primary,
             ),
-            onPressed: () {
-              _onItemTapped(2);
-            },
+            onPressed: () => _onItemTapped(context, 2),
           ),
           IconButton(
             icon: SvgPicture.asset(
-              _selectedIndex == 3
+              selectedIndex == 3
                   ? 'assets/icons/navbar/add-selected.svg'
                   : 'assets/icons/navbar/add.svg',
               color: AppColors.primary,
             ),
-            onPressed: () {
-              _onItemTapped(3);
-            },
+            onPressed: () => _onItemTapped(context, 3),
           ),
           IconButton(
             icon: SvgPicture.asset(
-              _selectedIndex == 4
+              selectedIndex == 4
                   ? 'assets/icons/navbar/profile-selected.svg'
                   : 'assets/icons/navbar/profile.svg',
               color: AppColors.primary,
             ),
-            onPressed: () {
-              _onItemTapped(4);
-            },
+            onPressed: () => _onItemTapped(context, 4),
           ),
         ],
       ),

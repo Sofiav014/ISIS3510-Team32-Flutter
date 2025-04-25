@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:isis3510_team32_flutter/models/venue_model.dart';
-import 'package:isis3510_team32_flutter/repositories/venue_repository.dart';
+import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
+import 'package:isis3510_team32_flutter/models/repositories/venue_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/venue_detail/venue_detail_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';

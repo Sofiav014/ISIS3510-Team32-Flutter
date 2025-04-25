@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
-import 'package:isis3510_team32_flutter/models/booking_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/sport_popularity_report_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/upcoming_booking_card_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/recommended_booking_card_widget.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
-import 'package:isis3510_team32_flutter/repositories/home_repository.dart';
+import 'package:isis3510_team32_flutter/models/repositories/home_repository.dart';
 import 'package:isis3510_team32_flutter/widgets/venue_popularity_report_widget.dart';
 
 class HomeView extends StatelessWidget {
@@ -89,9 +89,11 @@ class HomeView extends StatelessWidget {
               children: <Widget>[
                 if (popularityReport['highestRatedVenue'] != null)
                   VenuePopularityReportCardWidget(
-                    venue: popularityReport['highestRatedVenue'],
-                    title: 'Best Rated Overall',
-                  ),
+                      venue: popularityReport['highestRatedVenue'],
+                      title: 'Best Rated Overall',
+                      subtitle: popularityReport['highestRatedVenue']
+                          .rating
+                          .toString()),
                 if (popularityReport['mostPlayedSport'] != null)
                   SportPopularityReportCardWidget(
                     sport: popularityReport['mostPlayedSport'],
@@ -102,6 +104,8 @@ class HomeView extends StatelessWidget {
                   VenuePopularityReportCardWidget(
                     venue: popularityReport['mostBookedVenue'],
                     title: 'Most Booked Overall',
+                    subtitle:
+                        "${popularityReport['mostBookedVenue'].bookings.length.toString()} bookings",
                   ),
               ],
             ),

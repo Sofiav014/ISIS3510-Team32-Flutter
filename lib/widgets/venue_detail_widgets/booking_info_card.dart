@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
-import 'package:isis3510_team32_flutter/models/booking_model.dart';
-import 'package:isis3510_team32_flutter/models/venue_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:intl/intl.dart';
 
 class BookingInfoCard extends StatelessWidget {

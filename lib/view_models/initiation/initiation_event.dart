@@ -1,4 +1,4 @@
-import 'package:isis3510_team32_flutter/models/sport_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/sport_model.dart';
 
 abstract class InitiationEvent {}
 
@@ -31,4 +31,4 @@ class InitiationRemoveSportEvent extends InitiationEvent {
   InitiationRemoveSportEvent(this.sportId);
 }
 
-class InitiationSubmitEvent extends InitiationEvent {}
+class InitiationClearEvent extends InitiationEvent {}

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
-import 'package:isis3510_team32_flutter/models/venue_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 
 class VenuePopularityReportCardWidget extends StatelessWidget {
   final VenueModel venue;
   final String title;
+  final String subtitle;
 
   const VenuePopularityReportCardWidget({
     super.key,
     required this.venue,
     required this.title,
+    required this.subtitle,
   });
 
   @override
@@ -66,14 +68,16 @@ class VenuePopularityReportCardWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.star,
-                    color: Colors.white,
-                    size: 16.0,
-                  ),
-                  const SizedBox(width: 4.0),
+                  if (subtitle == venue.rating.toString()) ...[
+                    const Icon(
+                      Icons.star,
+                      color: Colors.white,
+                      size: 16.0,
+                    ),
+                    const SizedBox(width: 4.0),
+                  ],
                   Text(
-                    venue.rating.toString(),
+                    subtitle,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
