@@ -7,7 +7,7 @@ class BookingRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   List<String> getAvailableTimes(VenueModel venue, DateTime date) {
-    // Extract booked time ranges for the given date
+    // Extraer reservas del día seleccionado
     List<Map<String, DateTime>> bookedTimeRanges = venue.bookings
         .where((booking) {
           DateTime startTime = booking.startTime.toLocal();
@@ -21,7 +21,7 @@ class BookingRepository {
             })
         .toList();
 
-    // Define all possible time slots (7 AM to 10 PM)
+    // Definir slots de 1 hora desde 7:00 a 23:00 (16 slots)
     List<Map<String, String>> allTimeSlots = List.generate(
       16,
       (index) => {
@@ -30,26 +30,36 @@ class BookingRepository {
       },
     );
 
-    // Filter out booked time slots
+    DateTime now = DateTime.now();
+
+    // Verificar disponibilidad del slot
+    bool isSlotFree(DateTime slotStart, DateTime slotEnd,
+        List<Map<String, DateTime>> bookedRanges) {
+      return bookedRanges.every((range) =>
+          slotEnd.isBefore(range['start']!) ||
+          slotStart.isAfter(range['end']!));
+    }
+
     List<String> availableTimeSlots = allTimeSlots
         .where((slot) {
-          DateTime slotStartTime = DateTime(
-            date.year,
-            date.month,
-            date.day,
-            int.parse(slot['start']!.split(':')[0]),
-          );
-          DateTime slotEndTime = DateTime(
-            date.year,
-            date.month,
-            date.day,
-            int.parse(slot['end']!.split(':')[0]),
-          );
+          int startHour = int.parse(slot['start']!.split(':')[0]);
+          int endHour = int.parse(slot['end']!.split(':')[0]);
 
-          // Check if the slot is completely free (does not overlap with any booked range)
-          return bookedTimeRanges.every((range) =>
-              slotEndTime.isBefore(range['start']!) ||
-              slotStartTime.isAfter(range['end']!));
+          // Slot ajustado (e.g., 09:00:01 → 09:59:59)
+          DateTime slotStartTime =
+              DateTime(date.year, date.month, date.day, startHour, 0, 1);
+          DateTime slotEndTime =
+              DateTime(date.year, date.month, date.day, endHour - 1, 59, 59);
+
+          // Excluir slots pasados si es hoy
+          if (date.year == now.year &&
+              date.month == now.month &&
+              date.day == now.day &&
+              slotEndTime.isBefore(now)) {
+            return false;
+          }
+
+          return isSlotFree(slotStartTime, slotEndTime, bookedTimeRanges);
         })
         .map((slot) => '${slot['start']} - ${slot['end']}')
         .toList();
@@ -60,10 +70,9 @@ class BookingRepository {
   Future<List<String>> getAvailableTimesID(
       String venueId, DateTime date) async {
     final venueDoc = await _firestore.collection('venues').doc(venueId).get();
+    final venue = VenueModel.fromJson(venueDoc.data() ?? {});
 
-    final venue = VenueModel.fromJson((venueDoc).data() ?? {});
-
-    // Extract booked time ranges for the given date
+    // Extraer reservas del día seleccionado
     List<Map<String, DateTime>> bookedTimeRanges = venue.bookings
         .where((booking) {
           DateTime startTime = booking.startTime.toLocal();
@@ -77,7 +86,7 @@ class BookingRepository {
             })
         .toList();
 
-    // Define all possible time slots (7 AM to 10 PM)
+    // Definir slots de 1 hora desde 7:00 a 23:00 (16 slots)
     List<Map<String, String>> allTimeSlots = List.generate(
       16,
       (index) => {
@@ -86,26 +95,36 @@ class BookingRepository {
       },
     );
 
-    // Filter out booked time slots
+    DateTime now = DateTime.now();
+
+    // Verificar disponibilidad del slot
+    bool isSlotFree(DateTime slotStart, DateTime slotEnd,
+        List<Map<String, DateTime>> bookedRanges) {
+      return bookedRanges.every((range) =>
+          slotEnd.isBefore(range['start']!) ||
+          slotStart.isAfter(range['end']!));
+    }
+
     List<String> availableTimeSlots = allTimeSlots
         .where((slot) {
-          DateTime slotStartTime = DateTime(
-            date.year,
-            date.month,
-            date.day,
-            int.parse(slot['start']!.split(':')[0]),
-          );
-          DateTime slotEndTime = DateTime(
-            date.year,
-            date.month,
-            date.day,
-            int.parse(slot['end']!.split(':')[0]),
-          );
+          int startHour = int.parse(slot['start']!.split(':')[0]);
+          int endHour = int.parse(slot['end']!.split(':')[0]);
 
-          // Check if the slot is completely free (does not overlap with any booked range)
-          return bookedTimeRanges.every((range) =>
-              slotEndTime.isBefore(range['start']!) ||
-              slotStartTime.isAfter(range['end']!));
+          // Slot ajustado (e.g., 09:00:01 → 09:59:59)
+          DateTime slotStartTime =
+              DateTime(date.year, date.month, date.day, startHour, 0, 1);
+          DateTime slotEndTime =
+              DateTime(date.year, date.month, date.day, endHour - 1, 59, 59);
+
+          // Excluir slots pasados si es hoy
+          if (date.year == now.year &&
+              date.month == now.month &&
+              date.day == now.day &&
+              slotEndTime.isBefore(now)) {
+            return false;
+          }
+
+          return isSlotFree(slotStartTime, slotEndTime, bookedTimeRanges);
         })
         .map((slot) => '${slot['start']} - ${slot['end']}')
         .toList();

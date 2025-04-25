@@ -16,8 +16,7 @@ import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/loading/loading_event.dart';
 import 'package:isis3510_team32_flutter/widgets/initiation_view/icon_selection_button_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/initiation_view/initiation_date_picker_widget.dart';
-
-import '../widgets/initiation_view/initiation_icon_toggle_button_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/initiation_view/initiation_icon_toggle_button_widget.dart';
 
 class InitiationView extends StatelessWidget {
   const InitiationView({super.key});
