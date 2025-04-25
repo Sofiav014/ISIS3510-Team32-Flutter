@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 
@@ -25,12 +26,38 @@ class ProfileView extends StatelessWidget {
           children: [
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [ProfileCardWidget(), FavoriteVenuesWidget()],
+              children: [
+                ProfileCardWidget(),
+                FavoriteVenuesWidget(),
+                LogoutProfileWidget()
+              ],
             )
           ],
         ),
       ),
       bottomNavigationBar: const BottomNavigationWidget(selectedIndex: 4),
+    );
+  }
+}
+
+class LogoutProfileWidget extends StatelessWidget {
+  const LogoutProfileWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final authBloc = context.read<AuthBloc>();
+
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red, foregroundColor: Colors.white),
+          onPressed: () => authBloc.add(AuthLogOutEvent()),
+          child: const Text(
+            'Logout',
+          )),
     );
   }
 }
@@ -56,8 +83,22 @@ class FavoriteVenuesWidget extends StatelessWidget {
             ),
           ),
           BlocBuilder<AuthBloc, AuthState>(builder: (bloc, state) {
-            return const Row(
-              children: [],
+            return Container(
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              child: SizedBox(
+                height: 120,
+                child: Row(
+                  children: state.userModel != null
+                      ? state.userModel!.venuesLiked
+                          .map((venue) => Container(
+                                width: 120,
+                                margin: const EdgeInsets.only(right: 20),
+                                child: Text(venue.name),
+                              ))
+                          .toList()
+                      : [const Text("Unknown user")],
+                ),
+              ),
             );
           })
         ],
@@ -100,6 +141,93 @@ class ProfileCardSettingsButtonWidget extends StatelessWidget {
     super.key,
   });
 
+  void _showSelectionDialog(BuildContext context) {
+    const fontSize = 16.0;
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF3F3F3F),
+          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
+          title: const Text(
+            'Settings',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: fontSize + 1,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: SizedBox(
+            width: 500,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: const Text(
+                    'Edit profile name',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: fontSize,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text(
+                    'Change gender',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: fontSize,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text(
+                    'Update birth date',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: fontSize,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text(
+                    'Update favorite sports',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: fontSize,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                ),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text(
+                        'CANCEL',
+                        style: TextStyle(color: Colors.green),
+                      )),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -107,7 +235,7 @@ class ProfileCardSettingsButtonWidget extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primary, foregroundColor: Colors.white),
-        onPressed: () {},
+        onPressed: () => _showSelectionDialog(context),
         child: const Text('Settings'),
       ),
     );
