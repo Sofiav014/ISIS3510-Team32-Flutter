@@ -31,4 +31,4 @@ class InitiationRemoveSportEvent extends InitiationEvent {
   InitiationRemoveSportEvent(this.sportId);
 }
 
-class InitiationSubmitEvent extends InitiationEvent {}
+class InitiationClearEvent extends InitiationEvent {}

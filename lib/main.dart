@@ -1,82 +1,46 @@
-import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
-import 'package:isis3510_team32_flutter/core/bloc_observer.dart';
-import 'package:isis3510_team32_flutter/core/go_router.dart';
-import 'package:isis3510_team32_flutter/models/repositories/auth_repository.dart';
+import 'package:isis3510_team32_flutter/core/service_locator.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
-import 'package:provider/provider.dart';
-
-import 'core/firebase_options.dart';
+import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
+import 'package:isis3510_team32_flutter/widgets/loading_overlay_widget.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await dotenv.load(fileName: ".env");
 
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp(
-      name: 'sporthub-flutter-client',
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-  }
+  // Setup all dependencies
+  await setupDependencies();
 
-  await FirebaseAppCheck.instance
-      .activate(androidProvider: AndroidProvider.playIntegrity);
-
-  FlutterError.onError = (FlutterErrorDetails details) async {
-    FirebaseCrashlytics.instance.recordFlutterFatalError(details);
-  };
-
-  Bloc.observer = AppBlocObserver();
-
-  final authRepository = AuthRepository();
-  final authBloc = AuthBloc(authRepository);
-  final router = setupRouter(authBloc);
-
-  runApp(MyApp(
-    authRepository: authRepository,
-    authBloc: authBloc,
-    router: router,
-  ));
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final AuthRepository authRepository;
-  final AuthBloc authBloc;
-  final GoRouter router;
-
-  const MyApp(
-      {required this.authRepository,
-      required this.authBloc,
-      required this.router,
-      super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
+    return MultiBlocProvider(
       providers: [
-        Provider(create: (context) => authRepository),
+        BlocProvider(create: (_) => sl<AuthBloc>()),
+        BlocProvider(create: (_) => sl<InitiationBloc>()),
+        BlocProvider(create: (_) => sl<ConnectivityBloc>()),
+        BlocProvider(create: (_) => sl<LoadingBloc>()),
       ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (context) => authBloc),
-          BlocProvider(create: (context) => InitiationBloc()),
-        ],
-        child: MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          title: 'Flutter Navigation',
-          theme: ThemeData(
-            primaryColor: AppColors.primary,
-            primarySwatch: Colors.blue,
-          ),
-          routerConfig: router,
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Navigation',
+        theme: ThemeData(
+          primaryColor: AppColors.primary,
+          primarySwatch: Colors.blue,
         ),
+        routerConfig: sl<GoRouter>(),
+        builder: (context, child) {
+          return LoadingOverlayWidget(child: child ?? const SizedBox());
+        },
       ),
     );
   }
