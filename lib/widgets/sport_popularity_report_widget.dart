@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
-import 'package:isis3510_team32_flutter/models/sport_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/sport_model.dart';
 
 class SportPopularityReportCardWidget extends StatelessWidget {
   final SportModel sport;

@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:isis3510_team32_flutter/models/sport_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/sport_model.dart';
 
 part 'sport_model_hive.g.dart';
 

@@ -2,12 +2,12 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
-import 'package:isis3510_team32_flutter/models/venue_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/widgets/search_view_widgets/venue_list_widget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/venue_list/venue_list_bloc.dart';
-import 'package:isis3510_team32_flutter/repositories/venue_repository.dart';
+import 'package:isis3510_team32_flutter/models/repositories/venue_repository.dart';
 
 class VenueListView extends StatelessWidget {
   final String sportName;
@@ -36,7 +36,7 @@ class VenueListView extends StatelessWidget {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.primary),
             onPressed: () {
-              context.go('/search');
+              context.push('/search');
             },
           ),
           title: Text('$formattedSportName Venues',

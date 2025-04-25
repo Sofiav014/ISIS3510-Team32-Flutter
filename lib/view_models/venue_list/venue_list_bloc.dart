@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:isis3510_team32_flutter/models/venue_model.dart';
-import 'package:isis3510_team32_flutter/repositories/venue_repository.dart';
+import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
+import 'package:isis3510_team32_flutter/models/repositories/venue_repository.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,6 +25,18 @@ class VenueListBloc extends Bloc<VenueListEvent, VenueListState> {
 
       if (venueList.isEmpty) {
         emit(const VenueListLoaded(venues: []));
+        return;
+      }
+
+      bool isLocationServiceEnabled =
+          await Geolocator.isLocationServiceEnabled();
+
+      if (!isLocationServiceEnabled) {
+        venueList = venueList.map((venue) {
+          return venue.copyWith(distance: 'Distance not available');
+        }).toList();
+
+        emit(VenueListLoaded(venues: venueList));
         return;
       }
 

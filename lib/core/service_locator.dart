@@ -12,8 +12,8 @@ import 'package:isis3510_team32_flutter/core/go_router.dart';
 import 'package:isis3510_team32_flutter/models/hive/booking_model_hive.dart';
 import 'package:isis3510_team32_flutter/models/hive/sport_model_hive.dart';
 import 'package:isis3510_team32_flutter/models/hive/venue_model_hive.dart';
-import 'package:isis3510_team32_flutter/repositories/auth_repository.dart';
-import 'package:isis3510_team32_flutter/repositories/connectivity_repository.dart';
+import 'package:isis3510_team32_flutter/models/repositories/auth_repository.dart';
+import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
@@ -93,4 +93,3 @@ Future<void> _setupHive() async {
   Hive.registerAdapter(VenueModelHiveAdapter());
   Hive.registerAdapter(BookingModelHiveAdapter());
 }
-

@@ -1,5 +1,5 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:isis3510_team32_flutter/models/booking_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'venue_model_hive.dart';
 
 part 'booking_model_hive.g.dart';

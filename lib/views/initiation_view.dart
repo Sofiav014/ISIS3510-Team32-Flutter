@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
-import 'package:isis3510_team32_flutter/models/user_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
