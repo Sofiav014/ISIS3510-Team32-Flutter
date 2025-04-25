@@ -16,3 +16,10 @@ class CreateBookingMaxUsersEvent extends CreateBookingEvent {
 }
 
 class CreateBookingSubmitEvent extends CreateBookingEvent {}
+
+class CreateBookingSuccessEvent extends CreateBookingEvent {}
+
+class CreateBookingErrorEvent extends CreateBookingEvent {
+  String errorMessage;
+  CreateBookingErrorEvent(this.errorMessage);
+}

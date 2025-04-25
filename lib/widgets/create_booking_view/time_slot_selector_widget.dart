@@ -23,6 +23,19 @@ class TimeSlotSelectorWidget extends StatelessWidget {
           builder: (context, snapshot) {
             final timeSlots = snapshot.data ?? [];
 
+            if (timeSlots.isEmpty) {
+              return const Center(
+                child: Text(
+                  "No time slots available",
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              );
+            }
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
