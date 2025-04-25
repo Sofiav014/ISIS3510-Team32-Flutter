@@ -4,8 +4,6 @@ import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/create_booking/create_booking_bloc.dart';
-import 'package:isis3510_team32_flutter/view_models/create_booking/create_booking_event.dart';
-import 'package:isis3510_team32_flutter/view_models/create_booking/create_booking_state.dart';
 import 'package:isis3510_team32_flutter/widgets/create_booking_view/date_picker_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/create_booking_view/time_slot_selector_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
