@@ -5,6 +5,7 @@ abstract class AuthEvent {}
 
 class AuthCreateModelEvent extends AuthEvent {
   final UserModel userModel;
+
   AuthCreateModelEvent(this.userModel);
 }
 
