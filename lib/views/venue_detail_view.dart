@@ -1,3 +1,4 @@
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +19,9 @@ class VenueDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    FirebaseCrashlytics.instance
+        .setCustomKey('screen', 'Venue $sportId detail View');
+
     return BlocProvider(
         create: (context) => VenueDetailBloc(venueRepository: VenueRepository())
           ..add(LoadVenueDetailData(venueId: venueId)),
