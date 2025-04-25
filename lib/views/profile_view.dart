@@ -20,16 +20,48 @@ class ProfileView extends StatelessWidget {
       appBar: AppBar(title: const Text('Profile Screen')),
       body: Container(
         padding: const EdgeInsets.all(16),
-        child: Column(
+        child: const Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Column(
-              children: [const ProfileCardWidget(), Container()],
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [ProfileCardWidget(), FavoriteVenuesWidget()],
             )
           ],
         ),
       ),
       bottomNavigationBar: const BottomNavigationWidget(selectedIndex: 4),
+    );
+  }
+}
+
+class FavoriteVenuesWidget extends StatelessWidget {
+  const FavoriteVenuesWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'My favorite venues',
+            style: TextStyle(
+              color: AppColors.primary,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          BlocBuilder<AuthBloc, AuthState>(builder: (bloc, state) {
+            return const Row(
+              children: [],
+            );
+          })
+        ],
+      ),
     );
   }
 }
@@ -45,68 +77,141 @@ class ProfileCardWidget extends StatelessWidget {
         color: AppColors.lighterPurple,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
               ProfileCardAvatarWidget(),
               ProfileCardTextWidget(),
             ],
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          ProfileCardFavoriteSportsWidget(),
+          ProfileCardLightModeSwitchWidget(),
+          ProfileCardSettingsButtonWidget()
+        ],
+      ),
+    );
+  }
+}
+
+class ProfileCardSettingsButtonWidget extends StatelessWidget {
+  const ProfileCardSettingsButtonWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+        onPressed: () {},
+        child: const Text('Settings'),
+      ),
+    );
+  }
+}
+
+class ProfileCardLightModeSwitchWidget extends StatelessWidget {
+  const ProfileCardLightModeSwitchWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 20),
+      child: Row(
+        children: [
+          Row(
             children: [
+              const Icon(
+                Icons.sunny,
+                size: 24,
+                color: AppColors.primary,
+              ),
               Container(
-                margin: const EdgeInsets.only(top: 20, bottom: 5),
-                child: const Text(
-                  "Favorite sports",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.black45,
-                  ),
-                ),
-              ),
-              BlocBuilder<AuthBloc, AuthState>(
-                builder: (bloc, state) => Row(
-                  children: state.userModel != null
-                      ? state.userModel!.sportsLiked.map(
-                          (sport) {
-                            return Container(
-                              width: 48,
-                              height: 48,
-                              margin: const EdgeInsets.only(right: 5),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: AppColors.primary,
-                                  width: 2,
-                                ),
-                              ),
-                              child: ClipOval(
-                                child: Center(
-                                  child: SvgPicture.asset(
-                                    initiationSports[sport.id]!.logo,
-                                    width: 40,
-                                    height: 40,
-                                    colorFilter: const ColorFilter.mode(
-                                      AppColors.primary,
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ).toList()
-                      : [],
-                ),
-              ),
+                  margin: const EdgeInsets.only(left: 5),
+                  child: const Text(
+                    'Light mode',
+                  ))
             ],
+          ),
+          const Spacer(),
+          Transform.scale(
+            scale: 0.7,
+            child: Switch.adaptive(
+              activeColor: AppColors.primary,
+              activeTrackColor: AppColors.lighterPurple,
+              value: true,
+              onChanged: (_) {},
+            ),
           )
         ],
       ),
+    );
+  }
+}
+
+class ProfileCardFavoriteSportsWidget extends StatelessWidget {
+  const ProfileCardFavoriteSportsWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          margin: const EdgeInsets.only(top: 20, bottom: 5),
+          child: const Text(
+            "Favorite sports",
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.black45,
+            ),
+          ),
+        ),
+        BlocBuilder<AuthBloc, AuthState>(
+          builder: (bloc, state) => Row(
+            children: state.userModel != null
+                ? state.userModel!.sportsLiked.map(
+                    (sport) {
+                      return Container(
+                        width: 48,
+                        height: 48,
+                        margin: const EdgeInsets.only(right: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: AppColors.primary,
+                            width: 2,
+                          ),
+                        ),
+                        child: ClipOval(
+                          child: Center(
+                            child: SvgPicture.asset(
+                              initiationSports[sport.id]!.logo,
+                              width: 40,
+                              height: 40,
+                              colorFilter: const ColorFilter.mode(
+                                AppColors.primary,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ).toList()
+                : [],
+          ),
+        ),
+      ],
     );
   }
 }
