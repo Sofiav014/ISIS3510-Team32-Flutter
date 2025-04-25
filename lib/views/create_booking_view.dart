@@ -49,7 +49,6 @@ class _CreateBookingContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               DatePickerWidget(),
-              SizedBox(height: 24),
               TimeSlotSelectorWidget(),
               SizedBox(height: 24),
               // Aquí podrías insertar el botón de crear reserva también

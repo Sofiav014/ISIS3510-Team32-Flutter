@@ -11,7 +11,11 @@ class CreateBookingBloc extends Bloc<CreateBookingEvent, CreateBookingState> {
   final AuthBloc authBloc;
 
   CreateBookingBloc(this.bookingRepository, this.venueId, this.authBloc)
-      : super(CreateBookingState()) {
+      : super(CreateBookingState(
+          date: DateTime.now().hour >= 22
+              ? DateTime.now().add(const Duration(days: 1))
+              : DateTime.now(),
+        )) {
     on<CreateBookingDateEvent>((event, emit) {
       emit(state.copyWith(date: event.date));
     });

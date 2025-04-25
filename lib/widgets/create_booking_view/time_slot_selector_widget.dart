@@ -56,8 +56,8 @@ class TimeSlotSelectorWidget extends StatelessWidget {
                                   vertical: 6, horizontal: 6),
                               decoration: BoxDecoration(
                                 color: isSelected
-                                    ? AppColors.primaryNeutral
-                                    : const Color(0xFFFCD7B6),
+                                    ? AppColors.contrast900
+                                    : AppColors.primaryNeutral,
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               child: Text(

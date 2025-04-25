@@ -12,6 +12,14 @@ class DatePickerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bloc = context.read<CreateBookingBloc>();
+    final now = DateTime.now();
+
+    // Si ya son más de las 10:00 p.m., la primera fecha seleccionable será mañana
+    final todayCutoff =
+        DateTime(now.year, now.month, now.day, 22); // 10:00 p.m.
+    final firstAvailableDate = now.isAfter(todayCutoff)
+        ? DateTime(now.year, now.month, now.day + 1)
+        : DateTime(now.year, now.month, now.day);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -27,10 +35,14 @@ class DatePickerWidget extends StatelessWidget {
         const SizedBox(height: 8),
         BlocBuilder<CreateBookingBloc, CreateBookingState>(
           builder: (context, state) {
+            final initialDate = state.date ?? firstAvailableDate;
+
             return CalendarDatePicker(
-              initialDate: state.date ?? DateTime.now(),
-              firstDate: DateTime.now(),
-              lastDate: DateTime.now().add(const Duration(days: 60)),
+              initialDate: initialDate.isBefore(firstAvailableDate)
+                  ? firstAvailableDate
+                  : initialDate,
+              firstDate: firstAvailableDate,
+              lastDate: now.add(const Duration(days: 60)),
               onDateChanged: (selectedDate) {
                 bloc.add(CreateBookingDateEvent(selectedDate));
               },
