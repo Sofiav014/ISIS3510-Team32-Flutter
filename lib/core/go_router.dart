@@ -87,14 +87,6 @@ GoRouter setupRouter(AuthBloc authBloc) {
         },
       ),
       GoRoute(
-          path: '/initiation',
-          pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context, state: state, child: const InitiationView())),
-      GoRoute(
-          path: '/profile',
-          pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context, state: state, child: const ProfileView())),
-      GoRoute(
         path: '/create_booking/:venueId',
         pageBuilder: (context, state) {
           final venueId = state.pathParameters['venueId']!;
@@ -105,6 +97,14 @@ GoRouter setupRouter(AuthBloc authBloc) {
           );
         },
       ),
+      GoRoute(
+          path: '/initiation',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context, state: state, child: const InitiationView())),
+      GoRoute(
+          path: '/profile',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context, state: state, child: const ProfileView())),
     ],
   );
 }

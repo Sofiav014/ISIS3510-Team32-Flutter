@@ -27,12 +27,6 @@ class VenueDetailView extends StatelessWidget {
           ..add(LoadVenueDetailData(venueId: venueId)),
         child: Scaffold(
           appBar: AppBar(
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.primary),
-              onPressed: () {
-                context.go('/venue_list/$sportId');
-              },
-            ),
             title: const Text('Venue Detail',
                 style: TextStyle(
                     color: AppColors.primary, fontWeight: FontWeight.w600)),
@@ -58,7 +52,7 @@ class VenueDetailView extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: ElevatedButton(
                           onPressed: () {
-                            print('Botón para la doña Sofía');
+                            context.push('/create_booking/$venueId');
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.greenAccent,
@@ -69,7 +63,7 @@ class VenueDetailView extends StatelessWidget {
                             ),
                           ),
                           child: const Text(
-                            'Create a new Booking',
+                            'Create a new Booking venue',
                             style: TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,

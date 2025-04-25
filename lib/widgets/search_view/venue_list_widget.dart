@@ -16,7 +16,7 @@ class VenueListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          context.go('/venue_detail/${venue.sport.name}/${venue.id}');
+          context.push('/venue_detail/${venue.sport.name}/${venue.id}');
         },
         child: Container(
           margin: const EdgeInsets.all(8.0),
