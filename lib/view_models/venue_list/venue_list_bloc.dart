@@ -12,7 +12,7 @@ part 'venue_list_state.dart';
 class VenueListBloc extends Bloc<VenueListEvent, VenueListState> {
   final String sportName;
   final VenueRepository venueRepository;
-  VenueListBloc({required this.sportName, required this.venueRepository})
+    VenueListBloc({required this.sportName, required this.venueRepository})
       : super(VenueListInitial()) {
     on<LoadVenueListData>(_onLoadVenueListData);
   }
