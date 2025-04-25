@@ -7,4 +7,5 @@ class AppColors {
   static const Color lightPurple = Color(0xC860508C); // Light Purple
   static const Color primaryDark = Color(0xFF070304); // Black
   static const Color contrast900 = Color(0xFFFBD1A2); // Light Peach
+  static const Color awfulGreen = Color(0xFF77E996);
 }

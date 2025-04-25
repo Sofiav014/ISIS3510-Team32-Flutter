@@ -12,11 +12,30 @@ class VenueRepository {
           .get();
 
       return querySnapshot.docs.map((doc) {
-        return VenueModel.fromJson(doc.data() as Map<String, dynamic>);
+        Map<String, dynamic> venueData = doc.data() as Map<String, dynamic>;
+        venueData['id'] = doc.id;
+        return VenueModel.fromJson(venueData);
       }).toList();
     } catch (e) {
       print('Error fetching venues: $e');
-      return []; // Handle errors appropriately
+      return [];
+    }
+  }
+
+  Future<VenueModel?> getVenueById(String venueId) async {
+    try {
+      DocumentSnapshot documentSnapshot =
+          await _firestore.collection('venues').doc(venueId).get();
+
+      if (documentSnapshot.exists) {
+        return VenueModel.fromJson(
+            documentSnapshot.data() as Map<String, dynamic>);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching venue by ID: $e');
+      return null;
     }
   }
 }
