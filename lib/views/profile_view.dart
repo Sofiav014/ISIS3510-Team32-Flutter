@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
@@ -57,7 +58,7 @@ class ProfileCardWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                margin: const EdgeInsets.only(top: 20),
+                margin: const EdgeInsets.only(top: 20, bottom: 5),
                 child: const Text(
                   "Favorite sports",
                   style: TextStyle(
@@ -71,7 +72,32 @@ class ProfileCardWidget extends StatelessWidget {
                   children: state.userModel != null
                       ? state.userModel!.sportsLiked.map(
                           (sport) {
-                            return Image(image: NetworkImage(sport.logo));
+                            return Container(
+                              width: 48,
+                              height: 48,
+                              margin: const EdgeInsets.only(right: 5),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppColors.primary,
+                                  width: 2,
+                                ),
+                              ),
+                              child: ClipOval(
+                                child: Center(
+                                  child: SvgPicture.asset(
+                                    initiationSports[sport.id]!.logo,
+                                    width: 40,
+                                    height: 40,
+                                    colorFilter: const ColorFilter.mode(
+                                      AppColors.primary,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
                           },
                         ).toList()
                       : [],
