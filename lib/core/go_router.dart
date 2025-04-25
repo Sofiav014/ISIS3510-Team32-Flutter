@@ -8,6 +8,7 @@ import 'package:isis3510_team32_flutter/views/search_view.dart';
 import 'package:isis3510_team32_flutter/views/venue_list_view.dart';
 import 'package:isis3510_team32_flutter/views/home_view.dart';
 import 'package:isis3510_team32_flutter/views/profile_view.dart';
+import 'package:isis3510_team32_flutter/views/venue_detail_view.dart';
 
 CustomTransitionPage buildPageWithNoTransition<T>({
   required BuildContext context,
@@ -69,6 +70,18 @@ GoRouter setupRouter(AuthBloc authBloc) {
             context: context,
             state: state,
             child: VenueListView(sportName: sportId),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/venue_detail/:sportId/:venueId',
+        pageBuilder: (context, state) {
+          final venueId = state.pathParameters['venueId']!;
+          final sportId = state.pathParameters['sportId']!;
+          return buildPageWithNoTransition(
+            context: context,
+            state: state,
+            child: VenueDetailView(sportId: sportId, venueId: venueId),
           );
         },
       ),

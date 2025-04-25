@@ -25,7 +25,7 @@ class VenueListViewState extends State<VenueListView> {
     super.initState();
     BackButtonInterceptor.add((stopDefaultButtonEvent, routeInfo) {
       context.go('/search');
-      return true; // Prevent default back button behavior
+      return true;
     });
   }
 
