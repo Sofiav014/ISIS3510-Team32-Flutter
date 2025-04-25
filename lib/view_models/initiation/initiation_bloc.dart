@@ -1,5 +1,5 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:isis3510_team32_flutter/models/sport_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/sport_model.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_event.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_state.dart';
 
