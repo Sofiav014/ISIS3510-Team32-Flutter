@@ -11,6 +11,14 @@ class BookingInfoCard extends StatelessWidget {
 
   const BookingInfoCard({super.key, required this.venue, required this.booking});
 
+  String _truncateText(String text, int? maxLength) {
+    if (maxLength == null || text.length <= maxLength) {
+      return text;
+    } else {
+      return '${text.substring(0, maxLength)}...';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -45,8 +53,11 @@ class BookingInfoCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 4.0),
                   Text(
-                    venue.locationName,
-                    style: const TextStyle(color: Colors.white, fontSize: 17),
+                    _truncateText(venue.locationName, 30),
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17),
                   ),
                 ],
               ),

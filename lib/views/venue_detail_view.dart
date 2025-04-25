@@ -43,7 +43,9 @@ class VenueDetailView extends StatelessWidget {
                     } else if (state is VenueDetailLoaded) {
                       final VenueModel venue = state.venue;
                       return SingleChildScrollView(
-                        child: Column(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             VenueDetailImageWidget(venue: venue),
@@ -84,17 +86,15 @@ class VenueDetailView extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 8),
-                            Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                                child: Column(
+                            Column(
                                   children: venue.bookings.map((booking) => Padding(
                                     padding: const EdgeInsets.only(bottom: 8.0),
                                     child: BookingInfoCard(venue: venue, booking: booking),
                                   )).toList(),
-                                ),
-                            )
+                              ),
                           ],
                         ),
+                        )
                       );
                     } else if (state is VenueDetailError) {
                       return Center(child: Text('Error: ${state.message}'));
