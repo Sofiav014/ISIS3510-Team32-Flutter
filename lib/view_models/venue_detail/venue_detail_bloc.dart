@@ -19,8 +19,6 @@ class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
     emit(VenueDetailLoading());
     try {
       final venue = await venueRepository.getVenueById(event.venueId);
-      print('Venue ID: ${event.venueId}');
-      print('Venue: $venue');
       if (venue != null) {
         emit(VenueDetailLoaded(venue: venue));
       } else {

@@ -13,141 +13,154 @@ class TimeSlotSelectorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<CreateBookingBloc>();
 
-    return BlocBuilder<CreateBookingBloc, CreateBookingState>(
-      builder: (context, state) {
-        return FutureBuilder<List<String>>(
-          future: bloc.bookingRepository.getAvailableTimesID(
-            bloc.venueId,
-            state.date ?? DateTime.now(),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        const Text(
+          "Select a Time Slot:",
+          style: TextStyle(
+            fontSize: 20,
+            color: AppColors.primary,
+            fontWeight: FontWeight.bold,
           ),
-          builder: (context, snapshot) {
-            final timeSlots = snapshot.data ?? [];
+        ),
+        const SizedBox(height: 8),
+        BlocBuilder<CreateBookingBloc, CreateBookingState>(
+          builder: (context, state) {
+            return FutureBuilder<List<String>>(
+              future: bloc.bookingRepository.getAvailableTimesID(
+                bloc.venueId,
+                state.date ?? DateTime.now(),
+              ),
+              builder: (context, snapshot) {
+                final timeSlots = snapshot.data ?? [];
 
-            if (timeSlots.isEmpty) {
-              return const Center(
-                child: Text(
-                  "No time slots available",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              );
-            }
+                if (timeSlots.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      "No time slots available",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  );
+                }
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      GridView.count(
-                        shrinkWrap: true,
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 2.8, // more compact ratio
-                        physics: const NeverScrollableScrollPhysics(),
-                        children: timeSlots.map((slot) {
-                          final isSelected = state.timeSlot == slot;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GridView.count(
+                            shrinkWrap: true,
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 2.8,
+                            physics: const NeverScrollableScrollPhysics(),
+                            children: timeSlots.map((slot) {
+                              final isSelected = state.timeSlot == slot;
 
-                          return GestureDetector(
-                            onTap: () {
-                              bloc.add(CreateBookingTimeSlotEvent(slot));
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 6, horizontal: 6),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? AppColors.contrast900
-                                    : AppColors.primaryNeutral,
-                                borderRadius: BorderRadius.circular(10),
+                              return GestureDetector(
+                                onTap: () {
+                                  bloc.add(CreateBookingTimeSlotEvent(slot));
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 6, horizontal: 6),
+                                  decoration: BoxDecoration(
+                                    color: isSelected
+                                        ? AppColors.contrast900
+                                        : AppColors.primaryNeutral,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Text(
+                                    slot,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              SvgPicture.asset(
+                                "assets/icons/people.svg",
+                                height: 20,
+                                color: AppColors.contrast900,
                               ),
-                              child: Text(
-                                slot,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w600,
+                              const SizedBox(width: 8),
+                              const Text(
+                                "Number of Players",
+                                style: TextStyle(
+                                  color: AppColors.contrast900,
+                                  fontSize: 14,
                                 ),
                               ),
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        children: [
-                          SvgPicture.asset(
-                            "assets/icons/people.svg",
-                            height: 20,
-                            color: AppColors.contrast900,
+                            ],
                           ),
-                          const SizedBox(width: 8),
-                          const Text(
-                            "Number of Players",
-                            style: TextStyle(
-                              color: AppColors.contrast900,
-                              fontSize: 14,
+                          const SizedBox(height: 6),
+                          Container(
+                            height: 40,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryNeutral,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<int>(
+                                value: state.maxUsers,
+                                hint: const Text("Select number"),
+                                isExpanded: true,
+                                iconSize: 20,
+                                style: const TextStyle(fontSize: 14),
+                                items: List.generate(12, (index) => index + 1)
+                                    .map((num) => DropdownMenuItem<int>(
+                                          value: num,
+                                          child: Text(
+                                            num.toString(),
+                                            style: const TextStyle(
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ))
+                                    .toList(),
+                                onChanged: (num) {
+                                  if (num != null) {
+                                    bloc.add(CreateBookingMaxUsersEvent(num));
+                                  }
+                                },
+                              ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 6),
-                      Container(
-                        height: 40,
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        decoration: BoxDecoration(
-                          color: AppColors.primaryNeutral,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton<int>(
-                            value: state.maxUsers,
-                            hint: const Text("Select number"),
-                            isExpanded: true,
-                            iconSize: 20,
-                            style: const TextStyle(fontSize: 14),
-                            items: List.generate(12, (index) => index + 1)
-                                .map((num) => DropdownMenuItem<int>(
-                                      value: num,
-                                      child: Text(
-                                        num.toString(),
-                                        style: const TextStyle(
-                                          color: AppColors
-                                              .primary, // color visible sobre blanco
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    ))
-                                .toList(),
-                            onChanged: (num) {
-                              if (num != null) {
-                                bloc.add(CreateBookingMaxUsersEvent(num));
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             );
           },
-        );
-      },
+        ),
+      ],
     );
   }
 }

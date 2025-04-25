@@ -101,25 +101,20 @@ class BookingRepository {
     required UserModel user,
   }) async {
     try {
-      print('❤️‍🔥 Creating booking with ID $venueId...');
       final venueDoc = await _firestore.collection('venues').doc(venueId).get();
-      print('❤️‍🔥 Venue document retrieved: ${venueDoc.data()}');
 
       final venue = VenueModel.fromJson((venueDoc).data() ?? {});
 
-      print('❤️‍🔥 Venue model created: ${venue.toJson()}');
 
       // Get the current user's ID
       final userId = user.id;
 
-      print('❤️‍🔥 User ID: $userId');
 
       // Split the time slot into start and end times
       final times = getTimes(timeSlot, date);
       DateTime startTime = times[0];
       DateTime endTime = times[1];
 
-      print('❤️‍🔥 Start time: $startTime, End time: $endTime');
 
       final venueInfo = {
         'coords': venue.coords,
@@ -135,7 +130,6 @@ class BookingRepository {
         },
       };
 
-      print('❤️‍🔥 Venue info: $venueInfo');
 
       // Create a new booking document in Firestore
       DocumentReference bookingRef =
@@ -147,7 +141,6 @@ class BookingRepository {
         'venue': venueInfo,
       });
 
-      print('❤️‍🔥 Booking document created with ID: ${bookingRef.id}');
 
       // Update the venue document with the new booking
       await _firestore.collection('venues').doc(venueId).update({
@@ -162,7 +155,6 @@ class BookingRepository {
         ]),
       });
 
-      print('❤️‍🔥 Venue document updated with new booking.');
 
       // Update the user document with the new booking
       await _firestore.collection('users').doc(userId).update({
@@ -178,7 +170,6 @@ class BookingRepository {
         ]),
       });
 
-      print('❤️‍🔥 User document updated with new booking.');
 
       // Update Metadata
       await _firestore.collection('metadata').doc('metadata').update({
@@ -187,7 +178,6 @@ class BookingRepository {
         'venues_bookings.$venueId': FieldValue.increment(1),
       });
 
-      print('❤️‍🔥 Metadata updated with new booking count.');
 
       // Update the user's bookings in the UserModel
       user.bookings.add(BookingModel(
@@ -199,7 +189,6 @@ class BookingRepository {
         users: [userId],
       ));
 
-      print('❤️‍🔥 User bookings updated with new booking.');
 
       // Update the venue's bookings in the VenueModel
       venue.bookings.add(BookingModel(
@@ -211,8 +200,6 @@ class BookingRepository {
         users: [userId],
       ));
 
-      print('❤️‍🔥 Venue bookings updated with new booking.');
-      print('❤️‍🔥 Booking created successfully!');
       return true;
     } catch (e) {
       print('Error creating booking: $e');
