@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:isis3510_team32_flutter/models/hive/booking_model_hive.dart';
+import 'package:isis3510_team32_flutter/models/data_models/sport_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
@@ -6,6 +9,8 @@ import 'package:isis3510_team32_flutter/core/firebase_service.dart';
 
 class HomeRepository {
   final FirebaseFirestore _firestore = FirebaseService.instance.firestore;
+
+  // Online request
 
   Future<List<BookingModel>> getRecommendedBookings(UserModel user) async {
     final userBookingsId = user.bookings.map((booking) => booking.id).toList();
@@ -36,27 +41,25 @@ class HomeRepository {
         await _firestore.collection('metadata').doc('metadata').get();
 
     final data = metadata.data() ?? {};
-    
     Map<String, dynamic> venuesBookings = data['venues_bookings'] ?? {};
-  
-    var mostBookedVenue =
-      venuesBookings.entries.reduce((a, b) => a.value > b.value ? a : b);
-    
-    final mostBookedVenueDoc =
-      _firestore.collection('venues').doc(mostBookedVenue.key).get();
-    
-    final highestRatedVenueDoc = await _firestore
-      .collection('venues')
-      .orderBy('rating', descending: true)
-      .limit(1)
-      .get();
 
-    // to json (Model)
+    var mostBookedVenue =
+        venuesBookings.entries.reduce((a, b) => a.value > b.value ? a : b);
+
+    final mostBookedVenueDoc =
+        _firestore.collection('venues').doc(mostBookedVenue.key).get();
+
+    final highestRatedVenueDoc = await _firestore
+        .collection('venues')
+        .orderBy('rating', descending: true)
+        .limit(1)
+        .get();
+
     final mostBookedVenueModel =
-      VenueModel.fromJson((await mostBookedVenueDoc).data() ?? {});
-    
-    final highestRatedVenueModel = VenueModel.fromJson(highestRatedVenueDoc.docs.first.data());
-    
+        VenueModel.fromJson((await mostBookedVenueDoc).data() ?? {});
+
+    final highestRatedVenueModel =
+        VenueModel.fromJson(highestRatedVenueDoc.docs.first.data());
 
     if (user.bookings.isEmpty) {
       return {
@@ -83,6 +86,78 @@ class HomeRepository {
       'mostBookedVenue': mostBookedVenueModel,
       'mostPlayedSport': mostPlayedSport,
       'mostPlayedSportCount': mostPlayedSportCount
+    };
+  }
+
+  // Cache request
+
+  Future<void> cacheHomeData({
+    required String userId,
+    required List<BookingModel> upcoming,
+    required Map<String, dynamic> report,
+  }) async {
+    final box = await Hive.openBox('home_$userId');
+    final upcomingHive =
+        upcoming.map((b) => BookingModelHive.fromModel(b)).toList();
+
+    final highestRated = report['highestRatedVenue'] as VenueModel?;
+    final mostBooked = report['mostBookedVenue'] as VenueModel?;
+    final mostPlayedSport = report['mostPlayedSport'] as SportModel?;
+    final mostPlayedSportCount = report['mostPlayedSportCount'];
+
+    final reportMap = {
+      'highestRatedVenue': highestRated?.toJsonSerializable(),
+      'mostBookedVenue': mostBooked?.toJsonSerializable(),
+      'mostPlayedSport': mostPlayedSport?.toJson(),
+      'mostPlayedSportCount': mostPlayedSportCount,
+    };
+
+    await box.put('upcoming_bookings', upcomingHive);
+    await box.put('popularity_report', reportMap);
+  }
+
+  Future<List<BookingModel>?> getCachedUpcomingBookings(String userId) async {
+    final box = await Hive.openBox('home_$userId');
+    final cachedUpcomingBookings = box.get('upcoming_bookings') as List?;
+
+    if (cachedUpcomingBookings == null) return null;
+
+    return (cachedUpcomingBookings)
+        .map((e) => (e as BookingModelHive).toModel())
+        .toList();
+  }
+
+  Future<Map<String, dynamic>?> getCachedPopularityReport(String userId) async {
+    final box = await Hive.openBox('home_$userId');
+    final data = box.get('popularity_report');
+
+    if (data == null) return null;
+
+    if (data is! Map) {
+      return null;
+    }
+
+    final map = data.map((key, value) => MapEntry(key.toString(), value));
+
+    final highestRatedVenue = map['highestRatedVenue'] != null
+        ? VenueModel.fromJson(map['highestRatedVenue'])
+        : null;
+
+    final mostBookedVenue = map['mostBookedVenue'] != null
+        ? VenueModel.fromJson(map['mostBookedVenue'])
+        : null;
+
+    final mostPlayedSport = map['mostPlayedSport'] != null
+        ? SportModel.fromJson(map['mostPlayedSport'])
+        : null;
+
+    final mostPlayedSportCount = map['mostPlayedSportCount'];
+
+    return {
+      'highestRatedVenue': highestRatedVenue,
+      'mostBookedVenue': mostBookedVenue,
+      'mostPlayedSport': mostPlayedSport,
+      'mostPlayedSportCount': mostPlayedSportCount,
     };
   }
 }
