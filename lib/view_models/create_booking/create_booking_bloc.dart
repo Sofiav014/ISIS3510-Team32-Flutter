@@ -17,19 +17,26 @@ class CreateBookingBloc extends Bloc<CreateBookingEvent, CreateBookingState> {
               : DateTime.now(),
         )) {
     on<CreateBookingDateEvent>((event, emit) {
+      print("Date selected: ${event.date}");
       emit(state.copyWith(date: event.date));
     });
     on<CreateBookingTimeSlotEvent>((event, emit) {
+      print("Time slot selected: ${event.timeSlot}");
       emit(state.copyWith(timeSlot: event.timeSlot));
     });
     on<CreateBookingMaxUsersEvent>((event, emit) {
+      print("Max users selected: ${event.maxUsers}");
       emit(state.copyWith(maxUsers: event.maxUsers));
     });
     on<CreateBookingSubmitEvent>((event, emit) async {
+      print(
+          "Creating booking with date: ${state.date}, timeSlot: ${state.timeSlot}, maxUsers: ${state.maxUsers}");
+      print("Venue ID: $venueId");
       if (state.date != null &&
           state.timeSlot != null &&
           state.maxUsers != null &&
           state.maxUsers! > 0) {
+        print("Creating booking...");
         await bookingRepository.createBookingID(
           date: state.date!,
           timeSlot: state.timeSlot!,
@@ -38,6 +45,7 @@ class CreateBookingBloc extends Bloc<CreateBookingEvent, CreateBookingState> {
           user: authBloc.state.userModel!,
         );
       }
+      print("Booking created successfully!");
     });
   }
 }

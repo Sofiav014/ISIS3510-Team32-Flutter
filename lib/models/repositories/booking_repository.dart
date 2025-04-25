@@ -161,93 +161,95 @@ class BookingRepository {
     required UserModel user,
   }) async {
     try {
-      // Get the current user's ID
-      final userId = user.id;
+      // // Get the current user's ID
+      // final userId = user.id;
 
-      // Split the time slot into start and end times
-      final times = getTimes(timeSlot, date);
-      DateTime startTime = times[0];
-      DateTime endTime = times[1];
+      // // Split the time slot into start and end times
+      // final times = getTimes(timeSlot, date);
+      // DateTime startTime = times[0];
+      // DateTime endTime = times[1];
 
-      final venueInfo = {
-        'coords': venue.coords,
-        'id': venue.id,
-        'image': venue.image,
-        'location_name': venue.locationName,
-        'name': venue.name,
-        'rating': venue.rating,
-        'sport': {
-          'id': venue.sport.id,
-          'logo': venue.sport.logo,
-          'name': venue.sport.name,
-        },
-      };
+      // final venueInfo = {
+      //   'coords': venue.coords,
+      //   'id': venue.id,
+      //   'image': venue.image,
+      //   'location_name': venue.locationName,
+      //   'name': venue.name,
+      //   'rating': venue.rating,
+      //   'sport': {
+      //     'id': venue.sport.id,
+      //     'logo': venue.sport.logo,
+      //     'name': venue.sport.name,
+      //   },
+      // };
 
-      // Create a new booking document in Firestore
-      DocumentReference bookingRef =
-          await _firestore.collection('bookings').add({
-        'end_time': endTime,
-        'max_users': maxUsers,
-        'start_time': startTime,
-        'users': [userId],
-        'venue': venueInfo,
-      });
+      // // Create a new booking document in Firestore
+      // DocumentReference bookingRef =
+      //     await _firestore.collection('bookings').add({
+      //   'end_time': endTime,
+      //   'max_users': maxUsers,
+      //   'start_time': startTime,
+      //   'users': [userId],
+      //   'venue': venueInfo,
+      // });
 
-      // Update the venue document with the new booking
-      await _firestore.collection('venues').doc(venue.id).update({
-        'bookings': FieldValue.arrayUnion([
-          {
-            'end_time': endTime,
-            'id': bookingRef.id,
-            'max_users': maxUsers,
-            'start_time': startTime,
-            'users': [userId],
-          }
-        ]),
-      });
+      // // Update the venue document with the new booking
+      // await _firestore.collection('venues').doc(venue.id).update({
+      //   'bookings': FieldValue.arrayUnion([
+      //     {
+      //       'end_time': endTime,
+      //       'id': bookingRef.id,
+      //       'max_users': maxUsers,
+      //       'start_time': startTime,
+      //       'users': [userId],
+      //     }
+      //   ]),
+      // });
 
-      // Update the user document with the new booking
-      await _firestore.collection('users').doc(userId).update({
-        'bookings': FieldValue.arrayUnion([
-          {
-            'end_time': endTime,
-            'id': bookingRef.id,
-            'max_users': maxUsers,
-            'start_time': startTime,
-            'users': [userId],
-            'venue': venueInfo,
-          }
-        ]),
-      });
+      // // Update the user document with the new booking
+      // await _firestore.collection('users').doc(userId).update({
+      //   'bookings': FieldValue.arrayUnion([
+      //     {
+      //       'end_time': endTime,
+      //       'id': bookingRef.id,
+      //       'max_users': maxUsers,
+      //       'start_time': startTime,
+      //       'users': [userId],
+      //       'venue': venueInfo,
+      //     }
+      //   ]),
+      // });
 
-      // Update Metadata
-      await _firestore.collection('metadata').doc('metadata').update({
-        'sports_bookings.${venue.sport.name.toLowerCase()}':
-            FieldValue.increment(1),
-        'venues_bookings.${venue.id}': FieldValue.increment(1),
-      });
+      // // Update Metadata
+      // await _firestore.collection('metadata').doc('metadata').update({
+      //   'sports_bookings.${venue.sport.name.toLowerCase()}':
+      //       FieldValue.increment(1),
+      //   'venues_bookings.${venue.id}': FieldValue.increment(1),
+      // });
 
-      // Update the user's bookings in the UserModel
-      user.bookings.add(BookingModel(
-        id: bookingRef.id,
-        maxUsers: maxUsers,
-        startTime: startTime,
-        endTime: endTime,
-        venue: venue,
-        users: [userId],
-      ));
+      // // Update the user's bookings in the UserModel
+      // user.bookings.add(BookingModel(
+      //   id: bookingRef.id,
+      //   maxUsers: maxUsers,
+      //   startTime: startTime,
+      //   endTime: endTime,
+      //   venue: venue,
+      //   users: [userId],
+      // ));
 
-      // Update the venue's bookings in the VenueModel
-      venue.bookings.add(BookingModel(
-        id: bookingRef.id,
-        maxUsers: maxUsers,
-        startTime: startTime,
-        endTime: endTime,
-        venue: venue,
-        users: [userId],
-      ));
+      // // Update the venue's bookings in the VenueModel
+      // venue.bookings.add(BookingModel(
+      //   id: bookingRef.id,
+      //   maxUsers: maxUsers,
+      //   startTime: startTime,
+      //   endTime: endTime,
+      //   venue: venue,
+      //   users: [userId],
+      // ));
 
-      return true;
+      // return true;
+      print('Booking created successfully!');
+      return true; // Return true if booking creation is successful
     } catch (e) {
       print('Error creating booking: $e');
       return false; // Handle errors appropriately
@@ -262,96 +264,96 @@ class BookingRepository {
     required UserModel user,
   }) async {
     try {
-      final venueDoc = await _firestore.collection('venues').doc(venueId).get();
+      // final venueDoc = await _firestore.collection('venues').doc(venueId).get();
 
-      final venue = VenueModel.fromJson((venueDoc).data() ?? {});
+      // final venue = VenueModel.fromJson((venueDoc).data() ?? {});
 
-      // Get the current user's ID
-      final userId = user.id;
+      // // Get the current user's ID
+      // final userId = user.id;
 
-      // Split the time slot into start and end times
-      final times = getTimes(timeSlot, date);
-      DateTime startTime = times[0];
-      DateTime endTime = times[1];
+      // // Split the time slot into start and end times
+      // final times = getTimes(timeSlot, date);
+      // DateTime startTime = times[0];
+      // DateTime endTime = times[1];
 
-      final venueInfo = {
-        'coords': venue.coords,
-        'id': venue.id,
-        'image': venue.image,
-        'location_name': venue.locationName,
-        'name': venue.name,
-        'rating': venue.rating,
-        'sport': {
-          'id': venue.sport.id,
-          'logo': venue.sport.logo,
-          'name': venue.sport.name,
-        },
-      };
+      // final venueInfo = {
+      //   'coords': venue.coords,
+      //   'id': venue.id,
+      //   'image': venue.image,
+      //   'location_name': venue.locationName,
+      //   'name': venue.name,
+      //   'rating': venue.rating,
+      //   'sport': {
+      //     'id': venue.sport.id,
+      //     'logo': venue.sport.logo,
+      //     'name': venue.sport.name,
+      //   },
+      // };
 
-      // Create a new booking document in Firestore
-      DocumentReference bookingRef =
-          await _firestore.collection('bookings').add({
-        'end_time': endTime,
-        'max_users': maxUsers,
-        'start_time': startTime,
-        'users': [userId],
-        'venue': venueInfo,
-      });
+      // // Create a new booking document in Firestore
+      // DocumentReference bookingRef =
+      //     await _firestore.collection('bookings').add({
+      //   'end_time': endTime,
+      //   'max_users': maxUsers,
+      //   'start_time': startTime,
+      //   'users': [userId],
+      //   'venue': venueInfo,
+      // });
 
-      // Update the venue document with the new booking
-      await _firestore.collection('venues').doc(venue.id).update({
-        'bookings': FieldValue.arrayUnion([
-          {
-            'end_time': endTime,
-            'id': bookingRef.id,
-            'max_users': maxUsers,
-            'start_time': startTime,
-            'users': [userId],
-          }
-        ]),
-      });
+      // // Update the venue document with the new booking
+      // await _firestore.collection('venues').doc(venue.id).update({
+      //   'bookings': FieldValue.arrayUnion([
+      //     {
+      //       'end_time': endTime,
+      //       'id': bookingRef.id,
+      //       'max_users': maxUsers,
+      //       'start_time': startTime,
+      //       'users': [userId],
+      //     }
+      //   ]),
+      // });
 
-      // Update the user document with the new booking
-      await _firestore.collection('users').doc(userId).update({
-        'bookings': FieldValue.arrayUnion([
-          {
-            'end_time': endTime,
-            'id': bookingRef.id,
-            'max_users': maxUsers,
-            'start_time': startTime,
-            'users': [userId],
-            'venue': venueInfo,
-          }
-        ]),
-      });
+      // // Update the user document with the new booking
+      // await _firestore.collection('users').doc(userId).update({
+      //   'bookings': FieldValue.arrayUnion([
+      //     {
+      //       'end_time': endTime,
+      //       'id': bookingRef.id,
+      //       'max_users': maxUsers,
+      //       'start_time': startTime,
+      //       'users': [userId],
+      //       'venue': venueInfo,
+      //     }
+      //   ]),
+      // });
 
-      // Update Metadata
-      await _firestore.collection('metadata').doc('metadata').update({
-        'sports_bookings.${venue.sport.name.toLowerCase()}':
-            FieldValue.increment(1),
-        'venues_bookings.${venue.id}': FieldValue.increment(1),
-      });
+      // // Update Metadata
+      // await _firestore.collection('metadata').doc('metadata').update({
+      //   'sports_bookings.${venue.sport.name.toLowerCase()}':
+      //       FieldValue.increment(1),
+      //   'venues_bookings.${venue.id}': FieldValue.increment(1),
+      // });
 
-      // Update the user's bookings in the UserModel
-      user.bookings.add(BookingModel(
-        id: bookingRef.id,
-        maxUsers: maxUsers,
-        startTime: startTime,
-        endTime: endTime,
-        venue: venue,
-        users: [userId],
-      ));
+      // // Update the user's bookings in the UserModel
+      // user.bookings.add(BookingModel(
+      //   id: bookingRef.id,
+      //   maxUsers: maxUsers,
+      //   startTime: startTime,
+      //   endTime: endTime,
+      //   venue: venue,
+      //   users: [userId],
+      // ));
 
-      // Update the venue's bookings in the VenueModel
-      venue.bookings.add(BookingModel(
-        id: bookingRef.id,
-        maxUsers: maxUsers,
-        startTime: startTime,
-        endTime: endTime,
-        venue: venue,
-        users: [userId],
-      ));
-
+      // // Update the venue's bookings in the VenueModel
+      // venue.bookings.add(BookingModel(
+      //   id: bookingRef.id,
+      //   maxUsers: maxUsers,
+      //   startTime: startTime,
+      //   endTime: endTime,
+      //   venue: venue,
+      //   users: [userId],
+      // ));
+      print('Booking created successfully!');
       return true;
     } catch (e) {
       print('Error creating booking: $e');

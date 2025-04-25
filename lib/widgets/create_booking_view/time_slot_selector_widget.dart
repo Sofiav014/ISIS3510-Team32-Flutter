@@ -79,13 +79,13 @@ class TimeSlotSelectorWidget extends StatelessWidget {
                           SvgPicture.asset(
                             "assets/icons/people.svg",
                             height: 20,
-                            color: Colors.white,
+                            color: AppColors.contrast900,
                           ),
                           const SizedBox(width: 8),
                           const Text(
                             "Number of Players",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: AppColors.contrast900,
                               fontSize: 14,
                             ),
                           ),
