@@ -17,12 +17,15 @@ class HomeRepository {
         .limit(10)
         .get();
 
-    return recommendedBookingsQuery.docs
+    final recommendedBookings = recommendedBookingsQuery.docs
         .map((doc) => BookingModel.fromJson(doc.data()))
         .where((booking) => !userBookingsId.contains(booking.id))
         .where((booking) => booking.users.length < booking.maxUsers)
-        .take(3)
         .toList();
+
+    recommendedBookings.sort((a, b) => b.startTime.compareTo(a.startTime));
+
+    return recommendedBookings.take(3).toList();
   }
 
   List<BookingModel> getUpcomingBookings(UserModel user) {
@@ -36,27 +39,27 @@ class HomeRepository {
         await _firestore.collection('metadata').doc('metadata').get();
 
     final data = metadata.data() ?? {};
-    
+
     Map<String, dynamic> venuesBookings = data['venues_bookings'] ?? {};
-  
+
     var mostBookedVenue =
-      venuesBookings.entries.reduce((a, b) => a.value > b.value ? a : b);
-    
+        venuesBookings.entries.reduce((a, b) => a.value > b.value ? a : b);
+
     final mostBookedVenueDoc =
-      _firestore.collection('venues').doc(mostBookedVenue.key).get();
-    
+        _firestore.collection('venues').doc(mostBookedVenue.key).get();
+
     final highestRatedVenueDoc = await _firestore
-      .collection('venues')
-      .orderBy('rating', descending: true)
-      .limit(1)
-      .get();
+        .collection('venues')
+        .orderBy('rating', descending: true)
+        .limit(1)
+        .get();
 
     // to json (Model)
     final mostBookedVenueModel =
-      VenueModel.fromJson((await mostBookedVenueDoc).data() ?? {});
-    
-    final highestRatedVenueModel = VenueModel.fromJson(highestRatedVenueDoc.docs.first.data());
-    
+        VenueModel.fromJson((await mostBookedVenueDoc).data() ?? {});
+
+    final highestRatedVenueModel =
+        VenueModel.fromJson(highestRatedVenueDoc.docs.first.data());
 
     if (user.bookings.isEmpty) {
       return {
