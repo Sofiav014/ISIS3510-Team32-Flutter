@@ -47,8 +47,10 @@ class GoogleSignInButton extends StatelessWidget {
 
     if (gUser == null || timedOut) {
       loadingBloc.add(HideLoadingEvent());
-      // ignore: use_build_context_synchronously
-      showFailedToAuthenticateError(context);
+      if (timedOut) {
+        // ignore: use_build_context_synchronously
+        showFailedToAuthenticateError(context);
+      }
       return null;
     }
 
