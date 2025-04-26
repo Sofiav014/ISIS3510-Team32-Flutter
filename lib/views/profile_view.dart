@@ -99,12 +99,18 @@ class FavoriteVenuesWidget extends StatelessWidget {
           BlocBuilder<AuthBloc, AuthState>(builder: (bloc, state) {
             return SizedBox(
               height: 200,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: state.userModel!.venuesLiked.length,
-                itemBuilder: (context, index) =>
-                    VenueListWidget(venue: state.userModel!.venuesLiked[index]),
-              ),
+              child: (state.userModel != null &&
+                      state.userModel!.venuesLiked.isNotEmpty)
+                  ? ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: state.userModel!.venuesLiked.length,
+                      itemBuilder: (context, index) => VenueListWidget(
+                          venue: state.userModel!.venuesLiked[index]),
+                    )
+                  : Text(
+                      "You do not have any favorite venues to show",
+                      style: TextStyle(color: AppColors.text(context)),
+                    ),
             );
           })
         ],
