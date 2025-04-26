@@ -121,6 +121,20 @@ class HomeView extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: <Widget>[
+                if (popularityReport['highestRatedVenue'] == null &&
+                    popularityReport['mostPlayedSport'] == null &&
+                    popularityReport['mostBookedVenue'] == null)
+                  const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'No popularity data available',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
                 if (popularityReport['highestRatedVenue'] != null)
                   VenuePopularityReportCardWidget(
                       venue: popularityReport['highestRatedVenue'],
