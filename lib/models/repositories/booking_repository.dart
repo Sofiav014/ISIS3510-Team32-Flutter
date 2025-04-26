@@ -6,8 +6,7 @@ import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 class BookingRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<List<String>> getAvailableTimesID(
-      String venueId, DateTime date) async {
+  Future<List<String>> getAvailableTimes(String venueId, DateTime date) async {
     final venueDoc = await _firestore.collection('venues').doc(venueId).get();
     final venue = VenueModel.fromJson(venueDoc.data() ?? {});
 
@@ -72,6 +71,57 @@ class BookingRepository {
     return availableTimeSlots;
   }
 
+  Future<List<String>> getAvailableTimesOffline(DateTime date) async {
+    // Definir slots de 1 hora desde 7:00 a 23:00
+    List<Map<String, String>> allTimeSlots = [
+      {'start': '07:00', 'end': '08:00'},
+      {'start': '08:00', 'end': '09:00'},
+      {'start': '09:00', 'end': '10:00'},
+      {'start': '10:00', 'end': '11:00'},
+      {'start': '11:00', 'end': '12:00'},
+      {'start': '12:00', 'end': '13:00'},
+      {'start': '13:00', 'end': '14:00'},
+      {'start': '14:00', 'end': '15:00'},
+      {'start': '15:00', 'end': '16:00'},
+      {'start': '16:00', 'end': '17:00'},
+      {'start': '17:00', 'end': '18:00'},
+      {'start': '18:00', 'end': '19:00'},
+      {'start': '19:00', 'end': '20:00'},
+      {'start': '20:00', 'end': '21:00'},
+      {'start': '21:00', 'end': '22:00'},
+      {'start': '22:00', 'end': '23:00'},
+    ];
+
+    DateTime now = DateTime.now();
+
+    // Filtrar slots disponibles
+    List<String> availableTimeSlots = allTimeSlots
+        .where((slot) {
+          int startHour = int.parse(slot['start']!.split(':')[0]);
+          int endHour = int.parse(slot['end']!.split(':')[0]);
+
+          // Crear DateTime para el inicio y fin del slot
+          DateTime slotStartTime =
+              DateTime(date.year, date.month, date.day, startHour, 0, 0);
+          DateTime slotEndTime =
+              DateTime(date.year, date.month, date.day, endHour, 0, 0);
+
+          if (date.year == now.year &&
+              date.month == now.month &&
+              date.day == now.day &&
+              (slotEndTime.isBefore(now) ||
+                  (slotStartTime.isBefore(now) && slotEndTime.isAfter(now)))) {
+            return false;
+          }
+
+          return true;
+        })
+        .map((slot) => '${slot['start']} - ${slot['end']}')
+        .toList();
+
+    return availableTimeSlots;
+  }
+
   List<DateTime> getTimes(String timeSlot, DateTime date) {
     // Split the time slot into start and end times
     final timeSlots = timeSlot.split(' - ');
@@ -93,7 +143,7 @@ class BookingRepository {
     return [startTime, endTime];
   }
 
-  Future<bool> createBookingID({
+  Future<bool> createBooking({
     required DateTime date,
     required String timeSlot,
     required int maxUsers,
@@ -105,16 +155,13 @@ class BookingRepository {
 
       final venue = VenueModel.fromJson((venueDoc).data() ?? {});
 
-
       // Get the current user's ID
       final userId = user.id;
-
 
       // Split the time slot into start and end times
       final times = getTimes(timeSlot, date);
       DateTime startTime = times[0];
       DateTime endTime = times[1];
-
 
       final venueInfo = {
         'coords': venue.coords,
@@ -130,7 +177,6 @@ class BookingRepository {
         },
       };
 
-
       // Create a new booking document in Firestore
       DocumentReference bookingRef =
           await _firestore.collection('bookings').add({
@@ -140,7 +186,6 @@ class BookingRepository {
         'users': [userId],
         'venue': venueInfo,
       });
-
 
       // Update the venue document with the new booking
       await _firestore.collection('venues').doc(venueId).update({
@@ -154,7 +199,6 @@ class BookingRepository {
           }
         ]),
       });
-
 
       // Update the user document with the new booking
       await _firestore.collection('users').doc(userId).update({
@@ -170,14 +214,12 @@ class BookingRepository {
         ]),
       });
 
-
       // Update Metadata
       await _firestore.collection('metadata').doc('metadata').update({
         'sports_bookings.${venue.sport.name.toLowerCase()}':
             FieldValue.increment(1),
         'venues_bookings.$venueId': FieldValue.increment(1),
       });
-
 
       // Update the user's bookings in the UserModel
       user.bookings.add(BookingModel(
@@ -188,7 +230,6 @@ class BookingRepository {
         venue: venue,
         users: [userId],
       ));
-
 
       // Update the venue's bookings in the VenueModel
       venue.bookings.add(BookingModel(

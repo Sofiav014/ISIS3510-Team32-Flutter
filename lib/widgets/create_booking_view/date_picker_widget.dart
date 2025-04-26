@@ -15,8 +15,7 @@ class DatePickerWidget extends StatelessWidget {
     final now = DateTime.now();
 
     // Si ya son más de las 10:00 p.m., la primera fecha seleccionable será mañana
-    final todayCutoff =
-        DateTime(now.year, now.month, now.day, 22); // 10:00 p.m.
+    final todayCutoff = DateTime(now.year, now.month, now.day, 22);
     final firstAvailableDate = now.isAfter(todayCutoff)
         ? DateTime(now.year, now.month, now.day + 1)
         : DateTime(now.year, now.month, now.day);
