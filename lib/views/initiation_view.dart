@@ -3,12 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_event.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_event.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_state.dart';
@@ -356,6 +360,7 @@ class InitiationSportView extends StatelessWidget {
     final initiationBloc = context.read<InitiationBloc>();
     final authBloc = context.read<AuthBloc>();
     final loadingBloc = context.read<LoadingBloc>();
+    final connectivityBloc = context.read<ConnectivityBloc>();
 
     final size = MediaQuery.of(context).size;
     final aspectRatio = size.width / size.height;
@@ -455,8 +460,10 @@ class InitiationSportView extends StatelessWidget {
                 )
               ],
             ),
-            BlocBuilder<InitiationBloc, InitiationState>(
-                builder: (context, state) {
+            Builder(builder: (context) {
+              final initiationState = context.watch<InitiationBloc>().state;
+              final connectivityState = context.watch<ConnectivityBloc>().state;
+
               return ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
@@ -464,10 +471,16 @@ class InitiationSportView extends StatelessWidget {
                     borderRadius: BorderRadius.zero,
                   ),
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 96, vertical: 16),
                 ),
-                onPressed: state.sportsLiked.isNotEmpty
+                onPressed: initiationState.sportsLiked.isNotEmpty
                     ? () async {
+                        if (connectivityState is ConnectivityOfflineState) {
+                          showNoConnectionError(context);
+                          connectivityBloc
+                              .add(ConnectivityRequestedFetchEvent());
+                          return;
+                        }
                         loadingBloc.add(ShowLoadingEvent());
                         authBloc.add(
                           AuthCreateModelEvent(
@@ -483,7 +496,7 @@ class InitiationSportView extends StatelessWidget {
                       }
                     : null,
                 child: const Text(
-                  "Continue",
+                  "Create an account",
                   style: TextStyle(color: Colors.white),
                 ),
               );

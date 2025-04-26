@@ -108,9 +108,11 @@ class FavoriteVenuesWidget extends StatelessWidget {
                       itemBuilder: (context, index) => VenueListWidget(
                           venue: state.userModel!.venuesLiked[index]),
                     )
-                  : Text(
-                      "You do not have any favorite venues to show",
-                      style: TextStyle(color: AppColors.text(context)),
+                  : Center(
+                      child: Text(
+                        "You do not have any favorite venues to show",
+                        style: TextStyle(color: AppColors.text(context)),
+                      ),
                     ),
             );
           })
