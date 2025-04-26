@@ -20,7 +20,7 @@ void showNoConnectionError(BuildContext context) {
   Flushbar(
     title: "No Internet Connection",
     message:
-        "Please check your internet connection. The app may be displaying outdated data.",
+        "Please check your internet connection and try again. The app may be displaying outdated data.",
     icon: const Icon(
       Icons.warning,
       size: 16,
@@ -37,7 +37,7 @@ void showIncompleteFieldsError(BuildContext context) {
     message:
         "Please ensure you have selected the date, time slot, and number of players.",
     icon: const Icon(
-      Icons.error_outline,
+      Icons.info_rounded,
       size: 16,
       color: AppColors.primary,
     ),
