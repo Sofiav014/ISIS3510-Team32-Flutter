@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:isis3510_team32_flutter/core/app_colors.dart';
 
 void showFailedToAuthenticateError(BuildContext context) {
   Flushbar(
@@ -26,6 +27,21 @@ void showNoConnectionError(BuildContext context) {
       color: Colors.orangeAccent,
     ),
     leftBarIndicatorColor: Colors.orangeAccent,
+    duration: const Duration(seconds: 5),
+  ).show(context);
+}
+
+void showIncompleteFieldsError(BuildContext context) {
+  Flushbar(
+    title: "Incomplete Fields",
+    message:
+        "Please ensure you have selected the date, time slot, and number of players.",
+    icon: const Icon(
+      Icons.error_outline,
+      size: 16,
+      color: AppColors.primary,
+    ),
+    leftBarIndicatorColor: AppColors.primary,
     duration: const Duration(seconds: 5),
   ).show(context);
 }
