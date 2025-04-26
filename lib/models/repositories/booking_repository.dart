@@ -221,13 +221,15 @@ class BookingRepository {
         'venues_bookings.$venueId': FieldValue.increment(1),
       });
 
+      final venueModel = VenueModel.fromJson(venueInfo);
+
       // Update the user's bookings in the UserModel
       user.bookings.add(BookingModel(
         id: bookingRef.id,
         maxUsers: maxUsers,
         startTime: startTime,
         endTime: endTime,
-        venue: venue,
+        venue: venueModel,
         users: [userId],
       ));
 
