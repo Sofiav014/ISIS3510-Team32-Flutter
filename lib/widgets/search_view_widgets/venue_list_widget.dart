@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
@@ -26,10 +27,12 @@ class VenueListWidget extends StatelessWidget {
               borderRadius: const BorderRadius.all(Radius.circular(15.0)),
               child: AspectRatio(
                 aspectRatio: 16 / 9, // Adjust the aspect ratio as needed
-                child: Image.network(
-                  venue.image, // Use venue.image
-                  fit: BoxFit.cover,
-                ),
+                child: CachedNetworkImage(
+                imageUrl: venue.image,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => const Center(child: Icon(Icons.broken_image)),
+              ),
               ),
             ),
             Positioned(
