@@ -9,41 +9,47 @@ import 'package:isis3510_team32_flutter/models/repositories/venue_repository.dar
 part 'venue_detail_event.dart';
 part 'venue_detail_state.dart';
 
-class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState>{
+class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
   final VenueRepository venueRepository;
   final ConnectivityRepository connectivityRepository;
   final String venueId;
   late final StreamSubscription<bool> _connectivitySubscription;
 
-  VenueDetailBloc({required this.venueRepository, required this.connectivityRepository, required this.venueId}): super(VenueDetailInitial()){
+  VenueDetailBloc(
+      {required this.venueRepository,
+      required this.connectivityRepository,
+      required this.venueId})
+      : super(VenueDetailInitial()) {
     on<LoadVenueDetailData>(_onLoadVenueDetailData);
-    _connectivitySubscription = connectivityRepository.connectivityChanges.listen((isConnected) {
-      if (isConnected) add(LoadVenueDetailData(venueId: venueId)); });
+    _connectivitySubscription =
+        connectivityRepository.connectivityChanges.listen((isConnected) {
+      if (isConnected) add(LoadVenueDetailData(venueId: venueId));
+    });
   }
 
-  Future<void> _onLoadVenueDetailData(LoadVenueDetailData event, Emitter<VenueDetailState> emit)async {
-      emit(VenueDetailLoading());
-      try{
-        final isOnline = await connectivityRepository.hasInternet;
-        if (isOnline){
-          final venue = await venueRepository.getVenueById(event.venueId);
-          if(venue != null){
-            emit(VenueDetailLoaded(venue: venue));
-          } else {
-            emit(const VenueDetailError(message: 'Venue not found'));
-          }
+  Future<void> _onLoadVenueDetailData(
+      LoadVenueDetailData event, Emitter<VenueDetailState> emit) async {
+    emit(VenueDetailLoading());
+    try {
+      final isOnline = await connectivityRepository.hasInternet;
+      if (isOnline) {
+        final venue = await venueRepository.getVenueById(event.venueId);
+        if (venue != null) {
+          emit(VenueDetailLoaded(venue: venue));
         } else {
-          final venue = await venueRepository.getCachedVenueById(venueId);
-          if(venue != null){
-            emit( VenueDetailOfflineLoaded(venue: venue));
-          } else {
-            emit(const VenueDetailError(message: 'Venue not found'));
-          }
+          emit(const VenueDetailError(message: 'Venue not found'));
         }
-
-      } catch (e){
-        emit(VenueDetailError(message: 'Failed to fetch venue details: $e'));
+      } else {
+        final venue = await venueRepository.getCachedVenueById(venueId);
+        if (venue != null) {
+          emit(VenueDetailOfflineLoaded(venue: venue));
+        } else {
+          emit(const VenueDetailError(message: 'Venue not found'));
+        }
       }
+    } catch (e) {
+      emit(VenueDetailError(message: 'Failed to fetch venue details: $e'));
+    }
   }
 
   @override
