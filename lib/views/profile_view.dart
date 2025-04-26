@@ -11,8 +11,8 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_event.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_state.dart';
-import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/search_view_widgets/venue_list_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});

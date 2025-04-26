@@ -50,13 +50,19 @@ class VenueModel {
   }
 
   factory VenueModel.fromJson(Map<String, dynamic> json) {
+    final coords = json['coords'];
     return VenueModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
       locationName: json['location_name'] ?? '',
       rating: (json['rating'] ?? 0.0).toDouble(),
       image: json['image'] ?? '',
-      coords: json['coords'] ?? const GeoPoint(0, 0),
+      coords: coords is GeoPoint
+          ? coords // If it's already a GeoPoint, use it directly
+          : GeoPoint(
+              coords['latitude'] ?? 0.0,
+              coords['longitude'] ?? 0.0,
+            ), // Convert Map to GeoPoint,
       sport: SportModel.fromJson(json['sport']),
       bookings: (json['bookings'] as List? ?? [])
           .map((booking) =>
@@ -94,6 +100,22 @@ class VenueModel {
       'coords': coords,
       'sport': sport.toJson(),
       'bookings': bookings.map((b) => b.toJson()).toList(),
+    };
+  }
+
+  Map<String, dynamic> toJsonSerializable() {
+    return {
+      'id': id,
+      'name': name,
+      'location_name': locationName,
+      'rating': rating,
+      'image': image,
+      'coords': {
+        'latitude': coords.latitude,
+        'longitude': coords.longitude,
+      },
+      'sport': sport.toJson(),
+      'bookings': bookings.map((b) => b.toJsonSerializable()).toList(),
     };
   }
 

@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_event.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
+import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 
 class ConnectivityBloc extends Bloc<ConnectivityEvent, ConnectivityState> {
   final ConnectivityRepository repository;

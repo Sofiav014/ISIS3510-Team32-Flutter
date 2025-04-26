@@ -1,10 +1,10 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
+import 'package:go_router/go_router.dart';
+import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
-import 'package:isis3510_team32_flutter/widgets/search_view_widgets/venue_list_widget.dart';
-import 'package:go_router/go_router.dart';
+import 'package:isis3510_team32_flutter/widgets/search_view/venue_list_widget.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/venue_list/venue_list_bloc.dart';
 import 'package:isis3510_team32_flutter/models/repositories/venue_repository.dart';

@@ -2,15 +2,17 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/home_view/venue_popularity_report_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
+import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
-import 'package:isis3510_team32_flutter/widgets/sport_popularity_report_widget.dart';
-import 'package:isis3510_team32_flutter/widgets/upcoming_booking_card_widget.dart';
-import 'package:isis3510_team32_flutter/widgets/recommended_booking_card_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/home_view/sport_popularity_report_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/home_view/upcoming_booking_card_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/home_view/recommended_booking_card_widget.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/models/repositories/home_repository.dart';
-import 'package:isis3510_team32_flutter/widgets/venue_popularity_report_widget.dart';
+import 'package:isis3510_team32_flutter/constants/errors.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -21,8 +23,10 @@ class HomeView extends StatelessWidget {
 
     return BlocProvider(
       create: (context) => HomeBloc(
-          authBloc: context.read<AuthBloc>(), homeRepository: HomeRepository())
-        ..add(const LoadHomeData()),
+        authBloc: context.read<AuthBloc>(),
+        homeRepository: HomeRepository(),
+        connectivityRepository: ConnectivityRepository(),
+      )..add(const LoadHomeData()),
       child: Scaffold(
         backgroundColor: AppColors.background(context),
         appBar: AppBar(
@@ -36,18 +40,39 @@ class HomeView extends StatelessWidget {
           shadowColor: AppColors.text(context),
           elevation: 1,
         ),
-        body: BlocBuilder<HomeBloc, HomeState>(
-          builder: (context, state) {
-            if (state is HomeLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is HomeLoaded) {
-              return _buildHomeContent(state, context);
-            } else if (state is HomeError) {
-              return Center(child: Text('Error: ${state.error}'));
-            } else {
-              return const Center(child: Text('Loading...'));
+        body: BlocListener<HomeBloc, HomeState>(
+          listener: (context, state) {
+            if (state is HomeOfflineLoaded) {
+              showNoConnectionError(context);
             }
           },
+          child: BlocBuilder<HomeBloc, HomeState>(
+            builder: (context, state) {
+              if (state is HomeLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (state is HomeError) {
+                return Center(child: Text('Error: ${state.error}'));
+              } else if (state is HomeLoaded) {
+                return _buildHomeContent(
+                  state.upcomingBookings,
+                  state.recommendedBookings,
+                  state.popularityReport,
+                  false,
+                );
+              } else if (state is HomeOfflineLoaded) {
+                return _buildHomeContent(
+                  state.cachedUpcomingBookings ?? [],
+                  null,
+                  state.cachedPopularityReport ?? {},
+                  true,
+                );
+              } else {
+                return const Center(child: Text('Unknown state'));
+              }
+            },
+          ),
         ),
         bottomNavigationBar: const BottomNavigationWidget(
           selectedIndex: 2,
@@ -56,20 +81,29 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildHomeContent(HomeLoaded state, BuildContext context) {
+  Widget _buildHomeContent(
+    List<BookingModel> upcomingBookings,
+    List<BookingModel>? recommendedBookings,
+    Map<String, dynamic> popularityReport,
+    bool isOffline,
+  ) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _buildPopularityReport(state.popularityReport),
-          _buildUpcomingBookingsSection(state.upcomingBookings),
-          _buildBookingsToJoinSection(state.recommendedBookings),
+          _buildPopularityReport(popularityReport, isOffline),
+          _buildUpcomingBookingsSection(upcomingBookings, isOffline),
+          if (recommendedBookings != null)
+            _buildBookingsToJoinSection(recommendedBookings, isOffline)
+          else
+            _buildOfflineRecommendedPlaceholder(isOffline),
         ],
       ),
     );
   }
 
-  Widget _buildPopularityReport(Map<String, dynamic> popularityReport) {
+  Widget _buildPopularityReport(
+      Map<String, dynamic> popularityReport, bool isOffline) {
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, top: 8.0, bottom: 8.0),
       child: Column(
@@ -92,6 +126,20 @@ class HomeView extends StatelessWidget {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: <Widget>[
+                if (popularityReport['highestRatedVenue'] == null &&
+                    popularityReport['mostPlayedSport'] == null &&
+                    popularityReport['mostBookedVenue'] == null)
+                  const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'No popularity data available',
+                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
                 if (popularityReport['highestRatedVenue'] != null)
                   VenuePopularityReportCardWidget(
                       venue: popularityReport['highestRatedVenue'],
@@ -120,7 +168,8 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildUpcomingBookingsSection(List<BookingModel> upcomingBookings) {
+  Widget _buildUpcomingBookingsSection(
+      List<BookingModel> upcomingBookings, bool isOffline) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -137,10 +186,12 @@ class HomeView extends StatelessWidget {
           ),
         ),
         if (upcomingBookings.isEmpty)
-          const Center(
+          Center(
             child: Text(
-              'No upcoming bookings',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+              isOffline
+                  ? 'No upcoming bookings available'
+                  : 'No upcoming bookings',
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
           )
         else
@@ -159,7 +210,8 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildBookingsToJoinSection(List<BookingModel> recommendedBookings) {
+  Widget _buildBookingsToJoinSection(
+      List<BookingModel> recommendedBookings, bool isOffline) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -193,6 +245,34 @@ class HomeView extends StatelessWidget {
                   booking: recommendedBookings[index]);
             },
           ),
+      ],
+    );
+  }
+
+  Widget _buildOfflineRecommendedPlaceholder(bool isOffline) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+          child: Center(
+            child: Text(
+              'Bookings you may want to join',
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary),
+            ),
+          ),
+        ),
+        Center(
+          child: Text(
+            isOffline
+                ? 'No recommended bookings available while offline.'
+                : 'No recommended bookings',
+            style: const TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        )
       ],
     );
   }

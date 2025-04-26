@@ -4,10 +4,14 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:isis3510_team32_flutter/core/bloc_observer.dart';
 import 'package:isis3510_team32_flutter/core/firebase_options.dart';
 import 'package:isis3510_team32_flutter/core/go_router.dart';
+import 'package:isis3510_team32_flutter/models/hive/booking_model_hive.dart';
+import 'package:isis3510_team32_flutter/models/hive/sport_model_hive.dart';
+import 'package:isis3510_team32_flutter/models/hive/venue_model_hive.dart';
 import 'package:isis3510_team32_flutter/models/repositories/auth_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
@@ -31,6 +35,9 @@ Future<void> setupDependencies() async {
 
   // Router
   _setupRouter();
+
+  //Hive
+  await _setupHive();
 }
 
 Future<void> _setupExternalDependencies() async {
@@ -79,4 +86,12 @@ void _setupBlocs() {
 void _setupRouter() {
   // Register router
   sl.registerSingleton(setupRouter(sl<AuthBloc>()));
+}
+
+Future<void> _setupHive() async {
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(SportModelHiveAdapter());
+  Hive.registerAdapter(VenueModelHiveAdapter());
+  Hive.registerAdapter(BookingModelHiveAdapter());
 }
