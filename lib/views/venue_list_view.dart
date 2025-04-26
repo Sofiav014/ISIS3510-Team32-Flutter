@@ -1,5 +1,7 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:isis3510_team32_flutter/constants/errors.dart';
+import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
@@ -29,7 +31,7 @@ class VenueListView extends StatelessWidget {
 
     return BlocProvider(
       create: (context) => VenueListBloc(
-          sportName: sportName, venueRepository: VenueRepository())
+          sportName: sportName, venueRepository: VenueRepository(), connectivityRepository: ConnectivityRepository())
         ..add(const LoadVenueListData()),
       child: Scaffold(
         appBar: AppBar(
@@ -46,30 +48,37 @@ class VenueListView extends StatelessWidget {
           shadowColor: AppColors.primaryLight,
           elevation: 1,
         ),
-        body: BlocBuilder<VenueListBloc, VenueListState>(
-          builder: (context, state) {
-            if (state is VenueListLoading) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (state is VenueListLoaded) {
-              return _buildVenueListContent(state);
-            } else if (state is VenueListError) {
-              return Center(child: Text('Error: ${state.error}'));
-            } else {
-              return const Center(child: Text('Loading...'));
-            }
+        body: BlocListener<VenueListBloc, VenueListState>(
+          listener: (context, state){
+            if(state is VenueListOfflineLoaded) showNoConnectionError(context);
           },
+          child: BlocBuilder<VenueListBloc, VenueListState>(
+            builder: (context, state) {
+              if (state is VenueListLoading) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is VenueListLoaded) {
+                return _buildVenueListContent(state.venues);
+              } else if (state is VenueListOfflineLoaded){
+                return _buildVenueListContent(state.venues);
+              } else if (state is VenueListError) {
+                return Center(child: Text('Error: ${state.error}'));
+              } else {
+                return const Center(child: Text('Da fuk man this is not supposed to show here ...'));
+              }
+            },
+          )
         ),
         bottomNavigationBar: const BottomNavigationWidget(selectedIndex: 0),
       ),
     );
   }
 
-  Widget _buildVenueListContent(VenueListLoaded state) {
+  Widget _buildVenueListContent(List<VenueModel> venues) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          _buildVenueList(state.venues),
+          _buildVenueList(venues),
         ],
       ),
     );

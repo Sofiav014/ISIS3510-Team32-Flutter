@@ -27,19 +27,34 @@ class VenueRepository {
         return VenueModel.fromJson(venueData);
       }).toList();
 
+      for (VenueModel sportVenue in sportVenues){
+        _venueCache[sportVenue.id] =  sportVenue;
+      }
+
       return sportVenues;
     } catch (e) {
+      print('Error fetching venues: $e');
+      return [];
+      }
+    }
+
+  Future<List<VenueModel>> getCachedVenuesBySportId(String sportName) async {
+    try {
       List<VenueModel> sportVenues = <VenueModel>[];
 
       for (String venueId in _venueCache.keys){
-        VenueModel? venue = _venueCache[venueId];
-        if (venue?.sport.name == sportName){
-          sportVenues.add(venue!);
+        VenueModel venue = _venueCache[venueId]!;
+        if (venue.sport.name == sportName) {
+          sportVenues.add(venue);
         }
       }
       return sportVenues;
+    } catch (e) {
+      print('Error fetching venues: $e');
+      return [];
     }
   }
+
 
   Future<VenueModel?> getVenueById(String venueId) async {
     try {
@@ -62,4 +77,19 @@ class VenueRepository {
       return null;
     }
   }
+
+  Future<VenueModel?> getCachedVenueById(String venueId) async {
+    try {
+      if (!_venueCache.containsKey(venueId)){
+       return null;
+      }
+      else{
+        return _venueCache[venueId];
+      }
+    } catch (e) {
+      print('Error fetching venue by ID: $e');
+      return null;
+    }
+  }
+
 }
