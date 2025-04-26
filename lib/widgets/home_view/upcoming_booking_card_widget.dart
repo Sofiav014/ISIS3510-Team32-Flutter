@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
@@ -24,9 +25,14 @@ class UpcomingBookingCardWidget extends StatelessWidget {
           children: <Widget>[
             ClipRRect(
               borderRadius: const BorderRadius.all(Radius.circular(15.0)),
-              child: Image.network(
-                booking.venue.image,
+              child: CachedNetworkImage(
+                imageUrl: booking.venue.image,
                 fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => const Center(child: SizedBox(
+                  width: 250.0, //
+                  child: Icon(Icons.broken_image),
+                )),
               ),
             ),
             Positioned(

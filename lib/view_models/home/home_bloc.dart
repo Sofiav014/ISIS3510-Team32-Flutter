@@ -24,7 +24,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }) : super(HomeInitial()) {
     on<LoadHomeData>(_onLoadHomeData);
 
-    // Escuchar cambios de conectividad
     _connectivitySubscription =
         connectivityRepository.connectivityChanges.listen((isConnected) {
       if (isConnected) {

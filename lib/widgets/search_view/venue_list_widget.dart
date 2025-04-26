@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class VenueListWidget extends StatelessWidget {
   final VenueModel venue;
@@ -31,9 +32,13 @@ class VenueListWidget extends StatelessWidget {
                   borderRadius: const BorderRadius.all(Radius.circular(15.0)),
                   child: AspectRatio(
                     aspectRatio: 16 / 9,
-                    child: Image.network(
-                      venue.image,
+                    child: CachedNetworkImage(
+                      imageUrl: venue.image,
                       fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          const Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) =>
+                          const Center(child: Icon(Icons.broken_image)),
                     ),
                   ),
                 ),

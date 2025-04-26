@@ -38,8 +38,8 @@ class AppColors {
   static const primaryNeutral = Color(0xFFFFFFFF); // White
   static const lightPurple = Color(0xFF6750A4); // Light Purple
   static const lighterPurple = Color(0xFF7D73A2); // Lighter Purple
-  static const lightererPurple =
-      Color(0xFF9C94B8); // Lighterer Purple, I'm out of names
+  static const lightererPurple = Color(0xFF9C94B8); // Lighterer Purple, I'm out of names
   static const lightestPurple = Color(0xFFD6D2E0); // Lightest Purple
   static const contrast900 = Color(0xFFFBD1A2); // Light Peach
+  static const greenAccent = Color(0xFF77E996); // Light green
 }
