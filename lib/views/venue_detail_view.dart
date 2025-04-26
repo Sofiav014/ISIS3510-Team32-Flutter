@@ -26,12 +26,16 @@ class VenueDetailView extends StatelessWidget {
         create: (context) => VenueDetailBloc(venueRepository: VenueRepository())
           ..add(LoadVenueDetailData(venueId: venueId)),
         child: Scaffold(
+          backgroundColor: AppColors.background(context),
           appBar: AppBar(
-            title: const Text('Venue Detail',
+            title: Text('Venue Detail',
                 style: TextStyle(
-                    color: AppColors.primary, fontWeight: FontWeight.w600)),
+                  color: AppColors.titleText(context),
+                  fontWeight: FontWeight.w600,
+                )),
             centerTitle: true,
-            shadowColor: AppColors.primaryLight,
+            backgroundColor: AppColors.appBarBackground(context),
+            shadowColor: AppColors.text(context),
             elevation: 1,
           ),
           body: BlocBuilder<VenueDetailBloc, VenueDetailState>(
@@ -55,7 +59,7 @@ class VenueDetailView extends StatelessWidget {
                             context.push('/create_booking/$venueId');
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.greenAccent,
+                            backgroundColor: Colors.greenAccent,
                             foregroundColor: AppColors.primaryNeutral,
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
                             shape: RoundedRectangleBorder(

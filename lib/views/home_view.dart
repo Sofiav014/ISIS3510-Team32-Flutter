@@ -36,6 +36,7 @@ class HomeView extends StatelessWidget {
                 fontWeight: FontWeight.w600,
               )),
           centerTitle: true,
+          automaticallyImplyLeading: false,
           backgroundColor: AppColors.appBarBackground(context),
           shadowColor: AppColors.text(context),
           elevation: 1,

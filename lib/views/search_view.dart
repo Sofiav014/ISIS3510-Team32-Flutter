@@ -26,6 +26,7 @@ class SearchView extends StatelessWidget {
               )),
           centerTitle: true,
           backgroundColor: AppColors.appBarBackground(context),
+          automaticallyImplyLeading: false,
           shadowColor: AppColors.text(context),
           elevation: 1,
         ),
