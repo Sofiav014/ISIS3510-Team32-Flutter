@@ -18,10 +18,7 @@ class VenueListBloc extends Bloc<VenueListEvent, VenueListState> {
   final ConnectivityRepository connectivityRepository;
   late final StreamSubscription<bool> _connectivitySubscription;
 
-    VenueListBloc({required this.sportName,
-      required this.venueRepository,
-      required this.connectivityRepository}):
-          super(VenueListInitial()) {
+    VenueListBloc({required this.sportName, required this.venueRepository, required this.connectivityRepository}): super(VenueListInitial()) {
             on<LoadVenueListData>(_onLoadVenueListData);
             _connectivitySubscription = connectivityRepository.connectivityChanges.listen((isConnected) {
               if (isConnected) add(const LoadVenueListData()); });
@@ -111,5 +108,11 @@ class VenueListBloc extends Bloc<VenueListEvent, VenueListState> {
 
     return earthRadius *
         acos(cos(latA) * cos(latB) * cos(lonB - lonA) + sin(latA) * sin(latB));
+  }
+
+  @override
+  Future<void> close() {
+    _connectivitySubscription.cancel();
+    return super.close();
   }
 }

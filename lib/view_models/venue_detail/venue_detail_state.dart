@@ -20,6 +20,15 @@ class VenueDetailLoaded extends VenueDetailState {
   List<Object> get props => [venue];
 }
 
+class VenueDetailOfflineLoaded extends VenueDetailState {
+  final VenueModel venue;
+
+  const VenueDetailOfflineLoaded({required this.venue});
+
+  @override
+  List<Object> get props => [venue];
+}
+
 class VenueDetailError extends VenueDetailState {
   final String message;
 
