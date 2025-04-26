@@ -37,16 +37,19 @@ class VenueListView extends StatelessWidget {
         ..add(const LoadVenueListData()),
       child: Scaffold(
         backgroundColor: AppColors.background(context),
-        appBar:  AppBar(
+        appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+            icon: Icon(Icons.arrow_back, color: AppColors.titleText(context)),
             onPressed: () {
               context.push('/search');
             },
           ),
-          title: Text('$formattedSportName Venues',
-              style: const TextStyle(
-                  color: AppColors.primary, fontWeight: FontWeight.w600)),
+          title: Text(
+            '$formattedSportName Venues',
+            style: TextStyle(
+                color: AppColors.titleText(context),
+                fontWeight: FontWeight.w600),
+          ),
           centerTitle: true,
           shadowColor: AppColors.text(context),
           elevation: 1,
