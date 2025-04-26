@@ -1,4 +1,3 @@
-// filepath: c:\Users\sofia\OneDrive - Universidad de los andes\Documentos\UNIANDES\8 Semestre (2025-1)\Moviles\App Flutter\lib\widgets\create_booking_view\date_picker_widget.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
@@ -36,15 +35,21 @@ class DatePickerWidget extends StatelessWidget {
           builder: (context, state) {
             final initialDate = state.date ?? firstAvailableDate;
 
-            return CalendarDatePicker(
-              initialDate: initialDate.isBefore(firstAvailableDate)
-                  ? firstAvailableDate
-                  : initialDate,
-              firstDate: firstAvailableDate,
-              lastDate: now.add(const Duration(days: 60)),
-              onDateChanged: (selectedDate) {
-                bloc.add(CreateBookingDateEvent(selectedDate));
-              },
+            return Container(
+              margin: const EdgeInsets.only(bottom: 15),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20.0)),
+              child: CalendarDatePicker(
+                initialDate: initialDate.isBefore(firstAvailableDate)
+                    ? firstAvailableDate
+                    : initialDate,
+                firstDate: firstAvailableDate,
+                lastDate: now.add(const Duration(days: 60)),
+                onDateChanged: (selectedDate) {
+                  bloc.add(CreateBookingDateEvent(selectedDate));
+                },
+              ),
             );
           },
         ),

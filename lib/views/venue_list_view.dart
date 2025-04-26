@@ -1,5 +1,6 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
@@ -31,13 +32,24 @@ class VenueListView extends StatelessWidget {
           sportName: sportName, venueRepository: VenueRepository())
         ..add(const LoadVenueListData()),
       child: Scaffold(
+        backgroundColor: AppColors.background(context),
         appBar: AppBar(
-          title: Text('$formattedSportName Venues',
-              style: const TextStyle(
-                  color: AppColors.primary, fontWeight: FontWeight.w600)),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: AppColors.titleText(context)),
+            onPressed: () {
+              context.push('/search');
+            },
+          ),
+          title: Text(
+            '$formattedSportName Venues',
+            style: TextStyle(
+                color: AppColors.titleText(context),
+                fontWeight: FontWeight.w600),
+          ),
           centerTitle: true,
-          shadowColor: AppColors.primaryLight,
+          shadowColor: AppColors.text(context),
           elevation: 1,
+          backgroundColor: AppColors.appBarBackground(context),
         ),
         body: BlocBuilder<VenueListBloc, VenueListState>(
           builder: (context, state) {

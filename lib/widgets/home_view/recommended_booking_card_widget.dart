@@ -19,7 +19,7 @@ class RecommendedBookingCardWidget extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
-      color: AppColors.primaryLight,
+      color: AppColors.primary,
       child: Row(
         children: [
           ClipRRect(
