@@ -30,7 +30,8 @@ class CreateBookingBloc extends Bloc<CreateBookingEvent, CreateBookingState> {
           state.timeSlot != null &&
           state.maxUsers != null &&
           state.maxUsers! > 0) {
-        final booking = await bookingRepository.createBooking(
+            
+        final updatedUserModel = await bookingRepository.createBooking(
           date: state.date!,
           timeSlot: state.timeSlot!,
           maxUsers: state.maxUsers!,
@@ -38,7 +39,9 @@ class CreateBookingBloc extends Bloc<CreateBookingEvent, CreateBookingState> {
           user: authBloc.state.userModel!,
         );
 
-        emit(state.copyWith(success: booking));
+        final sucess = updatedUserModel != null;
+
+        emit(state.copyWith(success: sucess));
       }
     });
   }

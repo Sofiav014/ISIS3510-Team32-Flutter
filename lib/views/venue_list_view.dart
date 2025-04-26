@@ -36,6 +36,7 @@ class VenueListView extends StatelessWidget {
           connectivityRepository: ConnectivityRepository())
         ..add(const LoadVenueListData()),
       child: Scaffold(
+        backgroundColor: AppColors.background(context),
         appBar:  AppBar(
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.primary),
@@ -47,8 +48,9 @@ class VenueListView extends StatelessWidget {
               style: const TextStyle(
                   color: AppColors.primary, fontWeight: FontWeight.w600)),
           centerTitle: true,
-          shadowColor: AppColors.primaryLight,
+          shadowColor: AppColors.text(context),
           elevation: 1,
+          backgroundColor: AppColors.appBarBackground(context),
         ),
         body: BlocListener<VenueListBloc, VenueListState>(
             listener: (context, state) {

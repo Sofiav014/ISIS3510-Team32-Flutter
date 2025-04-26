@@ -19,16 +19,16 @@ class HomeRepository {
         .collection('bookings')
         .where('venue.sport.id',
             whereIn: user.sportsLiked.map((sport) => sport.id).toList())
-        .limit(10)
+        .limit(20)
         .get();
 
     final recommendedBookings = recommendedBookingsQuery.docs
-        .map((doc) => BookingModel.fromJson(doc.data()))
+        .map((doc) => BookingModel.fromFirestore(doc, null))
         .where((booking) => !userBookingsId.contains(booking.id))
         .where((booking) => booking.users.length < booking.maxUsers)
         .toList();
 
-    recommendedBookings.sort((a, b) => b.startTime.compareTo(a.startTime));
+    recommendedBookings.sort((a, b) => a.startTime.compareTo(b.startTime));
 
     return recommendedBookings.take(3).toList();
   }
@@ -36,7 +36,8 @@ class HomeRepository {
   List<BookingModel> getUpcomingBookings(UserModel user) {
     return user.bookings
         .where((booking) => booking.startTime.isAfter(DateTime.now()))
-        .toList();
+        .toList()
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
   }
 
   Future<Map<String, dynamic>> popularityReport(UserModel user) async {

@@ -53,8 +53,7 @@ class VenueListWidget extends StatelessWidget {
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.star,
-                            color: AppColors.primaryDark, size: 16),
+                        const Icon(Icons.star, color: Colors.black, size: 16),
                         const SizedBox(width: 4),
                         Text(
                           venue.rating.toString(),

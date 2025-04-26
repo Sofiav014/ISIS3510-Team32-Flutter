@@ -31,6 +31,7 @@ class VenueDetailView extends StatelessWidget {
             venueId: venueId)
           ..add(LoadVenueDetailData(venueId: venueId)),
         child: Scaffold(
+          backgroundColor: AppColors.background(context),
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: AppColors.primary),
@@ -38,11 +39,14 @@ class VenueDetailView extends StatelessWidget {
                 context.push('/venue_list/$sportId');
               },
             ),
-            title: const Text('Venue Detail',
+            title: Text('Venue Detail',
                 style: TextStyle(
-                    color: AppColors.primary, fontWeight: FontWeight.w600)),
+                  color: AppColors.titleText(context),
+                  fontWeight: FontWeight.w600,
+                )),
             centerTitle: true,
-            shadowColor: AppColors.primaryLight,
+            backgroundColor: AppColors.appBarBackground(context),
+            shadowColor: AppColors.text(context),
             elevation: 1,
           ),
           body: BlocListener<VenueDetailBloc, VenueDetailState>(

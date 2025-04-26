@@ -28,12 +28,17 @@ class HomeView extends StatelessWidget {
         connectivityRepository: ConnectivityRepository(),
       )..add(const LoadHomeData()),
       child: Scaffold(
+        backgroundColor: AppColors.background(context),
         appBar: AppBar(
-          title: const Text('SportHub',
+          title: Text('SportHub',
               style: TextStyle(
-                  color: AppColors.primary, fontWeight: FontWeight.w600)),
+                color: AppColors.titleText(context),
+                fontWeight: FontWeight.w600,
+              )),
           centerTitle: true,
-          shadowColor: AppColors.primaryLight,
+          automaticallyImplyLeading: false,
+          backgroundColor: AppColors.appBarBackground(context),
+          shadowColor: AppColors.text(context),
           elevation: 1,
         ),
         body: BlocListener<HomeBloc, HomeState>(
@@ -111,9 +116,10 @@ class HomeView extends StatelessWidget {
               child: Text(
                 'Popularity Report',
                 style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.lighterPurple,
+                ),
               ),
             ),
           ),
@@ -176,7 +182,7 @@ class HomeView extends StatelessWidget {
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary),
+                  color: AppColors.lighterPurple),
             ),
           ),
         ),
@@ -216,9 +222,10 @@ class HomeView extends StatelessWidget {
             child: Text(
               'Bookings you may want to join',
               style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.lighterPurple,
+              ),
             ),
           ),
         ),

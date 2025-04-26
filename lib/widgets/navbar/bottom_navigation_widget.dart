@@ -37,7 +37,7 @@ class BottomNavigationWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      color: AppColors.primaryNeutral,
+      color: AppColors.background(context),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -46,7 +46,7 @@ class BottomNavigationWidget extends StatelessWidget {
               selectedIndex == 0
                   ? 'assets/icons/navbar/search-selected.svg'
                   : 'assets/icons/navbar/search.svg',
-              color: AppColors.primary,
+              color: AppColors.lighterPurple,
             ),
             onPressed: () => _onItemTapped(context, 0),
           ),
@@ -55,7 +55,7 @@ class BottomNavigationWidget extends StatelessWidget {
               selectedIndex == 1
                   ? 'assets/icons/navbar/calendar-selected.svg'
                   : 'assets/icons/navbar/calendar.svg',
-              color: AppColors.primary,
+              color: AppColors.lighterPurple,
             ),
             onPressed: () => _onItemTapped(context, 1),
           ),
@@ -64,7 +64,7 @@ class BottomNavigationWidget extends StatelessWidget {
               selectedIndex == 2
                   ? 'assets/icons/navbar/home-selected.svg'
                   : 'assets/icons/navbar/home.svg',
-              color: AppColors.primary,
+              color: AppColors.lighterPurple,
             ),
             onPressed: () => _onItemTapped(context, 2),
           ),
@@ -73,7 +73,7 @@ class BottomNavigationWidget extends StatelessWidget {
               selectedIndex == 3
                   ? 'assets/icons/navbar/add-selected.svg'
                   : 'assets/icons/navbar/add.svg',
-              color: AppColors.primary,
+              color: AppColors.lighterPurple,
             ),
             onPressed: () => _onItemTapped(context, 3),
           ),
@@ -82,7 +82,7 @@ class BottomNavigationWidget extends StatelessWidget {
               selectedIndex == 4
                   ? 'assets/icons/navbar/profile-selected.svg'
                   : 'assets/icons/navbar/profile.svg',
-              color: AppColors.primary,
+              color: AppColors.lighterPurple,
             ),
             onPressed: () => _onItemTapped(context, 4),
           ),

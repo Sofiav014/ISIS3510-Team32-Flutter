@@ -102,17 +102,19 @@ class _CreateBookingContent extends StatelessWidget {
       ],
       child: Scaffold(
         appBar: AppBar(
-          title: const Text(
+          title: Text(
             'Create Booking',
             style: TextStyle(
-              color: AppColors.primary,
+              color: AppColors.titleText(context),
               fontWeight: FontWeight.w600,
             ),
           ),
           centerTitle: true,
-          shadowColor: AppColors.primaryLight,
+          backgroundColor: AppColors.appBarBackground(context),
+          shadowColor: AppColors.text(context),
           elevation: 1,
         ),
+        backgroundColor: AppColors.background(context),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -170,9 +172,8 @@ class _CreateBookingButton extends StatelessWidget {
                         }
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isEnabled
-                      ? AppColors.greenAccent
-                      : AppColors.primaryNeutral,
+                  backgroundColor:
+                      isEnabled ? Colors.greenAccent : AppColors.primaryNeutral,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
