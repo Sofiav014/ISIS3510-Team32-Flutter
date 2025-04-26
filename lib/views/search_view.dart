@@ -17,12 +17,16 @@ class SearchView extends StatelessWidget {
     return BlocProvider(
       create: (context) => SearchBloc()..add(const LoadSearchData()),
       child: Scaffold(
+        backgroundColor: AppColors.background(context),
         appBar: AppBar(
-          title: const Text('Search View',
+          title: Text('Search View',
               style: TextStyle(
-                  color: AppColors.primary, fontWeight: FontWeight.w600)),
+                color: AppColors.titleText(context),
+                fontWeight: FontWeight.w600,
+              )),
           centerTitle: true,
-          shadowColor: AppColors.primaryLight,
+          backgroundColor: AppColors.appBarBackground(context),
+          shadowColor: AppColors.text(context),
           elevation: 1,
         ),
         body: BlocBuilder<SearchBloc, SearchState>(

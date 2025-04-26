@@ -24,12 +24,16 @@ class HomeView extends StatelessWidget {
           authBloc: context.read<AuthBloc>(), homeRepository: HomeRepository())
         ..add(const LoadHomeData()),
       child: Scaffold(
+        backgroundColor: AppColors.background(context),
         appBar: AppBar(
-          title: const Text('SportHub',
+          title: Text('SportHub',
               style: TextStyle(
-                  color: AppColors.primary, fontWeight: FontWeight.w600)),
+                color: AppColors.titleText(context),
+                fontWeight: FontWeight.w600,
+              )),
           centerTitle: true,
-          shadowColor: AppColors.primaryLight,
+          backgroundColor: AppColors.appBarBackground(context),
+          shadowColor: AppColors.text(context),
           elevation: 1,
         ),
         body: BlocBuilder<HomeBloc, HomeState>(
@@ -37,7 +41,7 @@ class HomeView extends StatelessWidget {
             if (state is HomeLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is HomeLoaded) {
-              return _buildHomeContent(state);
+              return _buildHomeContent(state, context);
             } else if (state is HomeError) {
               return Center(child: Text('Error: ${state.error}'));
             } else {
@@ -52,7 +56,7 @@ class HomeView extends StatelessWidget {
     );
   }
 
-  Widget _buildHomeContent(HomeLoaded state) {
+  Widget _buildHomeContent(HomeLoaded state, BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,9 +81,10 @@ class HomeView extends StatelessWidget {
               child: Text(
                 'Popularity Report',
                 style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.primary),
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.lighterPurple,
+                ),
               ),
             ),
           ),
@@ -127,7 +132,7 @@ class HomeView extends StatelessWidget {
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary),
+                  color: AppColors.lighterPurple),
             ),
           ),
         ),
@@ -164,9 +169,10 @@ class HomeView extends StatelessWidget {
             child: Text(
               'Bookings you may want to join',
               style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppColors.lighterPurple,
+              ),
             ),
           ),
         ),

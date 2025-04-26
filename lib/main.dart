@@ -41,7 +41,11 @@ class MyApp extends StatelessWidget {
         ),
         routerConfig: sl<GoRouter>(),
         builder: (context, child) {
-          return LoadingOverlayWidget(child: child ?? const SizedBox());
+          return Container(
+              color: AppColors.background(context),
+              child: LoadingOverlayWidget(
+                child: child ?? const SizedBox(),
+              ));
         },
       ),
     );

@@ -32,19 +32,24 @@ class VenueListView extends StatelessWidget {
           sportName: sportName, venueRepository: VenueRepository())
         ..add(const LoadVenueListData()),
       child: Scaffold(
+        backgroundColor: AppColors.background(context),
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+            icon: Icon(Icons.arrow_back, color: AppColors.titleText(context)),
             onPressed: () {
               context.push('/search');
             },
           ),
-          title: Text('$formattedSportName Venues',
-              style: const TextStyle(
-                  color: AppColors.primary, fontWeight: FontWeight.w600)),
+          title: Text(
+            '$formattedSportName Venues',
+            style: TextStyle(
+                color: AppColors.titleText(context),
+                fontWeight: FontWeight.w600),
+          ),
           centerTitle: true,
-          shadowColor: AppColors.primaryLight,
+          shadowColor: AppColors.text(context),
           elevation: 1,
+          backgroundColor: AppColors.appBarBackground(context),
         ),
         body: BlocBuilder<VenueListBloc, VenueListState>(
           builder: (context, state) {

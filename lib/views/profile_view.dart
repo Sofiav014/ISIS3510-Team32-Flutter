@@ -21,7 +21,18 @@ class ProfileView extends StatelessWidget {
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Profile View');
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile Screen')),
+      appBar: AppBar(
+        title: Text('Profile',
+            style: TextStyle(
+              color: AppColors.titleText(context),
+              fontWeight: FontWeight.w600,
+            )),
+        centerTitle: true,
+        backgroundColor: AppColors.appBarBackground(context),
+        shadowColor: AppColors.text(context),
+        elevation: 1,
+      ),
+      backgroundColor: AppColors.background(context),
       body: Container(
         padding: const EdgeInsets.all(16),
         child: const Column(
@@ -115,27 +126,31 @@ class ProfileCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.lighterPurple,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              ProfileCardAvatarWidget(),
-              ProfileCardTextWidget(),
-            ],
-          ),
-          ProfileCardFavoriteSportsWidget(),
-          ProfileCardLightModeSwitchWidget(),
-          ProfileCardSettingsButtonWidget()
-        ],
-      ),
-    );
+    return BlocBuilder<ThemeBloc, ThemeState>(builder: (context, state) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: state is ThemeLightState
+              ? AppColors.lightestPurple
+              : AppColors.primary,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                ProfileCardAvatarWidget(),
+                ProfileCardTextWidget(),
+              ],
+            ),
+            ProfileCardFavoriteSportsWidget(),
+            ProfileCardLightModeSwitchWidget(),
+            ProfileCardSettingsButtonWidget()
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -252,40 +267,47 @@ class ProfileCardLightModeSwitchWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(top: 20),
-      child: Row(
-        children: [
-          Row(
-            children: [
-              const Icon(
-                Icons.sunny,
-                size: 24,
-                color: AppColors.primary,
-              ),
-              Container(
-                  margin: const EdgeInsets.only(left: 5),
-                  child: const Text(
-                    'Light mode',
-                  ))
-            ],
-          ),
-          const Spacer(),
-          BlocBuilder<ThemeBloc, ThemeState>(builder: (context, state) {
-            return Transform.scale(
-              scale: 0.7,
-              child: Switch.adaptive(
-                activeColor: AppColors.primary,
-                activeTrackColor: AppColors.lighterPurple,
-                value: state is ThemeLightState,
-                onChanged: (_) =>
-                    context.read<ThemeBloc>().add(ThemeSwitchEvent()),
-              ),
-            );
-          })
-        ],
-      ),
-    );
+    return Builder(builder: (context) {
+      final themeState = context.watch<ThemeBloc>().state;
+
+      return Container(
+        margin: const EdgeInsets.only(top: 20),
+        child: Row(
+          children: [
+            Row(
+              children: [
+                Icon(
+                  themeState is ThemeLightState
+                      ? Icons.sunny
+                      : Icons.nightlight,
+                  size: 24,
+                  color: AppColors.titleText(context),
+                ),
+                Container(
+                    margin: const EdgeInsets.only(left: 5),
+                    child: Text(
+                      'Light mode',
+                      style: TextStyle(color: AppColors.text(context)),
+                    ))
+              ],
+            ),
+            const Spacer(),
+            BlocBuilder<ThemeBloc, ThemeState>(builder: (context, state) {
+              return Transform.scale(
+                scale: 0.7,
+                child: Switch.adaptive(
+                  activeColor: AppColors.primary,
+                  activeTrackColor: AppColors.lightererPurple,
+                  value: state is ThemeLightState,
+                  onChanged: (_) =>
+                      context.read<ThemeBloc>().add(ThemeSwitchEvent()),
+                ),
+              );
+            })
+          ],
+        ),
+      );
+    });
   }
 }
 
@@ -301,11 +323,11 @@ class ProfileCardFavoriteSportsWidget extends StatelessWidget {
       children: [
         Container(
           margin: const EdgeInsets.only(top: 20, bottom: 5),
-          child: const Text(
+          child: Text(
             "Favorite sports",
             style: TextStyle(
               fontSize: 14,
-              color: Colors.black45,
+              color: AppColors.text(context),
             ),
           ),
         ),
@@ -357,7 +379,8 @@ class ProfileCardTextWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(builder: (bloc, state) {
+    return Builder(builder: (context) {
+      final authState = context.watch<AuthBloc>().state;
       return Container(
         margin: const EdgeInsets.only(left: 10),
         child: Column(
@@ -366,27 +389,28 @@ class ProfileCardTextWidget extends StatelessWidget {
             SizedBox(
               width: 230,
               child: Text(
-                state.userModel != null
-                    ? state.userModel!.name
+                authState.userModel != null
+                    ? authState.userModel!.name
                     : "Unknown user",
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
+                  color: AppColors.text(context),
                 ),
               ),
             ),
             Text(
-              "Gender: ${state.userModel != null ? state.userModel!.gender : "Unknown"}",
-              style: const TextStyle(
+              "Gender: ${authState.userModel != null ? authState.userModel!.gender : "Unknown"}",
+              style: TextStyle(
                 fontSize: 14,
-                color: Colors.black45,
+                color: AppColors.text(context),
               ),
             ),
             Text(
-              "Born in ${state.userModel != null ? DateFormat('dd/MM/yyyy').format(state.userModel!.birthDate) : "Unknown"}",
-              style: const TextStyle(
+              "Born in ${authState.userModel != null ? DateFormat('dd/MM/yyyy').format(authState.userModel!.birthDate) : "Unknown"}",
+              style: TextStyle(
                 fontSize: 14,
-                color: Colors.black45,
+                color: AppColors.text(context),
               ),
             )
           ],

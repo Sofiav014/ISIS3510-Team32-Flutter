@@ -43,8 +43,7 @@ class VenueListWidget extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.star,
-                        color: AppColors.primaryDark, size: 16),
+                    const Icon(Icons.star, color: Colors.black, size: 16),
                     const SizedBox(width: 4),
                     Text(
                       venue.rating.toString(),
@@ -61,7 +60,7 @@ class VenueListWidget extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(7.0),
                 decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(179),
+                  color: Colors.black.withAlpha(180),
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(15.0),
                     bottomRight: Radius.circular(15.0),

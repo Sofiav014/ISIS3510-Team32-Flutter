@@ -38,7 +38,7 @@ class SportPopularityReportCardWidget extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10.0),
         ),
-        color: AppColors.lightPurple,
+        color: AppColors.primary,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
