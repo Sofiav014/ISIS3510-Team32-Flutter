@@ -388,7 +388,7 @@ class ProfileCardTextWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: 230,
+              width: 210,
               child: Text(
                 authState.userModel != null
                     ? authState.userModel!.name
