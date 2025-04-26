@@ -35,7 +35,7 @@ class VenueDetailView extends StatelessWidget {
             leading: IconButton(
               icon: const Icon(Icons.arrow_back, color: AppColors.primary),
               onPressed: () {
-                context.go('/venue_list/$sportId');
+                context.push('/venue_list/$sportId');
               },
             ),
             title: const Text('Venue Detail',

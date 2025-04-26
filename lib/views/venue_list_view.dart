@@ -1,4 +1,5 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
@@ -35,7 +36,13 @@ class VenueListView extends StatelessWidget {
           connectivityRepository: ConnectivityRepository())
         ..add(const LoadVenueListData()),
       child: Scaffold(
-        appBar: AppBar(
+        appBar:  AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+            onPressed: () {
+              context.push('/search');
+            },
+          ),
           title: Text('$formattedSportName Venues',
               style: const TextStyle(
                   color: AppColors.primary, fontWeight: FontWeight.w600)),
