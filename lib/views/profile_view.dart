@@ -12,6 +12,7 @@ import 'package:isis3510_team32_flutter/view_models/theme/theme_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_event.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_state.dart';
 import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/search_view_widgets/venue_list_widget.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -43,7 +44,6 @@ class ProfileView extends StatelessWidget {
               children: [
                 ProfileCardWidget(),
                 FavoriteVenuesWidget(),
-                LogoutProfileWidget()
               ],
             )
           ],
@@ -97,21 +97,13 @@ class FavoriteVenuesWidget extends StatelessWidget {
             ),
           ),
           BlocBuilder<AuthBloc, AuthState>(builder: (bloc, state) {
-            return Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              child: SizedBox(
-                height: 120,
-                child: Row(
-                  children: state.userModel != null
-                      ? state.userModel!.venuesLiked
-                          .map((venue) => Container(
-                                width: 120,
-                                margin: const EdgeInsets.only(right: 20),
-                                child: Text(venue.name),
-                              ))
-                          .toList()
-                      : [const Text("Unknown user")],
-                ),
+            return SizedBox(
+              height: 200,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: state.userModel!.venuesLiked.length,
+                itemBuilder: (context, index) =>
+                    VenueListWidget(venue: state.userModel!.venuesLiked[index]),
               ),
             );
           })
@@ -146,7 +138,7 @@ class ProfileCardWidget extends StatelessWidget {
             ),
             ProfileCardFavoriteSportsWidget(),
             ProfileCardLightModeSwitchWidget(),
-            ProfileCardSettingsButtonWidget()
+            LogoutProfileWidget()
           ],
         ),
       );
