@@ -28,7 +28,7 @@ class UserModel {
     return UserModel(
       id: json['id'] ?? '',
       name: json['name'] ?? '',
-      birthDate: (json['birth_date'] as Timestamp).toDate(),
+      birthDate: (json['birth_date'] as DateTime?) ?? DateTime.utc(0),
       gender: json['gender'] ?? '',
       sportsLiked: (json['sports_liked'] as List? ?? [])
           .map((sport) => SportModel.fromJson(sport))

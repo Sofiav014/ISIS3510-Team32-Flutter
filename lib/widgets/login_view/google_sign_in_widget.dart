@@ -1,10 +1,17 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
+import 'package:isis3510_team32_flutter/core/service_locator.dart';
+import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
+import 'package:isis3510_team32_flutter/models/repositories/auth_repository.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_event.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
@@ -17,6 +24,7 @@ class GoogleSignInButton extends StatelessWidget {
 
   Future<UserCredential?> signInWithGoogle(BuildContext context) async {
     final loadingBloc = context.read<LoadingBloc>();
+    final authBloc = context.read<AuthBloc>();
 
     loadingBloc.add(ShowLoadingEvent());
 
@@ -61,12 +69,47 @@ class GoogleSignInButton extends StatelessWidget {
       idToken: gAuth.idToken,
     );
 
-    final userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
+    final user =
+        (await FirebaseAuth.instance.signInWithCredential(credential)).user;
 
+    final authRepository = sl.get<AuthRepository>();
+
+    final userModelRecievePort = ReceivePort();
+
+    final RootIsolateToken rootIsolateToken = RootIsolateToken.instance!;
+
+    await Isolate.spawn(isolateUserFetch, {
+      'sendPort': userModelRecievePort.sendPort,
+      'rootToken': rootIsolateToken,
+      'authRepository': authRepository,
+      'uid': user!.uid,
+    });
+
+    print("======================SPAWNED THE ISOLATE=====================");
+
+    final userModelJson =
+        await userModelRecievePort.first as Map<String, dynamic>?;
+
+    print(
+        "======================GOT A RESULT THROUGH THE PORT=====================");
+
+    authBloc.add(AuthChangeModelEvent(user,
+        userModelJson != null ? UserModel.fromJson(userModelJson) : null));
     loadingBloc.add(HideLoadingEvent());
+    return null;
+  }
 
-    return userCredential;
+  void isolateUserFetch(Map<String, dynamic> args) async {
+    final sendPort = args['sendPort'] as SendPort;
+    final authRepository = args['authRepository'] as AuthRepository;
+    final uid = args['uid'] as String;
+    final rootToken = args['rootToken'] as RootIsolateToken;
+
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootToken);
+
+    final userModel = await authRepository.fetchUser(uid);
+
+    sendPort.send(userModel?.toJson());
   }
 
   @override
