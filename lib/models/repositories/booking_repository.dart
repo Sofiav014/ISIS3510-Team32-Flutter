@@ -143,7 +143,7 @@ class BookingRepository {
     return [startTime, endTime];
   }
 
-  Future<bool> createBooking({
+  Future<UserModel?> createBooking({
     required DateTime date,
     required String timeSlot,
     required int maxUsers,
@@ -241,10 +241,10 @@ class BookingRepository {
         users: [userId],
       ));
 
-      return true;
+      return user;
     } catch (e) {
       print('Error creating booking: $e');
-      return false; // Handle errors appropriately
+      return null; // Handle errors appropriately
     }
   }
 }
