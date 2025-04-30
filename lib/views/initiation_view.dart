@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
+import 'package:isis3510_team32_flutter/core/screen_time.service.dart';
 import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
@@ -23,11 +24,15 @@ import 'package:isis3510_team32_flutter/widgets/initiation_view/initiation_date_
 import 'package:isis3510_team32_flutter/widgets/initiation_view/initiation_icon_toggle_button_widget.dart';
 
 class InitiationView extends StatelessWidget {
-  const InitiationView({super.key});
+  final ScreenTimeService screenTimeService;
+
+  const InitiationView({super.key, required this.screenTimeService});
 
   @override
   Widget build(BuildContext context) {
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Initiation View');
+
+    screenTimeService.startTrackingTime();
 
     final size = MediaQuery.of(context).size;
     final aspectRatio = size.width / size.height;
@@ -71,11 +76,13 @@ class InitiationView extends StatelessWidget {
                       Expanded(
                         child: IndexedStack(
                           index: state.currentStep,
-                          children: const [
-                            InitiationNameView(),
-                            InititationGenderView(),
-                            InititationAgeView(),
-                            InitiationSportView(),
+                          children: [
+                            const InitiationNameView(),
+                            const InititationGenderView(),
+                            const InititationAgeView(),
+                            InitiationSportView(
+                              screenTimeService: screenTimeService,
+                            ),
                           ],
                         ),
                       ),
@@ -116,7 +123,6 @@ class _InitiationNameViewState extends State<InitiationNameView> {
   @override
   Widget build(BuildContext context) {
     final initiationBloc = context.read<InitiationBloc>();
-    final authBloc = context.read<AuthBloc>();
 
     final size = MediaQuery.of(context).size;
     final aspectRatio = size.width / size.height;
@@ -353,7 +359,8 @@ class InititationAgeView extends StatelessWidget {
 }
 
 class InitiationSportView extends StatelessWidget {
-  const InitiationSportView({super.key});
+  final ScreenTimeService screenTimeService;
+  const InitiationSportView({super.key, required this.screenTimeService});
 
   @override
   Widget build(BuildContext context) {
@@ -481,6 +488,10 @@ class InitiationSportView extends StatelessWidget {
                               .add(ConnectivityRequestedFetchEvent());
                           return;
                         }
+
+                        await screenTimeService
+                            .stopAndRecordTime('Initiation View');
+
                         loadingBloc.add(ShowLoadingEvent());
                         authBloc.add(
                           AuthCreateModelEvent(

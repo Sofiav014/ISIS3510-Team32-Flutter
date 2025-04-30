@@ -103,7 +103,9 @@ GoRouter setupRouter(AuthBloc authBloc) {
       GoRoute(
           path: '/initiation',
           pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context, state: state, child: const InitiationView())),
+              context: context,
+              state: state,
+              child: InitiationView(screenTimeService: screenTimeService))),
       GoRoute(
           path: '/profile',
           pageBuilder: (context, state) => buildPageWithNoTransition(
