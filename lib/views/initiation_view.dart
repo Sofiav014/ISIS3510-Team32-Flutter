@@ -489,9 +489,6 @@ class InitiationSportView extends StatelessWidget {
                           return;
                         }
 
-                        await screenTimeService
-                            .stopAndRecordTime('Initiation View');
-
                         loadingBloc.add(ShowLoadingEvent());
                         authBloc.add(
                           AuthCreateModelEvent(
@@ -504,6 +501,8 @@ class InitiationSportView extends StatelessWidget {
                             ),
                           ),
                         );
+                        await screenTimeService
+                            .stopAndRecordTime('Initiation View');
                       }
                     : null,
                 child: const Text(
