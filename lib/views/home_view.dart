@@ -55,13 +55,6 @@ class HomeView extends StatelessWidget {
                 );
               } else if (state is HomeError) {
                 return Center(child: Text('Error: ${state.error}'));
-
-                // return _buildHomeContent(
-                //   [],
-                //   null,
-                //   {},
-                //   true,
-                // );
               } else if (state is HomeLoaded) {
                 return _buildHomeContent(
                   state.upcomingBookings,
@@ -282,7 +275,7 @@ class HomeView extends StatelessWidget {
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.lightPurple),
+                  color: AppColors.lighterPurple),
             ),
           ),
         ),
