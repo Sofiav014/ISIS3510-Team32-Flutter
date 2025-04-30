@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:isis3510_team32_flutter/models/hive/booking_model_hive.dart';
-import 'package:isis3510_team32_flutter/models/data_models/sport_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/core/firebase_service.dart';
+import 'package:isis3510_team32_flutter/models/hive/sport_model_hive.dart';
+import 'package:isis3510_team32_flutter/models/hive/venue_model_hive.dart';
 
 class HomeRepository {
   final FirebaseFirestore _firestore = FirebaseService.instance.firestore;
@@ -105,20 +106,16 @@ class HomeRepository {
     final upcomingHive =
         upcoming.map((b) => BookingModelHive.fromModel(b)).toList();
 
-    final highestRated = report['highestRatedVenue'] as VenueModel?;
-    final mostBooked = report['mostBookedVenue'] as VenueModel?;
-    final mostPlayedSport = report['mostPlayedSport'] as SportModel?;
+    final highestRated = VenueModelHive.fromModel(report['highestRatedVenue']);
+    final mostBooked = VenueModelHive.fromModel(report['mostBookedVenue']);
+    final mostPlayedSport = SportModelHive.fromModel(report['mostPlayedSport']);
     final mostPlayedSportCount = report['mostPlayedSportCount'];
 
-    final reportMap = {
-      'highestRatedVenue': highestRated?.toJsonSerializable(),
-      'mostBookedVenue': mostBooked?.toJsonSerializable(),
-      'mostPlayedSport': mostPlayedSport?.toJson(),
-      'mostPlayedSportCount': mostPlayedSportCount,
-    };
-
     await box.put('upcoming_bookings', upcomingHive);
-    await box.put('popularity_report', reportMap);
+    await box.put('highestRatedVenue', highestRated);
+    await box.put('mostBookedVenue', mostBooked);
+    await box.put('mostPlayedSport', mostPlayedSport);
+    await box.put('mostPlayedSportCount', mostPlayedSportCount);
   }
 
   Future<List<BookingModel>?> getCachedUpcomingBookings(String userId) async {
@@ -134,29 +131,24 @@ class HomeRepository {
 
   Future<Map<String, dynamic>?> getCachedPopularityReport(String userId) async {
     final box = await Hive.openBox('home_$userId');
-    final data = box.get('popularity_report');
+    final cachehighestRatedVenue = box.get('highestRatedVenue');
+    final cachemostBookedVenue = box.get('mostBookedVenue');
+    final cachemostPlayedSport = box.get('mostPlayedSport');
+    final cachemostPlayedSportCount = box.get('mostPlayedSportCount');
 
-    if (data == null) return null;
-
-    if (data is! Map) {
-      return null;
-    }
-
-    final map = data.map((key, value) => MapEntry(key.toString(), value));
-
-    final highestRatedVenue = map['highestRatedVenue'] != null
-        ? VenueModel.fromJson(map['highestRatedVenue'])
+    final highestRatedVenue = cachehighestRatedVenue != null
+        ? (cachehighestRatedVenue as VenueModelHive).toModel()
         : null;
 
-    final mostBookedVenue = map['mostBookedVenue'] != null
-        ? VenueModel.fromJson(map['mostBookedVenue'])
+    final mostBookedVenue = cachemostBookedVenue != null
+        ? (cachemostBookedVenue as VenueModelHive).toModel()
         : null;
-
-    final mostPlayedSport = map['mostPlayedSport'] != null
-        ? SportModel.fromJson(map['mostPlayedSport'])
+    final mostPlayedSport = cachemostPlayedSport != null
+        ? (cachemostPlayedSport as SportModelHive).toModel()
         : null;
-
-    final mostPlayedSportCount = map['mostPlayedSportCount'];
+    final mostPlayedSportCount = cachemostPlayedSportCount != null
+        ? cachemostPlayedSportCount as int
+        : null;
 
     return {
       'highestRatedVenue': highestRatedVenue,

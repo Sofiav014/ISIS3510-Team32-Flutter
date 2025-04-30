@@ -26,7 +26,7 @@ class DatePickerWidget extends StatelessWidget {
           "Choose a Date:",
           style: TextStyle(
             fontSize: 20,
-            color: AppColors.primary,
+            color: AppColors.lighterPurple,
             fontWeight: FontWeight.bold,
           ),
         ),

@@ -22,7 +22,7 @@ class TimeSlotSelectorWidget extends StatelessWidget {
           "Select a Time Slot:",
           style: TextStyle(
             fontSize: 20,
-            color: AppColors.primary,
+            color: AppColors.lighterPurple,
             fontWeight: FontWeight.bold,
           ),
         ),
