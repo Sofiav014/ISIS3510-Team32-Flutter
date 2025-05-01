@@ -91,20 +91,22 @@ class VenueRepository {
     }
   }
 
-  List<BookingModel> getActiveBookingsByVenue(VenueModel venue) {
+  List<BookingModel> getActiveBookingsByVenue(VenueModel venue, String userId) {
     try {
+      if (venue.bookings.isEmpty) {
+        return [];
+      }
       List<BookingModel> activeBookings = <BookingModel>[];
 
+      final DateTime now = DateTime.now();
       for (BookingModel booking in venue.bookings) {
-        final DateTime now = DateTime.now();
         final DateTime startTime = booking.startTime;
-        final DateTime endTime = booking.endTime;
 
         final int numberOfPeople = booking.users.length;
 
-        if (startTime.isBefore(now) &&
-            endTime.isAfter(now) &&
-            numberOfPeople < booking.maxUsers) {
+        if (startTime.isAfter(now) &&
+            numberOfPeople < booking.maxUsers &&
+            !booking.users.contains(userId)) {
           activeBookings.add(booking);
         }
       }

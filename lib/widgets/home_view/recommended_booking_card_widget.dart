@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
 import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/loading/loading_event.dart';
@@ -23,8 +26,16 @@ class RecommendedBookingCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final AuthBloc authBloc = context.read<AuthBloc>();
     final loadingBloc = context.read<LoadingBloc>();
+    final ConnectivityBloc connectivityBloc = context.read<ConnectivityBloc>();
     return GestureDetector(
       onTap: () {
+        final connectivityState = connectivityBloc.state;
+
+        if (connectivityState is ConnectivityOfflineState) {
+          showNoConnectionError(context);
+          return;
+        }
+
         showDialog(
           context: context,
           builder: (BuildContext dialogContext) {

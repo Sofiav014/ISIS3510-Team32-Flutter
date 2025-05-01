@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
 import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/loading/loading_event.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
+import 'package:isis3510_team32_flutter/view_models/venue_detail/venue_detail_bloc.dart';
 
 class BookingInfoCard extends StatelessWidget {
   final VenueModel venue;
   final BookingModel booking;
   final BookingRepository bookingRepository = BookingRepository();
 
-  BookingInfoCard(
-      {super.key, required this.venue, required this.booking});
+  BookingInfoCard({super.key, required this.venue, required this.booking});
 
   String _truncateText(String text, int? maxLength) {
     if (maxLength == null || text.length <= maxLength) {
@@ -30,9 +33,17 @@ class BookingInfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final AuthBloc authBloc = context.read<AuthBloc>();
     final loadingBloc = context.read<LoadingBloc>();
+    final ConnectivityBloc connectivityBloc = context.read<ConnectivityBloc>();
 
     return GestureDetector(
       onTap: () {
+        final connectivityState = connectivityBloc.state;
+
+        if (connectivityState is ConnectivityOfflineState) {
+          showNoConnectionError(context);
+          return;
+        }
+
         showDialog(
           context: context,
           builder: (BuildContext dialogContext) {
@@ -55,6 +66,7 @@ class BookingInfoCard extends StatelessWidget {
                     final user = await bookingRepository.joinBooking(
                       booking: booking,
                       user: authBloc.state.userModel!,
+                      venueId: venue.id,
                     );
 
                     if (context.mounted) {
@@ -68,6 +80,12 @@ class BookingInfoCard extends StatelessWidget {
                           ),
                         ),
                       );
+
+                      if (user != null) {
+                        context
+                            .read<VenueDetailBloc>()
+                            .add(LoadVenueDetailData(venueId: venue.id));
+                      }
                     }
                   },
                   child: const Text('Yes'),
