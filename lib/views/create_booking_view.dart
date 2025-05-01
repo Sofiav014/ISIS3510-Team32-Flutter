@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
+import 'package:isis3510_team32_flutter/core/screen_time.service.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/create_booking/create_booking_bloc.dart';
@@ -19,9 +20,13 @@ import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_st
 
 class CreateBookingView extends StatelessWidget {
   final String venueId;
+  final ScreenTimeService screenTimeService;
 
-  const CreateBookingView({super.key, required this.venueId});
-
+  const CreateBookingView({
+    super.key,
+    required this.venueId,
+    required this.screenTimeService,
+  });
   @override
   Widget build(BuildContext context) {
     final authBloc = context.read<AuthBloc>();
@@ -29,17 +34,22 @@ class CreateBookingView extends StatelessWidget {
 
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Create Booking View');
 
+    screenTimeService.startTrackingTime();
+
     return BlocProvider(
       create: (_) => CreateBookingBloc(BookingRepository(), venueId, authBloc),
-      child: _CreateBookingContent(loadingBloc: loadingBloc),
+      child: _CreateBookingContent(
+          loadingBloc: loadingBloc, screenTimeService: screenTimeService),
     );
   }
 }
 
 class _CreateBookingContent extends StatelessWidget {
   final LoadingBloc loadingBloc;
+  final ScreenTimeService screenTimeService;
 
-  const _CreateBookingContent({required this.loadingBloc});
+  const _CreateBookingContent(
+      {required this.loadingBloc, required this.screenTimeService});
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +134,9 @@ class _CreateBookingContent extends StatelessWidget {
                 const DatePickerWidget(),
                 const TimeSlotSelectorWidget(),
                 const SizedBox(height: 24),
-                _CreateBookingButton(loadingBloc: loadingBloc),
+                _CreateBookingButton(
+                    loadingBloc: loadingBloc,
+                    screenTimeService: screenTimeService),
               ],
             ),
           ),
@@ -139,8 +151,10 @@ class _CreateBookingContent extends StatelessWidget {
 
 class _CreateBookingButton extends StatelessWidget {
   final LoadingBloc loadingBloc;
+  final ScreenTimeService screenTimeService;
 
-  const _CreateBookingButton({required this.loadingBloc});
+  const _CreateBookingButton(
+      {required this.loadingBloc, required this.screenTimeService});
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +177,9 @@ class _CreateBookingButton extends StatelessWidget {
                     ? () async {
                         loadingBloc.add(ShowLoadingEvent());
                         createBookingBloc.add(CreateBookingSubmitEvent());
+
+                        await screenTimeService
+                            .stopAndRecordTime('Create Booking View');
                       }
                     : () {
                         if (connectivityState is ConnectivityOfflineState) {
