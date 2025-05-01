@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 
 class VenueRepository {
@@ -87,6 +88,33 @@ class VenueRepository {
     } catch (e) {
       print('Error fetching venue by ID: $e');
       return null;
+    }
+  }
+
+  List<BookingModel> getActiveBookingsByVenue(VenueModel venue) {
+    try {
+      List<BookingModel> activeBookings = <BookingModel>[];
+
+      for (BookingModel booking in venue.bookings) {
+        final DateTime now = DateTime.now();
+        final DateTime startTime = booking.startTime;
+        final DateTime endTime = booking.endTime;
+
+        final int numberOfPeople = booking.users.length;
+
+        if (startTime.isBefore(now) &&
+            endTime.isAfter(now) &&
+            numberOfPeople < booking.maxUsers) {
+          activeBookings.add(booking);
+        }
+      }
+
+      activeBookings.sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      return activeBookings;
+    } catch (e) {
+      print('Error fetching active bookings: $e');
+      return [];
     }
   }
 }

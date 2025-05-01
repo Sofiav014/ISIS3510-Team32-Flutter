@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/venue_repository.dart';
@@ -35,14 +36,17 @@ class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
       if (isOnline) {
         final venue = await venueRepository.getVenueById(event.venueId);
         if (venue != null) {
-          emit(VenueDetailLoaded(venue: venue));
+          final activeBookings =
+              venueRepository.getActiveBookingsByVenue(venue);
+          emit(VenueDetailLoaded(venue: venue, activeBookings: activeBookings));
         } else {
           emit(const VenueDetailError(message: 'Venue not found'));
         }
       } else {
         final venue = await venueRepository.getCachedVenueById(venueId);
         if (venue != null) {
-          emit(VenueDetailOfflineLoaded(venue: venue));
+          emit(
+              VenueDetailOfflineLoaded(venue: venue, activeBookings: const []));
         } else {
           emit(const VenueDetailError(message: 'Venue not found'));
         }

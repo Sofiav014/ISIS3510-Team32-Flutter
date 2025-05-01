@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
+import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/venue_repository.dart';
@@ -51,7 +52,9 @@ class VenueDetailView extends StatelessWidget {
           ),
           body: BlocListener<VenueDetailBloc, VenueDetailState>(
             listener: (context, state) {
-              if (state is VenueDetailOfflineLoaded) showNoConnectionError(context);
+              if (state is VenueDetailOfflineLoaded) {
+                showNoConnectionError(context);
+              }
             },
             child: BlocBuilder<VenueDetailBloc, VenueDetailState>(
               builder: (context, state) {
@@ -59,10 +62,12 @@ class VenueDetailView extends StatelessWidget {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is VenueDetailLoaded) {
                   final VenueModel venue = state.venue;
-                  return _buildVenueDetail(context, venue);
+                  final List<BookingModel> activeBookings =
+                      state.activeBookings;
+                  return _buildVenueDetail(context, venue, activeBookings);
                 } else if (state is VenueDetailOfflineLoaded) {
                   final VenueModel venue = state.venue;
-                  return _buildVenueDetail(context, venue);
+                  return _buildVenueDetail(context, venue, []);
                 } else if (state is VenueDetailError) {
                   return Center(child: Text('Error: ${state.message}'));
                 } else {
@@ -77,7 +82,8 @@ class VenueDetailView extends StatelessWidget {
         ));
   }
 
-  Widget _buildVenueDetail(BuildContext context, VenueModel venue) {
+  Widget _buildVenueDetail(BuildContext context, VenueModel venue,
+      List<BookingModel> activeBookings) {
     return SingleChildScrollView(
         child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -122,7 +128,7 @@ class VenueDetailView extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Column(
-            children: venue.bookings
+            children: activeBookings
                 .map((booking) => Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: BookingInfoCard(venue: venue, booking: booking),
