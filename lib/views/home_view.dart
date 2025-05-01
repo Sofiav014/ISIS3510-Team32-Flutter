@@ -123,47 +123,60 @@ class HomeView extends StatelessWidget {
               ),
             ),
           ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: <Widget>[
-                if (popularityReport['highestRatedVenue'] == null &&
-                    popularityReport['mostPlayedSport'] == null &&
-                    popularityReport['mostBookedVenue'] == null)
-                  const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'No popularity data available',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      ],
+          if (popularityReport['highestRatedVenue'] == null &&
+              popularityReport['mostPlayedSport'] == null &&
+              popularityReport['mostBookedVenue'] == null)
+            Center(
+              child: Text(
+                isOffline
+                    ? 'No upcoming bookings available'
+                    : 'No upcoming bookings',
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            )
+          else
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: <Widget>[
+                  if (popularityReport['highestRatedVenue'] == null &&
+                      popularityReport['mostPlayedSport'] == null &&
+                      popularityReport['mostBookedVenue'] == null)
+                    const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'No popularity data available',
+                            style: TextStyle(fontSize: 16, color: Colors.grey),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                if (popularityReport['highestRatedVenue'] != null)
-                  VenuePopularityReportCardWidget(
-                      venue: popularityReport['highestRatedVenue'],
-                      title: 'Best Rated Overall',
-                      subtitle: popularityReport['highestRatedVenue']
-                          .rating
-                          .toString()),
-                if (popularityReport['mostPlayedSport'] != null)
-                  SportPopularityReportCardWidget(
-                    sport: popularityReport['mostPlayedSport'],
-                    title: 'Most Played by You',
-                    sportPlayedCount: popularityReport['mostPlayedSportCount'],
-                  ),
-                if (popularityReport['mostBookedVenue'] != null)
-                  VenuePopularityReportCardWidget(
-                    venue: popularityReport['mostBookedVenue'],
-                    title: 'Most Booked Overall',
-                    subtitle:
-                        "${popularityReport['mostBookedVenue'].bookings.length.toString()} bookings",
-                  ),
-              ],
+                  if (popularityReport['highestRatedVenue'] != null)
+                    VenuePopularityReportCardWidget(
+                        venue: popularityReport['highestRatedVenue'],
+                        title: 'Best Rated Overall',
+                        subtitle: popularityReport['highestRatedVenue']
+                            .rating
+                            .toString()),
+                  if (popularityReport['mostPlayedSport'] != null)
+                    SportPopularityReportCardWidget(
+                      sport: popularityReport['mostPlayedSport'],
+                      title: 'Most Played by You',
+                      sportPlayedCount:
+                          popularityReport['mostPlayedSportCount'],
+                    ),
+                  if (popularityReport['mostBookedVenue'] != null)
+                    VenuePopularityReportCardWidget(
+                      venue: popularityReport['mostBookedVenue'],
+                      title: 'Most Booked Overall',
+                      subtitle:
+                          "${popularityReport['mostBookedVenue'].bookings.length.toString()} bookings",
+                    ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -262,7 +275,7 @@ class HomeView extends StatelessWidget {
               style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.primary),
+                  color: AppColors.lighterPurple),
             ),
           ),
         ),

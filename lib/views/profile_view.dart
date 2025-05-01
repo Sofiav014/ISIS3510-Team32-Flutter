@@ -92,7 +92,7 @@ class FavoriteVenuesWidget extends StatelessWidget {
           const Text(
             'My favorite venues',
             style: TextStyle(
-              color: AppColors.primary,
+              color: AppColors.lighterPurple,
               fontWeight: FontWeight.bold,
               fontSize: 18,
             ),
