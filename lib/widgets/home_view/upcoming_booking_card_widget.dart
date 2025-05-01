@@ -28,7 +28,10 @@ class UpcomingBookingCardWidget extends StatelessWidget {
               child: CachedNetworkImage(
                 imageUrl: booking.venue.image,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                placeholder: (context, url) => const Center(child: SizedBox(
+                  width: 250.0,
+                  child: CircularProgressIndicator(),
+                )),
                 errorWidget: (context, url, error) => const Center(child: SizedBox(
                   width: 250.0, //
                   child: Icon(Icons.broken_image),

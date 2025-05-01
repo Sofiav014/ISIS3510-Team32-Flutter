@@ -121,7 +121,7 @@ class VenueDetailView extends StatelessWidget {
               'Active Bookings',
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: AppColors.primary,
+                color: AppColors.lighterPurple,
                 fontSize: 18.0,
               ),
             ),
