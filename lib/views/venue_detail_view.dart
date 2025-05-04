@@ -1,11 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
+import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
+import 'package:isis3510_team32_flutter/models/repositories/auth_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/venue_repository.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/venue_detail/venue_detail_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
@@ -26,6 +30,7 @@ class VenueDetailView extends StatelessWidget {
 
     return BlocProvider(
         create: (context) => VenueDetailBloc(
+            authBloc: context.read<AuthBloc>(),
             venueRepository: VenueRepository(),
             connectivityRepository: ConnectivityRepository(),
             venueId: venueId)
@@ -34,7 +39,7 @@ class VenueDetailView extends StatelessWidget {
           backgroundColor: AppColors.background(context),
           appBar: AppBar(
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+              icon: Icon(Icons.arrow_back, color: AppColors.titleText(context)),
               onPressed: () {
                 context.push('/venue_list/$sportId');
               },
@@ -59,10 +64,12 @@ class VenueDetailView extends StatelessWidget {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is VenueDetailLoaded) {
                   final VenueModel venue = state.venue;
-                  return _buildVenueDetail(context, venue);
+                  final UserModel user = state.user;
+                  return _buildVenueDetail(context, venue, user);
                 } else if (state is VenueDetailOfflineLoaded) {
                   final VenueModel venue = state.venue;
-                  return _buildVenueDetail(context, venue);
+                  final UserModel user = state.user;
+                  return _buildVenueDetail(context, venue, user);
                 } else if (state is VenueDetailError) {
                   return Center(child: Text('Error: ${state.message}'));
                 } else {
@@ -77,14 +84,14 @@ class VenueDetailView extends StatelessWidget {
         ));
   }
 
-  Widget _buildVenueDetail(BuildContext context, VenueModel venue) {
+  Widget _buildVenueDetail(BuildContext context, VenueModel venue, UserModel user) {
     return SingleChildScrollView(
         child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          VenueDetailImageWidget(venue: venue),
+          VenueDetailImageWidget(venue: venue, user: user, connectivityRepository: ConnectivityRepository(), authRepository: AuthRepository()),
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),

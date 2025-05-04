@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 
@@ -12,7 +14,7 @@ class VenueRepository {
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  final Map<String, VenueModel> _venueCache = {};
+  final Map<String, VenueModel> _venueCache = HashMap();
 
   Future<List<VenueModel>> getVenuesBySportId(String sportName) async {
     try {

@@ -1,22 +1,29 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/venue_repository.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
 
 part 'venue_detail_event.dart';
 part 'venue_detail_state.dart';
 
 class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
+  final AuthBloc authBloc;
   final VenueRepository venueRepository;
   final ConnectivityRepository connectivityRepository;
   final String venueId;
+
   late final StreamSubscription<bool> _connectivitySubscription;
 
   VenueDetailBloc(
-      {required this.venueRepository,
+      {required this.authBloc,
+      required this.venueRepository,
       required this.connectivityRepository,
       required this.venueId})
       : super(VenueDetailInitial()) {
@@ -31,18 +38,29 @@ class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
       LoadVenueDetailData event, Emitter<VenueDetailState> emit) async {
     emit(VenueDetailLoading());
     try {
+
+      final AuthState authState = authBloc.state;
+      final UserModel? user = authState.userModel;
+
+      if (user == null) {
+        emit(const VenueDetailError(message: 'User not found or not authenticated.'));
+        return;
+      }
+
       final isOnline = await connectivityRepository.hasInternet;
+
+
       if (isOnline) {
         final venue = await venueRepository.getVenueById(event.venueId);
         if (venue != null) {
-          emit(VenueDetailLoaded(venue: venue));
+          emit(VenueDetailLoaded(venue: venue, user: user));
         } else {
           emit(const VenueDetailError(message: 'Venue not found'));
         }
       } else {
         final venue = await venueRepository.getCachedVenueById(venueId);
         if (venue != null) {
-          emit(VenueDetailOfflineLoaded(venue: venue));
+          emit(VenueDetailOfflineLoaded(venue: venue, user: user));
         } else {
           emit(const VenueDetailError(message: 'Venue not found'));
         }
