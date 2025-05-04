@@ -63,10 +63,10 @@ class BookingInfoCard extends StatelessWidget {
 
                     loadingBloc.add(ShowLoadingEvent());
 
-                    final user = await bookingRepository.joinBooking(
+                    final user = await bookingRepository.joinBookingFromVenue(
                       booking: booking,
                       user: authBloc.state.userModel!,
-                      venueId: venue.id,
+                      venue: venue,
                     );
 
                     if (context.mounted) {
