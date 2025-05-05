@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 class LoadingTimeService with ChangeNotifier {
   DateTime? _startTime;
@@ -22,7 +22,8 @@ class LoadingTimeService with ChangeNotifier {
         .doc('loading_time')
         .collection('all');
     final docRef = collectionRef.doc(screenName);
-    print('Recording loading time for $screenName: $timeSpent seconds');
+    debugPrint(
+        '✍🏻 Recording loading time for $screenName: $timeSpent seconds');
     try {
       // Fetch the document to update average time
       final document = await docRef.get();
@@ -42,16 +43,16 @@ class LoadingTimeService with ChangeNotifier {
           'average_time': newAvgTime,
           'visit_count': visitCount + 1,
         });
-        print('Successfully updated average loading time in Firestore');
+        debugPrint('✅ Successfully updated average loading time in Firestore');
       } else {
         await docRef.set({
           'average_time': timeSpent,
           'visit_count': 1,
         }, SetOptions(merge: true));
-        print('Successfully set average loading time in Firestore');
+        debugPrint('✅ Successfully set average loading time in Firestore');
       }
     } catch (error) {
-      print('Error updating document: $error');
+      debugPrint('❗️ Error updating document: $error');
     }
 
     _startTime = null;

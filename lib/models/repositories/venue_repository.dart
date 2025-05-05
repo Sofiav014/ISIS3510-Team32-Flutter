@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 
@@ -34,7 +35,7 @@ class VenueRepository {
 
       return sportVenues;
     } catch (e) {
-      print('Error fetching venues: $e');
+      debugPrint('❗️ Error fetching venues: $e');
       return [];
     }
   }
@@ -51,7 +52,7 @@ class VenueRepository {
       }
       return sportVenues;
     } catch (e) {
-      print('Error fetching venues: $e');
+      debugPrint('❗️ Error fetching venues: $e');
       return [];
     }
   }
@@ -73,7 +74,7 @@ class VenueRepository {
       }
       return _venueCache[venueId];
     } catch (e) {
-      print('Error fetching venue by ID: $e');
+      debugPrint('❗️ Error fetching venue by ID: $e');
       return null;
     }
   }
@@ -86,7 +87,7 @@ class VenueRepository {
         return _venueCache[venueId];
       }
     } catch (e) {
-      print('Error fetching venue by ID: $e');
+      debugPrint('❗️ Error fetching venue by ID: $e');
       return null;
     }
   }
@@ -115,7 +116,7 @@ class VenueRepository {
 
       return activeBookings;
     } catch (e) {
-      print('Error fetching active bookings: $e');
+      debugPrint('❗️ Error fetching active bookings: $e');
       return [];
     }
   }
