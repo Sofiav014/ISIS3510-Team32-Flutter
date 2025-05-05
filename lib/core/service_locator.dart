@@ -9,6 +9,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:isis3510_team32_flutter/core/bloc_observer.dart';
 import 'package:isis3510_team32_flutter/core/firebase_options.dart';
 import 'package:isis3510_team32_flutter/core/go_router.dart';
+import 'package:isis3510_team32_flutter/core/theme_frecuency_service.dart';
 import 'package:isis3510_team32_flutter/models/hive/booking_model_hive.dart';
 import 'package:isis3510_team32_flutter/models/hive/sport_model_hive.dart';
 import 'package:isis3510_team32_flutter/models/hive/venue_model_hive.dart';
@@ -80,7 +81,8 @@ void _setupBlocs() {
   sl.registerSingleton(ConnectivityBloc(sl<ConnectivityRepository>()));
   sl.registerSingleton(InitiationBloc());
   sl.registerSingleton(LoadingBloc());
-  sl.registerSingleton(ThemeBloc());
+  sl.registerSingleton(
+      ThemeBloc(themeFrecuencyService: ThemeFrecuencyService()));
 }
 
 void _setupRouter() {

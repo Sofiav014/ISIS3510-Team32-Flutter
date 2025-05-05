@@ -7,6 +7,7 @@ import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/core/screen_time_service.dart';
+import 'package:isis3510_team32_flutter/core/theme_frecuency_service.dart';
 import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
@@ -25,8 +26,12 @@ import 'package:isis3510_team32_flutter/widgets/initiation_view/initiation_icon_
 
 class InitiationView extends StatelessWidget {
   final ScreenTimeService screenTimeService;
+  final ThemeFrecuencyService themeFrecuencyService;
 
-  const InitiationView({super.key, required this.screenTimeService});
+  const InitiationView(
+      {super.key,
+      required this.screenTimeService,
+      required this.themeFrecuencyService});
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +87,7 @@ class InitiationView extends StatelessWidget {
                             const InititationAgeView(),
                             InitiationSportView(
                               screenTimeService: screenTimeService,
+                              themeFrecuencyService: themeFrecuencyService,
                             ),
                           ],
                         ),
@@ -360,7 +366,11 @@ class InititationAgeView extends StatelessWidget {
 
 class InitiationSportView extends StatelessWidget {
   final ScreenTimeService screenTimeService;
-  const InitiationSportView({super.key, required this.screenTimeService});
+  final ThemeFrecuencyService themeFrecuencyService;
+  const InitiationSportView(
+      {super.key,
+      required this.screenTimeService,
+      required this.themeFrecuencyService});
 
   @override
   Widget build(BuildContext context) {
@@ -503,6 +513,8 @@ class InitiationSportView extends StatelessWidget {
                         );
                         await screenTimeService
                             .stopAndRecordTime('Initiation View');
+                        await themeFrecuencyService
+                            .recordThemeChangeStatus(true);
                       }
                     : null,
                 child: const Text(

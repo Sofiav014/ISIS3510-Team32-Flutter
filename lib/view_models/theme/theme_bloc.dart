@@ -1,14 +1,25 @@
+import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:isis3510_team32_flutter/core/theme_frecuency_service.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_event.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeBloc extends HydratedBloc<ThemeEvent, ThemeState> {
-  ThemeBloc() : super(ThemeLightState()) {
+  ThemeFrecuencyService themeFrecuencyService;
+
+  ThemeBloc({required this.themeFrecuencyService}) : super(ThemeLightState()) {
     _registerHandlers();
   }
 
   void _registerHandlers() {
     on<ThemeSwitchEvent>((event, emit) async {
+      final prefs = await SharedPreferences.getInstance();
+      final bool? hasChangedBefore = prefs.getBool('userHasChangedTheme');
+      if (hasChangedBefore == null) {
+        await prefs.setBool('userHasChangedTheme', true);
+        themeFrecuencyService.recordThemeChangeStatus(false);
+      }
       emit(state is ThemeLightState ? ThemeDarkState() : ThemeLightState());
     });
   }
