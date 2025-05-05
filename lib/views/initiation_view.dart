@@ -54,19 +54,17 @@ class InitiationView extends StatelessWidget {
 
         if (initiationBloc.state.currentStep > 0) {
           initiationBloc.add(InitiationPreviousStepEvent());
-        } else {
-          Navigator.of(context).pop(result);
         }
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.only(
               top: topPadding,
               left: 16,
               right: 16,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
             child: SizedBox(
               height: MediaQuery.of(context).size.height -
