@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/core/screen_time_service.dart';
+import 'package:isis3510_team32_flutter/core/theme_frecuency_service.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
 import 'package:isis3510_team32_flutter/views/create_booking_view.dart';
@@ -28,6 +29,7 @@ CustomTransitionPage buildPageWithNoTransition<T>({
 GoRouter setupRouter(AuthBloc authBloc) {
   final authNotifier = AuthRouterNotifier(authBloc);
   final screenTimeService = ScreenTimeService();
+  final themeFrecuencyService = ThemeFrecuencyService();
 
   return GoRouter(
     initialLocation: '/login',
@@ -105,7 +107,10 @@ GoRouter setupRouter(AuthBloc authBloc) {
           pageBuilder: (context, state) => buildPageWithNoTransition(
               context: context,
               state: state,
-              child: InitiationView(screenTimeService: screenTimeService))),
+              child: InitiationView(
+                screenTimeService: screenTimeService,
+                themeFrecuencyService: themeFrecuencyService,
+              ))),
       GoRoute(
           path: '/profile',
           pageBuilder: (context, state) => buildPageWithNoTransition(
