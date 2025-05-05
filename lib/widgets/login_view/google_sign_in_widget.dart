@@ -85,12 +85,13 @@ class GoogleSignInButton extends StatelessWidget {
       'uid': user!.uid,
     });
 
-    print("======================SPAWNED THE ISOLATE=====================");
+    debugPrint(
+        "======================SPAWNED THE ISOLATE=====================");
 
     final userModelJson =
         await userModelRecievePort.first as Map<String, dynamic>?;
 
-    print(
+    debugPrint(
         "======================GOT A RESULT THROUGH THE PORT=====================");
 
     authBloc.add(AuthChangeModelEvent(user,

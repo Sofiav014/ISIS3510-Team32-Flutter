@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
@@ -245,7 +246,7 @@ class BookingRepository {
 
       return user;
     } catch (e) {
-      print('Error creating booking: $e');
+      debugPrint('❗️ Error creating booking: $e');
       return null; // Handle errors appropriately
     }
   }
@@ -305,10 +306,19 @@ class BookingRepository {
           }
         }
       }
-      user.bookings.add(booking);
+
+      final bookingModelUpdated = BookingModel(
+        id: booking.id,
+        maxUsers: booking.maxUsers,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        venue: booking.venue,
+        users: List<String>.from(booking.users),
+      );
+      user.bookings.add(bookingModelUpdated);
       return user; // Return null if successful, or return the updated user model if needed
     } catch (e) {
-      print('Error joining booking: $e');
+      debugPrint('❗️ Error joining booking: $e');
       return null; // Handle errors appropriately
     }
   }
@@ -356,6 +366,7 @@ class BookingRepository {
       await bookingRef.update({
         'users': FieldValue.arrayUnion([user.id]),
       });
+
       await _firestore.collection('users').doc(user.id).update({
         'bookings': FieldValue.arrayUnion([bookingModel]),
       });
@@ -404,10 +415,10 @@ class BookingRepository {
       );
 
       user.bookings.add(bookingModelUpdated);
-      return user; // Return null if successful, or return the updated user model if needed
+      return user;
     } catch (e) {
-      print('Error joining booking: $e');
-      return null; // Handle errors appropriately
+      debugPrint('❗️ Error joining booking: $e');
+      return null;
     }
   }
 }

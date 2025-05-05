@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
+import 'package:isis3510_team32_flutter/core/booking_view_service.dart';
 import 'package:isis3510_team32_flutter/core/screen_time_service.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
@@ -53,11 +54,14 @@ class _CreateBookingContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final BookingViewService bookingViewService = BookingViewService();
+
     return MultiBlocListener(
       listeners: [
         BlocListener<CreateBookingBloc, CreateBookingState>(
           listener: (context, state) {
             if (state.success == true) {
+              bookingViewService.recordView('Create Booking View');
               loadingBloc.add(HideLoadingEvent());
               showDialog(
                 context: context,

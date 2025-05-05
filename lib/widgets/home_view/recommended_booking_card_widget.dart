@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
+import 'package:isis3510_team32_flutter/core/booking_view_service.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -27,6 +28,9 @@ class RecommendedBookingCardWidget extends StatelessWidget {
     final AuthBloc authBloc = context.read<AuthBloc>();
     final loadingBloc = context.read<LoadingBloc>();
     final ConnectivityBloc connectivityBloc = context.read<ConnectivityBloc>();
+
+    final BookingViewService bookingViewService = BookingViewService();
+
     return GestureDetector(
       onTap: () {
         final connectivityState = connectivityBloc.state;
@@ -74,6 +78,7 @@ class RecommendedBookingCardWidget extends StatelessWidget {
                       );
 
                       if (user != null) {
+                        bookingViewService.recordView('Home View');
                         context.read<HomeBloc>().add(const LoadHomeData());
                       }
                     }

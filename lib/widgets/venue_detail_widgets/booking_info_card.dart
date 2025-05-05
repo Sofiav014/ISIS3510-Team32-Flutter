@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
+import 'package:isis3510_team32_flutter/core/booking_view_service.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:intl/intl.dart';
@@ -34,6 +35,7 @@ class BookingInfoCard extends StatelessWidget {
     final AuthBloc authBloc = context.read<AuthBloc>();
     final loadingBloc = context.read<LoadingBloc>();
     final ConnectivityBloc connectivityBloc = context.read<ConnectivityBloc>();
+    final BookingViewService bookingViewService = BookingViewService();
 
     return GestureDetector(
       onTap: () {
@@ -82,6 +84,7 @@ class BookingInfoCard extends StatelessWidget {
                       );
 
                       if (user != null) {
+                        bookingViewService.recordView('Venue Detail View');
                         context
                             .read<VenueDetailBloc>()
                             .add(LoadVenueDetailData(venueId: venue.id));
