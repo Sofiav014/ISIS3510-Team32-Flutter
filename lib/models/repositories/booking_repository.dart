@@ -249,4 +249,165 @@ class BookingRepository {
       return null; // Handle errors appropriately
     }
   }
+
+  Future<UserModel?> joinBooking({
+    required BookingModel booking,
+    required UserModel user,
+  }) async {
+    try {
+      final venueRef = _firestore.collection('venues').doc(booking.venue.id);
+
+      final venueDocSnapshot = await venueRef.get();
+      if (!venueDocSnapshot.exists) {
+        return null;
+      }
+
+      booking.users.add(user.id);
+      DocumentReference bookingRef =
+          _firestore.collection('bookings').doc(booking.id);
+      await bookingRef.update({
+        'users': FieldValue.arrayUnion([user.id]),
+      });
+      await _firestore.collection('users').doc(user.id).update({
+        'bookings': FieldValue.arrayUnion([booking.toJson()]),
+      });
+
+      List<dynamic> venueBookings = venueDocSnapshot.data()?['bookings'] ?? [];
+
+      final bookingIndex = venueBookings.indexWhere(
+        (b) => b['id'] == booking.id,
+      );
+
+      if (bookingIndex != -1) {
+        venueBookings[bookingIndex]['users'] =
+            List<String>.from(venueBookings[bookingIndex]['users'] ?? [])
+              ..add(user.id);
+
+        await venueRef.update({'bookings': venueBookings});
+      }
+
+      for (var userId in booking.users) {
+        if (userId != user.id) {
+          final userRef = _firestore.collection('users').doc(userId);
+          final userDocSnapshot = await userRef.get();
+
+          List<dynamic> userBookings =
+              userDocSnapshot.data()?['bookings'] ?? [];
+
+          final userBookingIndex = userBookings.indexWhere(
+            (b) => b['id'] == booking.id,
+          );
+          if (userBookingIndex != -1) {
+            userBookings[userBookingIndex]['users'] =
+                List<String>.from(userBookings[userBookingIndex]['users'] ?? [])
+                  ..add(user.id);
+            await userRef.update({'bookings': userBookings});
+          }
+        }
+      }
+      user.bookings.add(booking);
+      return user; // Return null if successful, or return the updated user model if needed
+    } catch (e) {
+      print('Error joining booking: $e');
+      return null; // Handle errors appropriately
+    }
+  }
+
+  Future<UserModel?> joinBookingFromVenue({
+    required BookingModel booking,
+    required UserModel user,
+    required VenueModel venue,
+  }) async {
+    try {
+      final venueRef = _firestore.collection('venues').doc(venue.id);
+
+      final venueDocSnapshot = await venueRef.get();
+      if (!venueDocSnapshot.exists) {
+        return null;
+      }
+
+      booking.users.add(user.id);
+
+      final venueModel = {
+        'coords': venue.coords,
+        'id': venue.id,
+        'image': venue.image,
+        'location_name': venue.locationName,
+        'name': venue.name,
+        'rating': venue.rating,
+        'sport': {
+          'id': venue.sport.id,
+          'logo': venue.sport.logo,
+          'name': venue.sport.name,
+        }
+      };
+
+      final bookingModel = {
+        'id': booking.id,
+        'maxUsers': booking.maxUsers,
+        'start_time': booking.startTime,
+        'end_time': booking.endTime,
+        'venue': venueModel,
+        'users': booking.users
+      };
+
+      DocumentReference bookingRef =
+          _firestore.collection('bookings').doc(booking.id);
+      await bookingRef.update({
+        'users': FieldValue.arrayUnion([user.id]),
+      });
+      await _firestore.collection('users').doc(user.id).update({
+        'bookings': FieldValue.arrayUnion([bookingModel]),
+      });
+
+      List<dynamic> venueBookings = venueDocSnapshot.data()?['bookings'] ?? [];
+
+      final bookingIndex = venueBookings.indexWhere(
+        (b) => b['id'] == booking.id,
+      );
+
+      if (bookingIndex != -1) {
+        venueBookings[bookingIndex]['users'] =
+            List<String>.from(venueBookings[bookingIndex]['users'] ?? [])
+              ..add(user.id);
+
+        await venueRef.update({'bookings': venueBookings});
+      }
+
+      for (var userId in booking.users) {
+        if (userId != user.id) {
+          final userRef = _firestore.collection('users').doc(userId);
+          final userDocSnapshot = await userRef.get();
+
+          List<dynamic> userBookings =
+              userDocSnapshot.data()?['bookings'] ?? [];
+
+          final userBookingIndex = userBookings.indexWhere(
+            (b) => b['id'] == booking.id,
+          );
+          if (userBookingIndex != -1) {
+            userBookings[userBookingIndex]['users'] =
+                List<String>.from(userBookings[userBookingIndex]['users'] ?? [])
+                  ..add(user.id);
+            await userRef.update({'bookings': userBookings});
+          }
+        }
+      }
+
+      final bookingModelUpdated = BookingModel(
+        id: booking.id,
+        maxUsers: booking.maxUsers,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        venue: VenueModel.fromJson(venueModel),
+        users: List<String>.from(booking.users),
+      );
+
+      user.bookings.add(bookingModelUpdated);
+      return user; // Return null if successful, or return the updated user model if needed
+    } catch (e) {
+      print('Error joining booking: $e');
+      return null; // Handle errors appropriately
+    }
+  }
 }
