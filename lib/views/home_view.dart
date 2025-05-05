@@ -2,6 +2,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:isis3510_team32_flutter/core/loading_time_service.dart';
 import 'package:isis3510_team32_flutter/widgets/home_view/venue_popularity_report_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
@@ -19,6 +20,10 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final LoadingTimeService loadingTimeService = LoadingTimeService();
+
+    loadingTimeService.startTrackingTime();
+
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Home View');
 
     return BlocProvider(
@@ -42,9 +47,11 @@ class HomeView extends StatelessWidget {
           elevation: 1,
         ),
         body: BlocListener<HomeBloc, HomeState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state is HomeOfflineLoaded) {
               showNoConnectionError(context);
+            } else if (state is HomeLoaded) {
+              await loadingTimeService.stopAndRecordTime('Home View');
             }
           },
           child: BlocBuilder<HomeBloc, HomeState>(
