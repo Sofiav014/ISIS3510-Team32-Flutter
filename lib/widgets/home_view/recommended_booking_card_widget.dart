@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
@@ -55,6 +56,14 @@ class RecommendedBookingCardWidget extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () async {
+                    final connectivityState = connectivityBloc.state;
+
+                    if (connectivityState is ConnectivityOfflineState) {
+                      Navigator.of(dialogContext).pop();
+                      showNoConnectionErrorJoinBooking(context);
+                      return;
+                    }
+
                     Navigator.of(dialogContext).pop();
 
                     loadingBloc.add(ShowLoadingEvent());
@@ -103,11 +112,23 @@ class RecommendedBookingCardWidget extends StatelessWidget {
                 topLeft: Radius.circular(15.0),
                 bottomLeft: Radius.circular(15.0),
               ),
-              child: Image.network(
-                booking.venue.image,
+              child: CachedNetworkImage(
+                imageUrl: booking.venue.image,
                 width: 120,
                 height: 120,
                 fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(
+                    child: SizedBox(
+                  width: 120.0,
+                  height: 120.0,
+                  child: CircularProgressIndicator(),
+                )),
+                errorWidget: (context, url, error) => const Center(
+                    child: SizedBox(
+                  width: 120.0,
+                  height: 120.0,
+                  child: Icon(Icons.broken_image),
+                )),
               ),
             ),
             Expanded(
