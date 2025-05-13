@@ -23,19 +23,15 @@ class RecommendedBookingCardWidget extends StatelessWidget {
     required this.booking,
   });
 
-  // This method is placed inside the widget class
   void _processBookingInBackground(
       BuildContext context, BookingModel booking) async {
-    // Show loading indicator (optional, but can be helpful)
     try {
-      // Call the existing joinBookingIsolate method from the repository
       final user = await bookingRepository.joinBookingIsolate(
         booking: booking,
         user: context.read<AuthBloc>().state.userModel!,
         authBloc: context.read<AuthBloc>(),
       );
 
-      // Show the SnackBar after the isolate operation completes
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -53,8 +49,7 @@ class RecommendedBookingCardWidget extends StatelessWidget {
         }
       }
     } catch (e) {
-      // Handle errors if any
-      debugPrint('Error: $e');
+      debugPrint('❗️ Error: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -102,11 +97,10 @@ class RecommendedBookingCardWidget extends StatelessWidget {
 
                     Navigator.of(dialogContext).pop();
 
-                    // Show "Your booking is being processed" message
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Your booking is being processed...'),
-                        duration: Duration(seconds: 2), // Message duration
+                        duration: Duration(seconds: 2),
                       ),
                     );
 

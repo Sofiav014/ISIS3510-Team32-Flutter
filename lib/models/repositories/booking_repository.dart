@@ -256,7 +256,7 @@ class BookingRepository {
       return user;
     } catch (e) {
       debugPrint('❗️ Error creating booking: $e');
-      return null; // Handle errors appropriately
+      return null;
     }
   }
 
@@ -325,10 +325,10 @@ class BookingRepository {
         users: List<String>.from(booking.users),
       );
       user.bookings.add(bookingModelUpdated);
-      return user; // Return null if successful, or return the updated user model if needed
+      return user; 
     } catch (e) {
       debugPrint('❗️ Error joining booking: $e');
-      return null; // Handle errors appropriately
+      return null; 
     }
   }
 
@@ -448,8 +448,8 @@ class BookingRepository {
       await Isolate.spawn(_joinBookingIsolate, {
         'receivePort': receivePort.sendPort,
         'rootToken': rootIsolateToken,
-        'booking': bookingJson, // Encode booking to JSON
-        'user': userJson, // Encode user to JSON
+        'booking': bookingJson, 
+        'user': userJson, 
         'firebaseOptions': Firebase.app().options,
       });
     } else {
@@ -459,17 +459,9 @@ class BookingRepository {
     final UserModel? updatedUser = await receivePort.first;
 
     if (updatedUser != null) {
-      debugPrint('🤡 updatedUser : $updatedUser');
       user = updatedUser;
-      debugPrint('🤡 user : $user');
-
-      debugPrint(
-          '🤡 FirebaseAuth.instance.currentUser : ${FirebaseAuth.instance.currentUser}');
-
-      debugPrint('🤡 updating the user model');
       authBloc
           .add(AuthChangeModelEvent(FirebaseAuth.instance.currentUser, user));
-      debugPrint('🤡 user model updated');
     }
 
     return user;
@@ -495,9 +487,9 @@ class BookingRepository {
       await Isolate.spawn(_joinBookingFromVenueIsolate, {
         'receivePort': receivePort.sendPort,
         'rootToken': rootIsolateToken,
-        'booking': bookingJson, // Encode booking to JSON
-        'user': userJson, // Encode user to JSON
-        'venue': venueJson, // Encode venue to JSON
+        'booking': bookingJson, 
+        'user': userJson, 
+        'venue': venueJson, 
         'firebaseOptions': Firebase.app().options,
       });
     } else {
@@ -524,7 +516,6 @@ class BookingRepository {
     try {
       final firebaseOptions = params['firebaseOptions'] as FirebaseOptions;
 
-      debugPrint('🤡 firebaseOptions : $firebaseOptions');
       await Firebase.initializeApp(
         options: firebaseOptions,
       );
@@ -542,7 +533,7 @@ class BookingRepository {
       final venueDocSnapshot = await venueRef.get();
 
       if (!venueDocSnapshot.exists) {
-        sendPort.send(null); // Return null if venue not found
+        sendPort.send(null); 
         return;
       }
 
@@ -601,10 +592,10 @@ class BookingRepository {
       );
       user.bookings.add(bookingModelUpdated);
 
-      sendPort.send(user); // Send updated user back to the main isolate
+      sendPort.send(user); 
     } catch (e) {
       debugPrint('❗️ Error joining booking in isolate: $e');
-      sendPort.send(null); // Send null if there's an error
+      sendPort.send(null); 
     }
   }
 
@@ -722,10 +713,10 @@ class BookingRepository {
       );
 
       user.bookings.add(bookingModelUpdated);
-      sendPort.send(user); // Send updated user back to the main isolate
+      sendPort.send(user);
     } catch (e) {
       debugPrint('❗️ Error joining booking from venue in isolate: $e');
-      sendPort.send(null); // Send null if there's an error
+      sendPort.send(null); 
     }
   }
 }

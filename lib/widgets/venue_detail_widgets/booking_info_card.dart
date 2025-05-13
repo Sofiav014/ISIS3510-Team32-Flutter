@@ -40,7 +40,6 @@ class BookingInfoCard extends StatelessWidget {
         authBloc: context.read<AuthBloc>(),
       );
 
-      // Show the SnackBar after the isolate operation completes
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -61,8 +60,7 @@ class BookingInfoCard extends StatelessWidget {
         }
       }
     } catch (e) {
-      // Handle errors if any
-      debugPrint('Error: $e');
+      debugPrint('❗️ Error: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
