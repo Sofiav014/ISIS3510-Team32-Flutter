@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
-import 'package:isis3510_team32_flutter/core/booking_view_service.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,8 +11,6 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
 import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
-import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
-import 'package:isis3510_team32_flutter/view_models/loading/loading_event.dart';
 
 class RecommendedBookingCardWidget extends StatelessWidget {
   final BookingModel booking;
@@ -24,13 +21,49 @@ class RecommendedBookingCardWidget extends StatelessWidget {
     required this.booking,
   });
 
+  // This method is placed inside the widget class
+  void _processBookingInBackground(
+      BuildContext context, BookingModel booking) async {
+    // Show loading indicator (optional, but can be helpful)
+    try {
+      // Call the existing joinBookingIsolate method from the repository
+      final user = await bookingRepository.joinBookingIsolate(
+        booking: booking,
+        user: context.read<AuthBloc>().state.userModel!,
+        authBloc: context.read<AuthBloc>(),
+      );
+
+      // Show the SnackBar after the isolate operation completes
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              user != null
+                  ? 'Successfully joined the booking!'
+                  : 'Failed to join the booking.',
+            ),
+          ),
+        );
+
+        if (user != null) {
+          context.read<HomeBloc>().add(const LoadHomeData());
+        }
+      }
+    } catch (e) {
+      // Handle errors if any
+      debugPrint('Error: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('An error occurred while processing the booking.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final AuthBloc authBloc = context.read<AuthBloc>();
-    final loadingBloc = context.read<LoadingBloc>();
     final ConnectivityBloc connectivityBloc = context.read<ConnectivityBloc>();
-
-    final BookingViewService bookingViewService = BookingViewService();
 
     return GestureDetector(
       onTap: () {
@@ -66,31 +99,15 @@ class RecommendedBookingCardWidget extends StatelessWidget {
 
                     Navigator.of(dialogContext).pop();
 
-                    loadingBloc.add(ShowLoadingEvent());
-
-                    final user = await bookingRepository.joinBooking(
-                      booking: booking,
-                      user: authBloc.state.userModel!,
+                    // Show "Your booking is being processed" message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Your booking is being processed...'),
+                        duration: Duration(seconds: 2), // Message duration
+                      ),
                     );
 
-                    // Show the SnackBar after the async operation
-                    if (context.mounted) {
-                      loadingBloc.add(HideLoadingEvent());
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            user != null
-                                ? 'Successfully joined the booking!'
-                                : 'Failed to join the booking.',
-                          ),
-                        ),
-                      );
-
-                      if (user != null) {
-                        bookingViewService.recordView('Home View');
-                        context.read<HomeBloc>().add(const LoadHomeData());
-                      }
-                    }
+                    _processBookingInBackground(context, booking);
                   },
                   child: const Text('Yes'),
                 ),
