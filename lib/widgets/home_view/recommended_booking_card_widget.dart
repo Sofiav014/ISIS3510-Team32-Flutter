@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
+import 'package:isis3510_team32_flutter/core/booking_view_service.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,6 +16,7 @@ import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
 class RecommendedBookingCardWidget extends StatelessWidget {
   final BookingModel booking;
   final BookingRepository bookingRepository = BookingRepository();
+  final BookingViewService bookingViewService = BookingViewService();
 
   RecommendedBookingCardWidget({
     super.key,
@@ -46,6 +48,7 @@ class RecommendedBookingCardWidget extends StatelessWidget {
         );
 
         if (user != null) {
+          bookingViewService.recordView('Home View');
           context.read<HomeBloc>().add(const LoadHomeData());
         }
       }
