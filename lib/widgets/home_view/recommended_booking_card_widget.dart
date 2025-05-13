@@ -56,6 +56,14 @@ class RecommendedBookingCardWidget extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () async {
+                    final connectivityState = connectivityBloc.state;
+
+                    if (connectivityState is ConnectivityOfflineState) {
+                      Navigator.of(dialogContext).pop();
+                      showNoConnectionErrorJoinBooking(context);
+                      return;
+                    }
+
                     Navigator.of(dialogContext).pop();
 
                     loadingBloc.add(ShowLoadingEvent());

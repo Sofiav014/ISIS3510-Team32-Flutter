@@ -31,6 +31,21 @@ void showNoConnectionError(BuildContext context) {
   ).show(context);
 }
 
+void showNoConnectionErrorJoinBooking(BuildContext context) {
+  Flushbar(
+    title: "No Internet Connection",
+    message:
+        "Please check your internet connection and try again. You cannot join a booking without connection.",
+    icon: const Icon(
+      Icons.info_rounded,
+      size: 16,
+      color: Colors.red,
+    ),
+    leftBarIndicatorColor: Colors.red,
+    duration: const Duration(seconds: 5),
+  ).show(context);
+}
+
 void showIncompleteFieldsError(BuildContext context) {
   Flushbar(
     title: "Incomplete Fields",
