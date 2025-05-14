@@ -1,8 +1,17 @@
+import 'dart:convert';
+import 'dart:isolate';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:isis3510_team32_flutter/core/firebase_service.dart';
 import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 
 class BookingRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -247,7 +256,7 @@ class BookingRepository {
       return user;
     } catch (e) {
       debugPrint('❗️ Error creating booking: $e');
-      return null; // Handle errors appropriately
+      return null;
     }
   }
 
@@ -316,10 +325,10 @@ class BookingRepository {
         users: List<String>.from(booking.users),
       );
       user.bookings.add(bookingModelUpdated);
-      return user; // Return null if successful, or return the updated user model if needed
+      return user; 
     } catch (e) {
       debugPrint('❗️ Error joining booking: $e');
-      return null; // Handle errors appropriately
+      return null; 
     }
   }
 
@@ -419,6 +428,295 @@ class BookingRepository {
     } catch (e) {
       debugPrint('❗️ Error joining booking: $e');
       return null;
+    }
+  }
+
+  Future<UserModel?> joinBookingIsolate({
+    required BookingModel booking,
+    required UserModel user,
+    required AuthBloc authBloc,
+  }) async {
+    final receivePort = ReceivePort();
+
+    final rootIsolateToken = RootIsolateToken.instance;
+
+    final bookingJson = jsonEncode(booking.toJsonSerializable());
+
+    final userJson = jsonEncode(user.toJsonSerializable());
+
+    if (rootIsolateToken != null) {
+      await Isolate.spawn(_joinBookingIsolate, {
+        'receivePort': receivePort.sendPort,
+        'rootToken': rootIsolateToken,
+        'booking': bookingJson, 
+        'user': userJson, 
+        'firebaseOptions': Firebase.app().options,
+      });
+    } else {
+      return null;
+    }
+
+    final UserModel? updatedUser = await receivePort.first;
+
+    if (updatedUser != null) {
+      user = updatedUser;
+      authBloc
+          .add(AuthChangeModelEvent(FirebaseAuth.instance.currentUser, user));
+    }
+
+    return user;
+  }
+
+  Future<UserModel?> joinBookingFromVenueIsolate({
+    required BookingModel booking,
+    required UserModel user,
+    required VenueModel venue,
+    required AuthBloc authBloc,
+  }) async {
+    final receivePort = ReceivePort();
+
+    final rootIsolateToken = RootIsolateToken.instance;
+
+    final bookingJson = jsonEncode(booking.toJsonSerializable());
+
+    final venueJson = jsonEncode(venue.toJsonSerializable());
+
+    final userJson = jsonEncode(user.toJsonSerializable());
+
+    if (rootIsolateToken != null) {
+      await Isolate.spawn(_joinBookingFromVenueIsolate, {
+        'receivePort': receivePort.sendPort,
+        'rootToken': rootIsolateToken,
+        'booking': bookingJson, 
+        'user': userJson, 
+        'venue': venueJson, 
+        'firebaseOptions': Firebase.app().options,
+      });
+    } else {
+      return null;
+    }
+
+    final UserModel? updatedUser = await receivePort.first;
+
+    if (updatedUser != null) {
+      authBloc.add(
+          AuthChangeModelEvent(FirebaseAuth.instance.currentUser, updatedUser));
+    }
+
+    return updatedUser;
+  }
+
+  void _joinBookingIsolate(Map<String, dynamic> params) async {
+    final sendPort = params['receivePort'] as SendPort;
+
+    final rootIsolateToken = params['rootToken'] as RootIsolateToken;
+
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+
+    try {
+      final firebaseOptions = params['firebaseOptions'] as FirebaseOptions;
+
+      await Firebase.initializeApp(
+        options: firebaseOptions,
+      );
+
+      final bookingJson = params['booking'] as String;
+
+      final userJson = params['user'] as String;
+
+      final booking = BookingModel.fromJson(jsonDecode(bookingJson));
+
+      final user = UserModel.fromJson(jsonDecode(userJson));
+
+      final firestore = FirebaseService.instance.firestore;
+      final venueRef = firestore.collection('venues').doc(booking.venue.id);
+      final venueDocSnapshot = await venueRef.get();
+
+      if (!venueDocSnapshot.exists) {
+        sendPort.send(null); 
+        return;
+      }
+
+      booking.users.add(user.id);
+
+      DocumentReference bookingRef =
+          firestore.collection('bookings').doc(booking.id);
+
+      await bookingRef.update({
+        'users': FieldValue.arrayUnion([user.id]),
+      });
+
+      await firestore.collection('users').doc(user.id).update({
+        'bookings': FieldValue.arrayUnion([booking.toJson()]),
+      });
+
+      List<dynamic> venueBookings = venueDocSnapshot.data()?['bookings'] ?? [];
+      final bookingIndex = venueBookings.indexWhere(
+        (b) => b['id'] == booking.id,
+      );
+
+      if (bookingIndex != -1) {
+        venueBookings[bookingIndex]['users'] =
+            List<String>.from(venueBookings[bookingIndex]['users'] ?? [])
+              ..add(user.id);
+
+        await venueRef.update({'bookings': venueBookings});
+      }
+
+      for (var userId in booking.users) {
+        if (userId != user.id) {
+          final userRef = firestore.collection('users').doc(userId);
+          final userDocSnapshot = await userRef.get();
+
+          List<dynamic> userBookings =
+              userDocSnapshot.data()?['bookings'] ?? [];
+          final userBookingIndex = userBookings.indexWhere(
+            (b) => b['id'] == booking.id,
+          );
+          if (userBookingIndex != -1) {
+            userBookings[userBookingIndex]['users'] =
+                List<String>.from(userBookings[userBookingIndex]['users'] ?? [])
+                  ..add(user.id);
+            await userRef.update({'bookings': userBookings});
+          }
+        }
+      }
+
+      final bookingModelUpdated = BookingModel(
+        id: booking.id,
+        maxUsers: booking.maxUsers,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        venue: booking.venue,
+        users: List<String>.from(booking.users),
+      );
+      user.bookings.add(bookingModelUpdated);
+
+      sendPort.send(user); 
+    } catch (e) {
+      debugPrint('❗️ Error joining booking in isolate: $e');
+      sendPort.send(null); 
+    }
+  }
+
+  void _joinBookingFromVenueIsolate(Map<String, dynamic> params) async {
+    final sendPort = params['receivePort'] as SendPort;
+
+    final rootIsolateToken = params['rootToken'] as RootIsolateToken;
+
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+
+    try {
+      final firebaseOptions = params['firebaseOptions'] as FirebaseOptions;
+
+      await Firebase.initializeApp(
+        options: firebaseOptions,
+      );
+
+      final bookingJson = params['booking'] as String;
+
+      final userJson = params['user'] as String;
+
+      final venueJson = params['venue'] as String;
+
+      final booking = BookingModel.fromJson(jsonDecode(bookingJson));
+
+      final user = UserModel.fromJson(jsonDecode(userJson));
+
+      final venue = VenueModel.fromJson(jsonDecode(venueJson));
+
+      final firestore = FirebaseService.instance.firestore;
+
+      final venueRef = firestore.collection('venues').doc(venue.id);
+
+      final venueDocSnapshot = await venueRef.get();
+      if (!venueDocSnapshot.exists) {
+        return null;
+      }
+
+      booking.users.add(user.id);
+
+      final venueModel = {
+        'coords': venue.coords,
+        'id': venue.id,
+        'image': venue.image,
+        'location_name': venue.locationName,
+        'name': venue.name,
+        'rating': venue.rating,
+        'sport': {
+          'id': venue.sport.id,
+          'logo': venue.sport.logo,
+          'name': venue.sport.name,
+        }
+      };
+
+      final bookingModel = {
+        'id': booking.id,
+        'maxUsers': booking.maxUsers,
+        'start_time': booking.startTime,
+        'end_time': booking.endTime,
+        'venue': venueModel,
+        'users': booking.users
+      };
+
+      DocumentReference bookingRef =
+          firestore.collection('bookings').doc(booking.id);
+      await bookingRef.update({
+        'users': FieldValue.arrayUnion([user.id]),
+      });
+
+      await firestore.collection('users').doc(user.id).update({
+        'bookings': FieldValue.arrayUnion([bookingModel]),
+      });
+
+      List<dynamic> venueBookings = venueDocSnapshot.data()?['bookings'] ?? [];
+
+      final bookingIndex = venueBookings.indexWhere(
+        (b) => b['id'] == booking.id,
+      );
+
+      if (bookingIndex != -1) {
+        venueBookings[bookingIndex]['users'] =
+            List<String>.from(venueBookings[bookingIndex]['users'] ?? [])
+              ..add(user.id);
+
+        await venueRef.update({'bookings': venueBookings});
+      }
+
+      for (var userId in booking.users) {
+        if (userId != user.id) {
+          final userRef = firestore.collection('users').doc(userId);
+          final userDocSnapshot = await userRef.get();
+
+          List<dynamic> userBookings =
+              userDocSnapshot.data()?['bookings'] ?? [];
+
+          final userBookingIndex = userBookings.indexWhere(
+            (b) => b['id'] == booking.id,
+          );
+          if (userBookingIndex != -1) {
+            userBookings[userBookingIndex]['users'] =
+                List<String>.from(userBookings[userBookingIndex]['users'] ?? [])
+                  ..add(user.id);
+            await userRef.update({'bookings': userBookings});
+          }
+        }
+      }
+
+      final bookingModelUpdated = BookingModel(
+        id: booking.id,
+        maxUsers: booking.maxUsers,
+        startTime: booking.startTime,
+        endTime: booking.endTime,
+        venue: VenueModel.fromJson(venueModel),
+        users: List<String>.from(booking.users),
+      );
+
+      user.bookings.add(bookingModelUpdated);
+      sendPort.send(user);
+    } catch (e) {
+      debugPrint('❗️ Error joining booking from venue in isolate: $e');
+      sendPort.send(null); 
     }
   }
 }

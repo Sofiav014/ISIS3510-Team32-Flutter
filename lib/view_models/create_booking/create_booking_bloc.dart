@@ -30,7 +30,6 @@ class CreateBookingBloc extends Bloc<CreateBookingEvent, CreateBookingState> {
           state.timeSlot != null &&
           state.maxUsers != null &&
           state.maxUsers! > 0) {
-            
         final updatedUserModel = await bookingRepository.createBooking(
           date: state.date!,
           timeSlot: state.timeSlot!,

@@ -10,15 +10,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
-import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
-import 'package:isis3510_team32_flutter/view_models/loading/loading_event.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
+import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/venue_detail/venue_detail_bloc.dart';
 
 class BookingInfoCard extends StatelessWidget {
   final VenueModel venue;
   final BookingModel booking;
   final BookingRepository bookingRepository = BookingRepository();
+  final BookingViewService bookingViewService = BookingViewService();
 
   BookingInfoCard({super.key, required this.venue, required this.booking});
 
@@ -30,12 +30,49 @@ class BookingInfoCard extends StatelessWidget {
     }
   }
 
+  void _processBookingInBackground(
+      BuildContext context, BookingModel booking, VenueModel venue) async {
+    try {
+      final user = await bookingRepository.joinBookingFromVenueIsolate(
+        booking: booking,
+        user: context.read<AuthBloc>().state.userModel!,
+        venue: venue,
+        authBloc: context.read<AuthBloc>(),
+      );
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              user != null
+                  ? 'Successfully joined the booking!'
+                  : 'Failed to join the booking.',
+            ),
+          ),
+        );
+
+        if (user != null) {
+          bookingViewService.recordView('Venue Detail View');
+          context
+              .read<VenueDetailBloc>()
+              .add(LoadVenueDetailData(venueId: venue.id));
+          context.read<HomeBloc>().add(const LoadHomeData());
+        }
+      }
+    } catch (e) {
+      debugPrint('❗️ Error: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('An error occurred while processing the booking.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final AuthBloc authBloc = context.read<AuthBloc>();
-    final loadingBloc = context.read<LoadingBloc>();
     final ConnectivityBloc connectivityBloc = context.read<ConnectivityBloc>();
-    final BookingViewService bookingViewService = BookingViewService();
 
     return GestureDetector(
       onTap: () {
@@ -71,33 +108,14 @@ class BookingInfoCard extends StatelessWidget {
 
                     Navigator.of(dialogContext).pop();
 
-                    loadingBloc.add(ShowLoadingEvent());
-
-                    final user = await bookingRepository.joinBookingFromVenue(
-                      booking: booking,
-                      user: authBloc.state.userModel!,
-                      venue: venue,
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Your booking is being processed...'),
+                        duration: Duration(seconds: 2),
+                      ),
                     );
 
-                    if (context.mounted) {
-                      loadingBloc.add(HideLoadingEvent());
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            user != null
-                                ? 'Successfully joined the booking!'
-                                : 'Failed to join the booking.',
-                          ),
-                        ),
-                      );
-
-                      if (user != null) {
-                        bookingViewService.recordView('Venue Detail View');
-                        context
-                            .read<VenueDetailBloc>()
-                            .add(LoadVenueDetailData(venueId: venue.id));
-                      }
-                    }
+                    _processBookingInBackground(context, booking, venue);
                   },
                   child: const Text('Yes'),
                 ),

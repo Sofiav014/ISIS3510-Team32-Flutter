@@ -12,25 +12,56 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
 import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
-import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
-import 'package:isis3510_team32_flutter/view_models/loading/loading_event.dart';
 
 class RecommendedBookingCardWidget extends StatelessWidget {
   final BookingModel booking;
   final BookingRepository bookingRepository = BookingRepository();
+  final BookingViewService bookingViewService = BookingViewService();
 
   RecommendedBookingCardWidget({
     super.key,
     required this.booking,
   });
 
+  void _processBookingInBackground(
+      BuildContext context, BookingModel booking) async {
+    try {
+      final user = await bookingRepository.joinBookingIsolate(
+        booking: booking,
+        user: context.read<AuthBloc>().state.userModel!,
+        authBloc: context.read<AuthBloc>(),
+      );
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              user != null
+                  ? 'Successfully joined the booking!'
+                  : 'Failed to join the booking.',
+            ),
+          ),
+        );
+
+        if (user != null) {
+          bookingViewService.recordView('Home View');
+          context.read<HomeBloc>().add(const LoadHomeData());
+        }
+      }
+    } catch (e) {
+      debugPrint('❗️ Error: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('An error occurred while processing the booking.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final AuthBloc authBloc = context.read<AuthBloc>();
-    final loadingBloc = context.read<LoadingBloc>();
     final ConnectivityBloc connectivityBloc = context.read<ConnectivityBloc>();
-
-    final BookingViewService bookingViewService = BookingViewService();
 
     return GestureDetector(
       onTap: () {
@@ -66,31 +97,14 @@ class RecommendedBookingCardWidget extends StatelessWidget {
 
                     Navigator.of(dialogContext).pop();
 
-                    loadingBloc.add(ShowLoadingEvent());
-
-                    final user = await bookingRepository.joinBooking(
-                      booking: booking,
-                      user: authBloc.state.userModel!,
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Your booking is being processed...'),
+                        duration: Duration(seconds: 2),
+                      ),
                     );
 
-                    // Show the SnackBar after the async operation
-                    if (context.mounted) {
-                      loadingBloc.add(HideLoadingEvent());
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            user != null
-                                ? 'Successfully joined the booking!'
-                                : 'Failed to join the booking.',
-                          ),
-                        ),
-                      );
-
-                      if (user != null) {
-                        bookingViewService.recordView('Home View');
-                        context.read<HomeBloc>().add(const LoadHomeData());
-                      }
-                    }
+                    _processBookingInBackground(context, booking);
                   },
                   child: const Text('Yes'),
                 ),
