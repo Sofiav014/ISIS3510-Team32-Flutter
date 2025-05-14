@@ -11,7 +11,9 @@ class AuthRepository {
           fromFirestore: UserModel.fromFirestore,
           toFirestore: (UserModel uM, _) => uM.toFirestore(),
         );
-    return (await userModelRef.get()).data();
+    return (await userModelRef
+            .get(const GetOptions(source: Source.serverAndCache)))
+        .data();
   }
 
   Future<void> uploadUser(UserModel userModel) async {

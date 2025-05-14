@@ -108,8 +108,12 @@ class HomeRepository {
 
     final highestRated = VenueModelHive.fromModel(report['highestRatedVenue']);
     final mostBooked = VenueModelHive.fromModel(report['mostBookedVenue']);
-    final mostPlayedSport = SportModelHive.fromModel(report['mostPlayedSport']);
-    final mostPlayedSportCount = report['mostPlayedSportCount'];
+    final mostPlayedSport = report['mostPlayedSport'] != null
+        ? SportModelHive.fromModel(report['mostPlayedSport'])
+        : null;
+    final mostPlayedSportCount = report['mostPlayedSport'] != null
+        ? report['mostPlayedSportCount']
+        : null;
 
     await box.put('upcoming_bookings', upcomingHive);
     await box.put('highestRatedVenue', highestRated);

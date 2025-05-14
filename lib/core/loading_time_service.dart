@@ -57,4 +57,45 @@ class LoadingTimeService with ChangeNotifier {
 
     _startTime = null;
   }
+
+  Future<void> recordThemeSelection(String theme, bool isFirstTime) async {
+    final docRef = _firestore.collection('analytics').doc('theme_selection');
+
+    try {
+      final docSnapshot = await docRef.get();
+
+      if (!docSnapshot.exists) {
+        // Initialize both counts
+        await docRef.set({
+          'light': theme == 'light' ? 1 : 0,
+          'dark': theme == 'dark' ? 1 : 0,
+        });
+        debugPrint('✅ Initialized theme selection counts');
+        return;
+      }
+
+      final currentData = docSnapshot.data()!;
+      final int lightCount = (currentData['light'] ?? 0) as int;
+      final int darkCount = (currentData['dark'] ?? 0) as int;
+
+      Map<String, int> updates = {};
+
+      if (theme == 'light') {
+        updates['light'] = lightCount + 1;
+        if (!isFirstTime) {
+          updates['dark'] = (darkCount > 0) ? darkCount - 1 : 0;
+        }
+      } else if (theme == 'dark') {
+        updates['dark'] = darkCount + 1;
+        if (!isFirstTime) {
+          updates['light'] = (lightCount > 0) ? lightCount - 1 : 0;
+        }
+      }
+
+      await docRef.update(updates);
+      debugPrint('✅ Updated theme selection counts: $updates');
+    } catch (error) {
+      debugPrint('❗️ Error updating theme selection: $error');
+    }
+  }
 }
