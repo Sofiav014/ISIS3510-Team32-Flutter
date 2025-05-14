@@ -22,7 +22,7 @@ import 'package:sign_in_button/sign_in_button.dart';
 class GoogleSignInButton extends StatelessWidget {
   const GoogleSignInButton({super.key});
 
-  Future<UserCredential?> signInWithGoogle(BuildContext context) async {
+  Future<void> signInWithGoogle(BuildContext context) async {
     final loadingBloc = context.read<LoadingBloc>();
     final authBloc = context.read<AuthBloc>();
 
@@ -33,34 +33,30 @@ class GoogleSignInButton extends StatelessWidget {
     if (currentUser != null) {
       // User is already signed in, return their credentials
       loadingBloc.add(HideLoadingEvent());
-      return FirebaseAuth.instance.currentUser as UserCredential?;
+      return;
     }
 
     // Begin interactive sign-in process
     final googleSignIn = GoogleSignIn();
 
     // Sign out any cached GoogleSignIn user to force "Choose account" screen
+    debugPrint(
+        '======================== STARTING SIGN OUT ==================================');
     await googleSignIn.signOut();
+    debugPrint(
+        '======================== SIGNED OUT ==================================');
     GoogleSignInAccount? gUser;
 
-    bool timedOut = false;
+    debugPrint(
+        '======================== STARTED SIGN IN ==================================');
+    gUser = await googleSignIn.signIn();
 
-    try {
-      gUser = await googleSignIn.signIn().timeout(
-            const Duration(seconds: 20),
-          );
-    } on TimeoutException {
-      timedOut = true;
-    }
-
-    if (gUser == null || timedOut) {
+    if (gUser == null) {
       loadingBloc.add(HideLoadingEvent());
-      if (timedOut) {
-        // ignore: use_build_context_synchronously
-        showFailedToAuthenticateError(context);
-      }
       return null;
     }
+    debugPrint(
+        '======================== FINISHED SIGN IN ==================================');
 
     final GoogleSignInAuthentication gAuth = await gUser.authentication;
 
@@ -85,19 +81,23 @@ class GoogleSignInButton extends StatelessWidget {
       'uid': user!.uid,
     });
 
-    debugPrint(
-        "======================SPAWNED THE ISOLATE=====================");
-
     final userModelJson =
         await userModelRecievePort.first as Map<String, dynamic>?;
 
-    debugPrint(
-        "======================GOT A RESULT THROUGH THE PORT=====================");
-
     authBloc.add(AuthChangeModelEvent(user,
         userModelJson != null ? UserModel.fromJson(userModelJson) : null));
+
     loadingBloc.add(HideLoadingEvent());
-    return null;
+  }
+
+  Future<void> attemptSignInWithGoogle(BuildContext context) async {
+    final loadingBloc = context.read<LoadingBloc>();
+    try {
+      await signInWithGoogle(context);
+    } catch (e) {
+      showFailedToAuthenticateError(context);
+      loadingBloc.add(HideLoadingEvent());
+    }
   }
 
   void isolateUserFetch(Map<String, dynamic> args) async {
@@ -125,7 +125,7 @@ class GoogleSignInButton extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         onPressed: () async {
           if (state is ConnectivityOnlineState) {
-            signInWithGoogle(context);
+            attemptSignInWithGoogle(context);
           } else {
             showFailedToAuthenticateError(context);
             connectivityBloc.add(ConnectivityRequestedFetchEvent());
