@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:isis3510_team32_flutter/core/theme_frecuency_service.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_event.dart';

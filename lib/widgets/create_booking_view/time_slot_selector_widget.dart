@@ -145,7 +145,7 @@ class TimeSlotSelectorWidget extends StatelessWidget {
                                     iconSize: 20,
                                     style: const TextStyle(fontSize: 14),
                                     items: List.generate(
-                                            12, (index) => index + 1)
+                                            22, (index) => index + 1)
                                         .map((playerCount) =>
                                             DropdownMenuItem<int>(
                                               value: playerCount,
