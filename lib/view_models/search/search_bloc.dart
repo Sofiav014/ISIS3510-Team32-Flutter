@@ -15,7 +15,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       LoadSearchData event, Emitter<SearchState> emit) async {
     emit(SearchLoading());
     try {
-      final sports = initiationSports.values.toList();
+      final sports = sportLocal.values.toList();
       emit(SearchLoaded(sports: sports));
     } catch (e) {
       emit(SearchError('Failed to load search data: $e'));

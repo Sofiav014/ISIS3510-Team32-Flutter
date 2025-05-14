@@ -352,7 +352,7 @@ class ProfileCardFavoriteSportsWidget extends StatelessWidget {
                         child: ClipOval(
                           child: Center(
                             child: SvgPicture.asset(
-                              initiationSports[sport.id]!.logo,
+                              sportLocal[sport.id]!.logo,
                               width: 40,
                               height: 40,
                               colorFilter: const ColorFilter.mode(
