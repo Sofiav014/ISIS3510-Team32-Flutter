@@ -39,8 +39,7 @@ class VenueListBloc extends Bloc<VenueListEvent, VenueListState> {
             return;
           }
 
-          bool isLocationServiceEnabled =
-          await Geolocator.isLocationServiceEnabled();
+          bool isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
 
           if (!isLocationServiceEnabled) {
             venueList = venueList.map((venue) {

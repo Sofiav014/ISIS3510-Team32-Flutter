@@ -26,8 +26,7 @@ class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
       required this.authBloc})
       : super(VenueDetailInitial()) {
     on<LoadVenueDetailData>(_onLoadVenueDetailData);
-    _connectivitySubscription =
-        connectivityRepository.connectivityChanges.listen((isConnected) {
+    _connectivitySubscription = connectivityRepository.connectivityChanges.listen((isConnected) {
       if (isConnected) add(LoadVenueDetailData(venueId: venueId));
     });
   }
@@ -49,8 +48,7 @@ class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
       } else {
         final venue = await venueRepository.getCachedVenueById(venueId);
         if (venue != null) {
-          emit(
-              VenueDetailOfflineLoaded(venue: venue, activeBookings: const []));
+          emit(VenueDetailOfflineLoaded(venue: venue, activeBookings: const []));
         } else {
           emit(const VenueDetailError(message: 'Venue not found'));
         }

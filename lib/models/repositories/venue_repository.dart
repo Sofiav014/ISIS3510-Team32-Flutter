@@ -1,39 +1,58 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'package:isis3510_team32_flutter/core/firebase_service.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
+import 'package:flutter/services.dart';
+import 'package:isis3510_team32_flutter/models/data_structures/lru_cache.dart';
+
+import 'dart:async';
+import 'dart:isolate';
 
 class VenueRepository {
   VenueRepository._internal();
 
   static final VenueRepository _instance = VenueRepository._internal();
 
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   factory VenueRepository() {
     return _instance;
   }
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  final Map<String, VenueModel> _venueCache = {};
+  final LRUCache<String, VenueModel> _venueCache =  LRUCache(maxSize: 20);
 
   Future<List<VenueModel>> getVenuesBySportId(String sportName) async {
     try {
-      QuerySnapshot querySnapshot = await _firestore
-          .collection('venues')
-          .where('sport.name', isEqualTo: sportName)
-          .get();
 
-      List<VenueModel> sportVenues = querySnapshot.docs.map((doc) {
-        Map<String, dynamic> venueData = doc.data() as Map<String, dynamic>;
-        venueData['id'] = doc.id;
-        return VenueModel.fromJson(venueData);
-      }).toList();
+      final receivePort = ReceivePort();
+      final rootIsolateToken = RootIsolateToken.instance;
 
-      for (VenueModel sportVenue in sportVenues) {
-        _venueCache[sportVenue.id] = sportVenue;
+      if (rootIsolateToken != null) {
+        Map<String, dynamic> params = {
+          'sportName': sportName,
+          'rootIsolateToken': rootIsolateToken,
+          'sendPort':receivePort.sendPort,
+          'firebaseOptions': Firebase.app().options
+        };
+        await Isolate.spawn(_venuesBySportIdIsolate, params);
+
+        final List<VenueModel>? sportVenues = await receivePort.first;
+
+        if (sportVenues != null){
+          for (VenueModel sportVenue in sportVenues) {
+            _venueCache.put(sportVenue.id, sportVenue);
+          }
+          return sportVenues;
+        }
+        else{
+          return [];
+        }
+      }else {
+        return [];
       }
-
-      return sportVenues;
     } catch (e) {
       debugPrint('❗️ Error fetching venues: $e');
       return [];
@@ -44,8 +63,8 @@ class VenueRepository {
     try {
       List<VenueModel> sportVenues = <VenueModel>[];
 
-      for (String venueId in _venueCache.keys) {
-        VenueModel venue = _venueCache[venueId]!;
+      for (String venueId in _venueCache.getKeys()) {
+        VenueModel venue = _venueCache.get(venueId)!;
         if (venue.sport.name == sportName) {
           sportVenues.add(venue);
         }
@@ -60,6 +79,7 @@ class VenueRepository {
   Future<VenueModel?> getVenueById(String venueId) async {
     try {
       if (!_venueCache.containsKey(venueId)) {
+
         DocumentSnapshot documentSnapshot =
             await _firestore.collection('venues').doc(venueId).get();
 
@@ -67,12 +87,12 @@ class VenueRepository {
           Map<String, dynamic> venueData =
               documentSnapshot.data() as Map<String, dynamic>;
           venueData['id'] = documentSnapshot.id;
-          _venueCache[venueId] = VenueModel.fromJson(venueData);
+          _venueCache.put(venueId, VenueModel.fromJson(venueData));
         } else {
           return null;
         }
       }
-      return _venueCache[venueId];
+      return _venueCache.get(venueId);
     } catch (e) {
       debugPrint('❗️ Error fetching venue by ID: $e');
       return null;
@@ -84,7 +104,7 @@ class VenueRepository {
       if (!_venueCache.containsKey(venueId)) {
         return null;
       } else {
-        return _venueCache[venueId];
+        return _venueCache.get(venueId);
       }
     } catch (e) {
       debugPrint('❗️ Error fetching venue by ID: $e');
@@ -118,6 +138,42 @@ class VenueRepository {
     } catch (e) {
       debugPrint('❗️ Error fetching active bookings: $e');
       return [];
+    }
+  }
+
+  void _venuesBySportIdIsolate(Map<String, dynamic> params) async {
+    final sendPort = params['sendPort'] as SendPort;
+
+    final rootIsolateToken = params['rootIsolateToken'] as RootIsolateToken;
+
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+
+    final sportName = params['sportName'] as String;
+
+    try {
+      final firebaseOptions = params['firebaseOptions'] as FirebaseOptions;
+
+      await Firebase.initializeApp( options: firebaseOptions);
+
+      final firestore = FirebaseService.instance.firestore;
+
+      QuerySnapshot querySnapshot = await firestore
+          .collection('venues')
+          .where('sport.name', isEqualTo: sportName)
+          .get();
+
+      List<VenueModel> sportVenues = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> venueData = doc.data() as Map<String, dynamic>;
+        venueData['id'] = doc.id;
+        return VenueModel.fromJson(venueData);
+      }).toList();
+
+      // Send the processed list back to the main isolate
+      sendPort.send(sportVenues);
+    } catch (e) {
+      debugPrint('❗️ Error fetching venues in isolate: $e');
+      // If an error occurs, you might want to send an empty list or an error indicator back
+      sendPort.send([]);
     }
   }
 }
