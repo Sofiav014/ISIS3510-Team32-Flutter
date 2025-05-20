@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:isis3510_team32_flutter/core/screen_time_service.dart';
+import 'package:isis3510_team32_flutter/core/theme_frecuency_service.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
+import 'package:isis3510_team32_flutter/views/create_booking_view.dart';
 import 'package:isis3510_team32_flutter/views/initiation_view.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
 import 'package:isis3510_team32_flutter/views/search_view.dart';
 import 'package:isis3510_team32_flutter/views/venue_list_view.dart';
 import 'package:isis3510_team32_flutter/views/home_view.dart';
 import 'package:isis3510_team32_flutter/views/profile_view.dart';
+import 'package:isis3510_team32_flutter/views/venue_detail_view.dart';
 
 CustomTransitionPage buildPageWithNoTransition<T>({
   required BuildContext context,
@@ -24,6 +28,8 @@ CustomTransitionPage buildPageWithNoTransition<T>({
 
 GoRouter setupRouter(AuthBloc authBloc) {
   final authNotifier = AuthRouterNotifier(authBloc);
+  final screenTimeService = ScreenTimeService();
+  final themeFrecuencyService = ThemeFrecuencyService();
 
   return GoRouter(
     initialLocation: '/login',
@@ -73,9 +79,38 @@ GoRouter setupRouter(AuthBloc authBloc) {
         },
       ),
       GoRoute(
+        path: '/venue_detail/:sportId/:venueId',
+        pageBuilder: (context, state) {
+          final venueId = state.pathParameters['venueId']!;
+          final sportId = state.pathParameters['sportId']!;
+          return buildPageWithNoTransition(
+            context: context,
+            state: state,
+            child: VenueDetailView(sportId: sportId, venueId: venueId),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/create_booking/:venueId',
+        pageBuilder: (context, state) {
+          final venueId = state.pathParameters['venueId']!;
+          return buildPageWithNoTransition(
+            context: context,
+            state: state,
+            child: CreateBookingView(
+                venueId: venueId, screenTimeService: screenTimeService),
+          );
+        },
+      ),
+      GoRoute(
           path: '/initiation',
           pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context, state: state, child: const InitiationView())),
+              context: context,
+              state: state,
+              child: InitiationView(
+                screenTimeService: screenTimeService,
+                themeFrecuencyService: themeFrecuencyService,
+              ))),
       GoRoute(
           path: '/profile',
           pageBuilder: (context, state) => buildPageWithNoTransition(

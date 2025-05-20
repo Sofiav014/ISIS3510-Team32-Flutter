@@ -2,25 +2,42 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
-import 'package:isis3510_team32_flutter/models/user_model.dart';
+import 'package:isis3510_team32_flutter/core/screen_time_service.dart';
+import 'package:isis3510_team32_flutter/core/theme_frecuency_service.dart';
+import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_event.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_event.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_state.dart';
-import 'package:isis3510_team32_flutter/widgets/initiation_date_picker_widget.dart';
-import 'package:isis3510_team32_flutter/widgets/icon_selection_button_widget.dart';
-
-import '../widgets/initiation_icon_toggle_button_widget.dart';
+import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/loading/loading_event.dart';
+import 'package:isis3510_team32_flutter/widgets/initiation_view/icon_selection_button_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/initiation_view/initiation_date_picker_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/initiation_view/initiation_icon_toggle_button_widget.dart';
 
 class InitiationView extends StatelessWidget {
-  const InitiationView({super.key});
+  final ScreenTimeService screenTimeService;
+  final ThemeFrecuencyService themeFrecuencyService;
+
+  const InitiationView(
+      {super.key,
+      required this.screenTimeService,
+      required this.themeFrecuencyService});
 
   @override
   Widget build(BuildContext context) {
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Initiation View');
+
+    screenTimeService.startTrackingTime();
 
     final size = MediaQuery.of(context).size;
     final aspectRatio = size.width / size.height;
@@ -37,19 +54,17 @@ class InitiationView extends StatelessWidget {
 
         if (initiationBloc.state.currentStep > 0) {
           initiationBloc.add(InitiationPreviousStepEvent());
-        } else {
-          Navigator.of(context).pop(result);
         }
       },
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         body: SafeArea(
           child: SingleChildScrollView(
             padding: EdgeInsets.only(
               top: topPadding,
               left: 16,
               right: 16,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+              bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
             child: SizedBox(
               height: MediaQuery.of(context).size.height -
@@ -64,11 +79,14 @@ class InitiationView extends StatelessWidget {
                       Expanded(
                         child: IndexedStack(
                           index: state.currentStep,
-                          children: const [
-                            InitiationNameView(),
-                            InititationGenderView(),
-                            InititationAgeView(),
-                            InitiationSportView(),
+                          children: [
+                            const InitiationNameView(),
+                            const InititationGenderView(),
+                            const InititationAgeView(),
+                            InitiationSportView(
+                              screenTimeService: screenTimeService,
+                              themeFrecuencyService: themeFrecuencyService,
+                            ),
                           ],
                         ),
                       ),
@@ -109,6 +127,7 @@ class _InitiationNameViewState extends State<InitiationNameView> {
   @override
   Widget build(BuildContext context) {
     final initiationBloc = context.read<InitiationBloc>();
+
     final size = MediaQuery.of(context).size;
     final aspectRatio = size.width / size.height;
     final isHorizontal = aspectRatio > 1.2;
@@ -344,12 +363,19 @@ class InititationAgeView extends StatelessWidget {
 }
 
 class InitiationSportView extends StatelessWidget {
-  const InitiationSportView({super.key});
+  final ScreenTimeService screenTimeService;
+  final ThemeFrecuencyService themeFrecuencyService;
+  const InitiationSportView(
+      {super.key,
+      required this.screenTimeService,
+      required this.themeFrecuencyService});
 
   @override
   Widget build(BuildContext context) {
     final initiationBloc = context.read<InitiationBloc>();
     final authBloc = context.read<AuthBloc>();
+    final loadingBloc = context.read<LoadingBloc>();
+    final connectivityBloc = context.read<ConnectivityBloc>();
 
     final size = MediaQuery.of(context).size;
     final aspectRatio = size.width / size.height;
@@ -362,112 +388,141 @@ class InitiationSportView extends StatelessWidget {
     final double iconSpacing = isHorizontal ? 0 : 4;
     final double spacingBetweenQuestion = isHorizontal ? 32 : 64;
 
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              const Text(
-                "We want to know you better",
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
+    return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (previous, current) =>
+          !previous.hasModel && current.hasModel && current.user != null,
+      listener: (context, state) {
+        context.go("/home");
+        initiationBloc.add(InitiationClearEvent());
+        loadingBloc.add(HideLoadingEvent());
+      },
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Text(
+                  "We want to know you better",
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(
-                height: spacingBetweenQuestion,
-              ),
-              const Text(
-                "Choose the sports you are interested in",
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: 20,
+                SizedBox(
+                  height: spacingBetweenQuestion,
                 ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(
-                height: 32,
-              ),
-              SizedBox(
-                width: 320,
-                child: GridView.count(
-                  crossAxisCount: gridRowLength,
-                  shrinkWrap: true,
-                  mainAxisSpacing: 10.0, // Spacing between rows
-                  crossAxisSpacing: 10.0, // Spacing between columns
-                  padding: const EdgeInsets.all(
-                      10.0), // Padding around the entire grid
-                  children: [
-                    InitiationIconSelectionToggle(
-                      text: "Basketball",
-                      imageAsset: "assets/icons/initiation/basketball-logo.svg",
-                      sport: initiationSports["basketball"]!,
-                      size: imageSize,
-                      spacing: iconSpacing,
-                      textSize: textSize,
-                    ),
-                    InitiationIconSelectionToggle(
-                      text: "Football",
-                      imageAsset: "assets/icons/initiation/football-logo.svg",
-                      sport: initiationSports["football"]!,
-                      size: imageSize,
-                      spacing: iconSpacing,
-                      textSize: textSize,
-                    ),
-                    InitiationIconSelectionToggle(
-                      text: "Volleyball",
-                      imageAsset: "assets/icons/initiation/volleyball-logo.svg",
-                      sport: initiationSports["volleyball"]!,
-                      size: imageSize,
-                      spacing: iconSpacing,
-                      textSize: textSize,
-                    ),
-                    InitiationIconSelectionToggle(
-                      text: "Tennis",
-                      imageAsset: "assets/icons/initiation/tennis-logo.svg",
-                      sport: initiationSports["tennis"]!,
-                      spacing: iconSpacing,
-                      size: imageSize,
-                      textSize: textSize,
-                    ),
-                  ],
+                const Text(
+                  "Choose the sports you are interested in",
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontSize: 20,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-              )
-            ],
-          ),
-          BlocBuilder<InitiationBloc, InitiationState>(
-              builder: (context, state) {
-            return ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.zero,
+                const SizedBox(
+                  height: 32,
                 ),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
-              ),
-              onPressed: state.sportsLiked.isNotEmpty
-                  ? () {
-                      authBloc.add(AuthCreateModelEvent(UserModel(
-                        id: authBloc.state.user!.uid,
-                        name: initiationBloc.state.name!,
-                        birthDate: initiationBloc.state.birthDate!,
-                        gender: initiationBloc.state.gender!,
-                        sportsLiked: initiationBloc.state.sportsLiked,
-                      )));
-                    }
-                  : null,
-              child: const Text(
-                "Continue",
-                style: TextStyle(color: Colors.white),
-              ),
-            );
-          })
-        ],
+                SizedBox(
+                  width: 320,
+                  child: GridView.count(
+                    crossAxisCount: gridRowLength,
+                    shrinkWrap: true,
+                    mainAxisSpacing: 10.0, // Spacing between rows
+                    crossAxisSpacing: 10.0, // Spacing between columns
+                    padding: const EdgeInsets.all(
+                        10.0), // Padding around the entire grid
+                    children: [
+                      InitiationIconSelectionToggle(
+                        text: "Basketball",
+                        imageAsset:
+                            "assets/icons/initiation/basketball-logo.svg",
+                        sport: initiationSports["basketball"]!,
+                        size: imageSize,
+                        spacing: iconSpacing,
+                        textSize: textSize,
+                      ),
+                      InitiationIconSelectionToggle(
+                        text: "Football",
+                        imageAsset: "assets/icons/initiation/football-logo.svg",
+                        sport: initiationSports["football"]!,
+                        size: imageSize,
+                        spacing: iconSpacing,
+                        textSize: textSize,
+                      ),
+                      InitiationIconSelectionToggle(
+                        text: "Volleyball",
+                        imageAsset:
+                            "assets/icons/initiation/volleyball-logo.svg",
+                        sport: initiationSports["volleyball"]!,
+                        size: imageSize,
+                        spacing: iconSpacing,
+                        textSize: textSize,
+                      ),
+                      InitiationIconSelectionToggle(
+                        text: "Tennis",
+                        imageAsset: "assets/icons/initiation/tennis-logo.svg",
+                        sport: initiationSports["tennis"]!,
+                        spacing: iconSpacing,
+                        size: imageSize,
+                        textSize: textSize,
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            Builder(builder: (context) {
+              final initiationState = context.watch<InitiationBloc>().state;
+              final connectivityState = context.watch<ConnectivityBloc>().state;
+
+              return ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.zero,
+                  ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 96, vertical: 16),
+                ),
+                onPressed: initiationState.sportsLiked.isNotEmpty
+                    ? () async {
+                        if (connectivityState is ConnectivityOfflineState) {
+                          showNoConnectionError(context);
+                          connectivityBloc
+                              .add(ConnectivityRequestedFetchEvent());
+                          return;
+                        }
+
+                        loadingBloc.add(ShowLoadingEvent());
+                        authBloc.add(
+                          AuthCreateModelEvent(
+                            UserModel(
+                              id: authBloc.state.user!.uid,
+                              name: initiationBloc.state.name!,
+                              birthDate: initiationBloc.state.birthDate!,
+                              gender: initiationBloc.state.gender!,
+                              sportsLiked: initiationBloc.state.sportsLiked,
+                            ),
+                          ),
+                        );
+                        await screenTimeService
+                            .stopAndRecordTime('Initiation View');
+                        await themeFrecuencyService
+                            .recordThemeChangeStatus(true);
+                      }
+                    : null,
+                child: const Text(
+                  "Create an account",
+                  style: TextStyle(color: Colors.white),
+                ),
+              );
+            })
+          ],
+        ),
       ),
     );
   }

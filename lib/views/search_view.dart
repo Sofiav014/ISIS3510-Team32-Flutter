@@ -1,11 +1,11 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
-import 'package:isis3510_team32_flutter/widgets/bottom_navigation_widget.dart';
-import 'package:isis3510_team32_flutter/widgets/search_view_widgets/sport_button_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/search_view/sport_button_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/search/search_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:isis3510_team32_flutter/models/sport_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/sport_model.dart';
 
 class SearchView extends StatelessWidget {
   const SearchView({super.key});
@@ -17,12 +17,17 @@ class SearchView extends StatelessWidget {
     return BlocProvider(
       create: (context) => SearchBloc()..add(const LoadSearchData()),
       child: Scaffold(
+        backgroundColor: AppColors.background(context),
         appBar: AppBar(
-          title: const Text('Search View',
+          title: Text('Search View',
               style: TextStyle(
-                  color: AppColors.primary, fontWeight: FontWeight.w600)),
+                color: AppColors.titleText(context),
+                fontWeight: FontWeight.w600,
+              )),
           centerTitle: true,
-          shadowColor: AppColors.primaryLight,
+          backgroundColor: AppColors.appBarBackground(context),
+          automaticallyImplyLeading: false,
+          shadowColor: AppColors.text(context),
           elevation: 1,
         ),
         body: BlocBuilder<SearchBloc, SearchState>(

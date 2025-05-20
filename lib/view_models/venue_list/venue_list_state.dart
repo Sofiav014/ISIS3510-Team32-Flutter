@@ -20,6 +20,15 @@ class VenueListLoaded extends VenueListState {
   List<Object> get props => [venues];
 }
 
+class VenueListOfflineLoaded extends VenueListState {
+  final List<VenueModel> venues;
+
+  const VenueListOfflineLoaded({required this.venues});
+
+  @override
+  List<Object> get props => [venues];
+}
+
 class VenueListError extends VenueListState {
   final String error;
 

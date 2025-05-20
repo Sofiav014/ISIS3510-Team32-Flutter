@@ -1,7 +1,7 @@
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
-import 'package:isis3510_team32_flutter/widgets/google_sign_in_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/login_view/google_sign_in_widget.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});

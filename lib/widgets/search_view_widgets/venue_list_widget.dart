@@ -1,5 +1,6 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:isis3510_team32_flutter/models/venue_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -26,10 +27,12 @@ class VenueListWidget extends StatelessWidget {
               borderRadius: const BorderRadius.all(Radius.circular(15.0)),
               child: AspectRatio(
                 aspectRatio: 16 / 9, // Adjust the aspect ratio as needed
-                child: Image.network(
-                  venue.image, // Use venue.image
-                  fit: BoxFit.cover,
-                ),
+                child: CachedNetworkImage(
+                imageUrl: venue.image,
+                fit: BoxFit.cover,
+                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
+                errorWidget: (context, url, error) => const Center(child: Icon(Icons.broken_image)),
+              ),
               ),
             ),
             Positioned(
@@ -43,8 +46,7 @@ class VenueListWidget extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.star,
-                        color: AppColors.primaryDark, size: 16),
+                    const Icon(Icons.star, color: Colors.black, size: 16),
                     const SizedBox(width: 4),
                     Text(
                       venue.rating.toString(),
@@ -61,7 +63,7 @@ class VenueListWidget extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(7.0),
                 decoration: BoxDecoration(
-                  color: Colors.black.withAlpha(179),
+                  color: Colors.black.withAlpha(180),
                   borderRadius: const BorderRadius.only(
                     bottomLeft: Radius.circular(15.0),
                     bottomRight: Radius.circular(15.0),
