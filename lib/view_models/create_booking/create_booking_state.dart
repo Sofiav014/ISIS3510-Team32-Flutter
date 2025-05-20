@@ -16,10 +16,11 @@ class CreateBookingState {
     String? timeSlot,
     int? maxUsers,
     bool? success,
+    bool overrideTimeSlot = false,
   }) {
     return CreateBookingState(
       date: date ?? this.date,
-      timeSlot: timeSlot ?? this.timeSlot,
+      timeSlot: overrideTimeSlot ? timeSlot : (timeSlot ?? this.timeSlot),
       maxUsers: maxUsers ?? this.maxUsers,
       success: success ?? this.success,
     );
