@@ -10,6 +10,10 @@ class CreateBookingTimeSlotEvent extends CreateBookingEvent {
   CreateBookingTimeSlotEvent(this.timeSlot);
 }
 
+class CreateBookingTimeSlotEventOverwrite extends CreateBookingEvent {
+  CreateBookingTimeSlotEventOverwrite();
+}
+
 class CreateBookingMaxUsersEvent extends CreateBookingEvent {
   int maxUsers;
   CreateBookingMaxUsersEvent(this.maxUsers);
