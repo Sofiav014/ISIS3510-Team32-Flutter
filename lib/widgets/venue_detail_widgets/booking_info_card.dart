@@ -11,7 +11,6 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
-import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/venue_detail/venue_detail_bloc.dart';
 
 class BookingInfoCard extends StatelessWidget {
@@ -41,6 +40,7 @@ class BookingInfoCard extends StatelessWidget {
       );
 
       if (context.mounted) {
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -55,12 +55,11 @@ class BookingInfoCard extends StatelessWidget {
           bookingViewService.recordView('Venue Detail View');
           context
               .read<VenueDetailBloc>()
-              .add(LoadVenueDetailData(venueId: venue.id));
-          context.read<HomeBloc>().add(const LoadHomeData());
+              .add(LoadVenueDetailData(venueId: venue.id, refetch: true));
         }
       }
     } catch (e) {
-      debugPrint('❗️ Error: $e');
+      debugPrint('❗️ An error occurred while processing the booking. Error: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

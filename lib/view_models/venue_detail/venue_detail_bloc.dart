@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
@@ -26,7 +27,9 @@ class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
       required this.authBloc})
       : super(VenueDetailInitial()) {
     on<LoadVenueDetailData>(_onLoadVenueDetailData);
-    _connectivitySubscription = connectivityRepository.connectivityChanges.listen((isConnected) {
+
+    _connectivitySubscription =
+      connectivityRepository.connectivityChanges.listen((isConnected) {
       if (isConnected) add(LoadVenueDetailData(venueId: venueId));
     });
   }
@@ -37,7 +40,13 @@ class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
     try {
       final isOnline = await connectivityRepository.hasInternet;
       if (isOnline) {
-        final venue = await venueRepository.getVenueById(event.venueId);
+        VenueModel? venue;
+        if (event.refetch == null) {
+          venue = await venueRepository.getVenueById(venueId, false);
+        } else {
+          venue = await venueRepository.getVenueById(venueId, true);
+        }
+
         if (venue != null) {
           final activeBookings = venueRepository.getActiveBookingsByVenue(
               venue, authBloc.state.userModel!.id);
@@ -48,7 +57,8 @@ class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
       } else {
         final venue = await venueRepository.getCachedVenueById(venueId);
         if (venue != null) {
-          emit(VenueDetailOfflineLoaded(venue: venue, activeBookings: const []));
+          emit(
+              VenueDetailOfflineLoaded(venue: venue, activeBookings: const []));
         } else {
           emit(const VenueDetailError(message: 'Venue not found'));
         }
