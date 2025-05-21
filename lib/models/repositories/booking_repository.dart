@@ -6,10 +6,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:isis3510_team32_flutter/core/firebase_service.dart';
 import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
+import 'package:isis3510_team32_flutter/models/hive/booking_model_hive.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 
@@ -253,6 +255,19 @@ class BookingRepository {
         users: [userId],
       ));
 
+      final upcomingBookings = user.bookings
+          .where((booking) => booking.startTime.isAfter(DateTime.now()))
+          .toList()
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      final upcomingHiveBookings = upcomingBookings
+          .map((booking) => BookingModelHive.fromModel(booking))
+          .toList();
+
+      final box = await Hive.openBox('home_${user.id}');
+
+      await box.put('upcoming_bookings', upcomingHiveBookings);
+
       return user;
     } catch (e) {
       debugPrint('❗️ Error creating booking: $e');
@@ -325,10 +340,24 @@ class BookingRepository {
         users: List<String>.from(booking.users),
       );
       user.bookings.add(bookingModelUpdated);
-      return user; 
+
+      final upcomingBookings = user.bookings
+          .where((booking) => booking.startTime.isAfter(DateTime.now()))
+          .toList()
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      final upcomingHiveBookings = upcomingBookings
+          .map((booking) => BookingModelHive.fromModel(booking))
+          .toList();
+
+      final box = await Hive.openBox('home_${user.id}');
+
+      await box.put('upcoming_bookings', upcomingHiveBookings);
+
+      return user;
     } catch (e) {
       debugPrint('❗️ Error joining booking: $e');
-      return null; 
+      return null;
     }
   }
 
@@ -424,6 +453,20 @@ class BookingRepository {
       );
 
       user.bookings.add(bookingModelUpdated);
+
+      final upcomingBookings = user.bookings
+          .where((booking) => booking.startTime.isAfter(DateTime.now()))
+          .toList()
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      final upcomingHiveBookings = upcomingBookings
+          .map((booking) => BookingModelHive.fromModel(booking))
+          .toList();
+
+      final box = await Hive.openBox('home_${user.id}');
+
+      await box.put('upcoming_bookings', upcomingHiveBookings);
+
       return user;
     } catch (e) {
       debugPrint('❗️ Error joining booking: $e');
@@ -448,8 +491,8 @@ class BookingRepository {
       await Isolate.spawn(_joinBookingIsolate, {
         'receivePort': receivePort.sendPort,
         'rootToken': rootIsolateToken,
-        'booking': bookingJson, 
-        'user': userJson, 
+        'booking': bookingJson,
+        'user': userJson,
         'firebaseOptions': Firebase.app().options,
       });
     } else {
@@ -459,12 +502,24 @@ class BookingRepository {
     final UserModel? updatedUser = await receivePort.first;
 
     if (updatedUser != null) {
-      user = updatedUser;
-      authBloc
-          .add(AuthChangeModelEvent(FirebaseAuth.instance.currentUser, user));
+      authBloc.add(
+          AuthChangeModelEvent(FirebaseAuth.instance.currentUser, updatedUser));
+
+      final upcomingBookings = user.bookings
+          .where((booking) => booking.startTime.isAfter(DateTime.now()))
+          .toList()
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      final upcomingHiveBookings = upcomingBookings
+          .map((booking) => BookingModelHive.fromModel(booking))
+          .toList();
+
+      final box = await Hive.openBox('home_${user.id}');
+
+      await box.put('upcoming_bookings', upcomingHiveBookings);
     }
 
-    return user;
+    return updatedUser;
   }
 
   Future<UserModel?> joinBookingFromVenueIsolate({
@@ -487,9 +542,9 @@ class BookingRepository {
       await Isolate.spawn(_joinBookingFromVenueIsolate, {
         'receivePort': receivePort.sendPort,
         'rootToken': rootIsolateToken,
-        'booking': bookingJson, 
-        'user': userJson, 
-        'venue': venueJson, 
+        'booking': bookingJson,
+        'user': userJson,
+        'venue': venueJson,
         'firebaseOptions': Firebase.app().options,
       });
     } else {
@@ -501,6 +556,19 @@ class BookingRepository {
     if (updatedUser != null) {
       authBloc.add(
           AuthChangeModelEvent(FirebaseAuth.instance.currentUser, updatedUser));
+
+      final upcomingBookings = updatedUser.bookings
+          .where((booking) => booking.startTime.isAfter(DateTime.now()))
+          .toList()
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      final upcomingHiveBookings = upcomingBookings
+          .map((booking) => BookingModelHive.fromModel(booking))
+          .toList();
+
+      final box = await Hive.openBox('home_${updatedUser.id}');
+
+      await box.put('upcoming_bookings', upcomingHiveBookings);
     }
 
     return updatedUser;
@@ -533,7 +601,7 @@ class BookingRepository {
       final venueDocSnapshot = await venueRef.get();
 
       if (!venueDocSnapshot.exists) {
-        sendPort.send(null); 
+        sendPort.send(null);
         return;
       }
 
@@ -592,10 +660,10 @@ class BookingRepository {
       );
       user.bookings.add(bookingModelUpdated);
 
-      sendPort.send(user); 
+      sendPort.send(user);
     } catch (e) {
       debugPrint('❗️ Error joining booking in isolate: $e');
-      sendPort.send(null); 
+      sendPort.send(null);
     }
   }
 
@@ -716,7 +784,7 @@ class BookingRepository {
       sendPort.send(user);
     } catch (e) {
       debugPrint('❗️ Error joining booking from venue in isolate: $e');
-      sendPort.send(null); 
+      sendPort.send(null);
     }
   }
 }
