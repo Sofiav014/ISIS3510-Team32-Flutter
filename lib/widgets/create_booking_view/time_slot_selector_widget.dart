@@ -46,6 +46,13 @@ class TimeSlotSelectorWidget extends StatelessWidget {
                   builder: (context, snapshot) {
                     final timeSlots = snapshot.data ?? [];
 
+                    if (state.timeSlot != null &&
+                        timeSlots.isNotEmpty &&
+                        !timeSlots.contains(state.timeSlot)) {
+                      createBookingBloc
+                          .add(CreateBookingTimeSlotEventOverwrite());
+                    }
+
                     if (timeSlots.isEmpty) {
                       return const Center(
                         child: Text(

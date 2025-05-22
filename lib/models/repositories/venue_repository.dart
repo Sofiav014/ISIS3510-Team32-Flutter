@@ -15,18 +15,16 @@ class VenueRepository {
 
   static final VenueRepository _instance = VenueRepository._internal();
 
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   factory VenueRepository() {
     return _instance;
   }
 
-  final LRUCache<String, VenueModel> _venueCache =  LRUCache(maxSize: 20);
+  final LRUCache<String, VenueModel> _venueCache = LRUCache(maxSize: 20);
 
   Future<List<VenueModel>> getVenuesBySportId(String sportName) async {
     try {
-
       final receivePort = ReceivePort();
       final rootIsolateToken = RootIsolateToken.instance;
 
@@ -34,23 +32,22 @@ class VenueRepository {
         Map<String, dynamic> params = {
           'sportName': sportName,
           'rootIsolateToken': rootIsolateToken,
-          'sendPort':receivePort.sendPort,
+          'sendPort': receivePort.sendPort,
           'firebaseOptions': Firebase.app().options
         };
         await Isolate.spawn(_venuesBySportIdIsolate, params);
 
         final List<VenueModel>? sportVenues = await receivePort.first;
 
-        if (sportVenues != null){
+        if (sportVenues != null) {
           for (VenueModel sportVenue in sportVenues) {
             _venueCache.put(sportVenue.id, sportVenue);
           }
           return sportVenues;
-        }
-        else{
+        } else {
           return [];
         }
-      }else {
+      } else {
         return [];
       }
     } catch (e) {
@@ -76,10 +73,9 @@ class VenueRepository {
     }
   }
 
-  Future<VenueModel?> getVenueById(String venueId) async {
+  Future<VenueModel?> getVenueById(String venueId, bool refetch) async {
     try {
-      if (!_venueCache.containsKey(venueId)) {
-
+      if (!_venueCache.containsKey(venueId) || refetch) {
         DocumentSnapshot documentSnapshot =
             await _firestore.collection('venues').doc(venueId).get();
 
@@ -153,7 +149,7 @@ class VenueRepository {
     try {
       final firebaseOptions = params['firebaseOptions'] as FirebaseOptions;
 
-      await Firebase.initializeApp( options: firebaseOptions);
+      await Firebase.initializeApp(options: firebaseOptions);
 
       final firestore = FirebaseService.instance.firestore;
 

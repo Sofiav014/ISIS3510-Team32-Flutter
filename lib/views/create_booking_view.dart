@@ -186,10 +186,13 @@ class _CreateBookingButton extends StatelessWidget {
                             .stopAndRecordTime('Create Booking View');
                       }
                     : () {
-                        if (connectivityState is ConnectivityOfflineState) {
-                          showNoConnectionError(context);
-                        } else {
+                        if (state.date == null ||
+                            state.timeSlot == null ||
+                            state.maxUsers == null) {
                           showIncompleteFieldsError(context);
+                        } else if (connectivityState
+                            is ConnectivityOfflineState) {
+                          showNoConnectionError(context);
                         }
                       },
                 style: ElevatedButton.styleFrom(

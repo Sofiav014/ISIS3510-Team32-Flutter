@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/models/data_structures/lru_cache.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
@@ -18,13 +17,15 @@ class CreateBookingBloc extends Bloc<CreateBookingEvent, CreateBookingState> {
       : super(_initializeState()) {
     on<CreateBookingDateEvent>((event, emit) {
       _cache.put('date', event.date); // Save to cache
-      _cache.put('timeSlot', null);
-      emit(state.copyWith(
-          date: event.date, timeSlot: null, overrideTimeSlot: true));
+      emit(state.copyWith(date: event.date));
     });
     on<CreateBookingTimeSlotEvent>((event, emit) {
       _cache.put('timeSlot', event.timeSlot); // Save to cache
       emit(state.copyWith(timeSlot: event.timeSlot));
+    });
+    on<CreateBookingTimeSlotEventOverwrite>((event, emit) {
+      _cache.put('timeSlot', null); // Save to cache
+      emit(state.copyWith(timeSlot: null, overrideTimeSlot: true));
     });
     on<CreateBookingMaxUsersEvent>((event, emit) {
       _cache.put('maxUsers', event.maxUsers); // Save to cache
