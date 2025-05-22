@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/core/booking_view_service.dart';
@@ -28,98 +29,17 @@ class BookingInfoCard extends StatelessWidget {
       return '${text.substring(0, maxLength)}...';
     }
   }
-
-  void _processBookingInBackground(
-      BuildContext context, BookingModel booking, VenueModel venue) async {
-    try {
-      final user = await bookingRepository.joinBookingFromVenueIsolate(
-        booking: booking,
-        user: context.read<AuthBloc>().state.userModel!,
-        venue: venue,
-        authBloc: context.read<AuthBloc>(),
-      );
-
-      if (context.mounted) {
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              user != null
-                  ? 'Successfully joined the booking!'
-                  : 'Failed to join the booking.',
-            ),
-          ),
-        );
-
-        if (user != null) {
-          bookingViewService.recordView('Venue Detail View');
-          context
-              .read<VenueDetailBloc>()
-              .add(LoadVenueDetailData(venueId: venue.id, refetch: true));
-        }
-      }
-    } catch (e) {
-      debugPrint('❗️ An error occurred while processing the booking. Error: $e');
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('An error occurred while processing the booking.')),
-        );
-      }
-    }
-  }
-
+  
   @override
   Widget build(BuildContext context) {
-    final ConnectivityBloc connectivityBloc = context.read<ConnectivityBloc>();
 
     return GestureDetector(
       onTap: () {
-        final connectivityState = connectivityBloc.state;
-
-        if (connectivityState is ConnectivityOfflineState) {
-          showNoConnectionError(context);
-          return;
-        }
-
-        showDialog(
-          context: context,
-          builder: (BuildContext dialogContext) {
-            return AlertDialog(
-              title: const Text('Join Booking'),
-              content: const Text('Do you want to join this booking?'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                  },
-                  child: const Text('No'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    final connectivityState = connectivityBloc.state;
-
-                    if (connectivityState is ConnectivityOfflineState) {
-                      Navigator.of(dialogContext).pop();
-                      showNoConnectionErrorJoinBooking(context);
-                      return;
-                    }
-
-                    Navigator.of(dialogContext).pop();
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Your booking is being processed...'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-
-                    _processBookingInBackground(context, booking, venue);
-                  },
-                  child: const Text('Yes'),
-                ),
-              ],
-            );
+        context.push(
+          '/booking_detail',
+          extra: {
+            'booking': booking,
+            'selectedIndex': 0,
           },
         );
       },

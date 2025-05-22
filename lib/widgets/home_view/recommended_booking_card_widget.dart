@@ -1,17 +1,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/core/booking_view_service.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
-import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
-import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
-import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
-import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
+
+import 'package:go_router/go_router.dart';
 
 class RecommendedBookingCardWidget extends StatelessWidget {
   final BookingModel booking;
@@ -23,93 +19,15 @@ class RecommendedBookingCardWidget extends StatelessWidget {
     required this.booking,
   });
 
-  void _processBookingInBackground(
-      BuildContext context, BookingModel booking) async {
-    try {
-      final user = await bookingRepository.joinBookingIsolate(
-        booking: booking,
-        user: context.read<AuthBloc>().state.userModel!,
-        authBloc: context.read<AuthBloc>(),
-      );
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              user != null
-                  ? 'Successfully joined the booking!'
-                  : 'Failed to join the booking.',
-            ),
-          ),
-        );
-
-        if (user != null) {
-          bookingViewService.recordView('Home View');
-          context.read<HomeBloc>().add(const LoadHomeData());
-        }
-      }
-    } catch (e) {
-      debugPrint('❗️ Error: $e');
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('An error occurred while processing the booking.')),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final ConnectivityBloc connectivityBloc = context.read<ConnectivityBloc>();
-
     return GestureDetector(
       onTap: () {
-        final connectivityState = connectivityBloc.state;
-
-        if (connectivityState is ConnectivityOfflineState) {
-          showNoConnectionError(context);
-          return;
-        }
-
-        showDialog(
-          context: context,
-          builder: (BuildContext dialogContext) {
-            return AlertDialog(
-              title: const Text('Join Booking'),
-              content: const Text('Do you want to join this booking?'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(dialogContext).pop();
-                  },
-                  child: const Text('No'),
-                ),
-                TextButton(
-                  onPressed: () async {
-                    final connectivityState = connectivityBloc.state;
-
-                    if (connectivityState is ConnectivityOfflineState) {
-                      Navigator.of(dialogContext).pop();
-                      showNoConnectionErrorJoinBooking(context);
-                      return;
-                    }
-
-                    Navigator.of(dialogContext).pop();
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Your booking is being processed...'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-
-                    _processBookingInBackground(context, booking);
-                  },
-                  child: const Text('Yes'),
-                ),
-              ],
-            );
+        context.push(
+          '/booking_detail',
+          extra: {
+            'booking': booking,
+            'selectedIndex': 2,
           },
         );
       },
