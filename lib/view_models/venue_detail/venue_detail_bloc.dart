@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
@@ -29,7 +28,7 @@ class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
     on<LoadVenueDetailData>(_onLoadVenueDetailData);
 
     _connectivitySubscription =
-      connectivityRepository.connectivityChanges.listen((isConnected) {
+        connectivityRepository.connectivityChanges.listen((isConnected) {
       if (isConnected) add(LoadVenueDetailData(venueId: venueId));
     });
   }
@@ -40,7 +39,8 @@ class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
     try {
       final isOnline = await connectivityRepository.hasInternet;
       if (isOnline) {
-        final venue = await venueRepository.getVenueById(venueId, event.refresh != null);
+        final venue =
+            await venueRepository.getVenueById(venueId, event.refetch != null);
 
         if (venue != null) {
           final activeBookings = venueRepository.getActiveBookingsByVenue(
