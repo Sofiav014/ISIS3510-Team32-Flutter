@@ -40,12 +40,7 @@ class VenueDetailBloc extends Bloc<VenueDetailEvent, VenueDetailState> {
     try {
       final isOnline = await connectivityRepository.hasInternet;
       if (isOnline) {
-        VenueModel? venue;
-        if (event.refetch == null) {
-          venue = await venueRepository.getVenueById(venueId, false);
-        } else {
-          venue = await venueRepository.getVenueById(venueId, true);
-        }
+        final venue = await venueRepository.getVenueById(venueId, event.refresh != null)
 
         if (venue != null) {
           final activeBookings = venueRepository.getActiveBookingsByVenue(
