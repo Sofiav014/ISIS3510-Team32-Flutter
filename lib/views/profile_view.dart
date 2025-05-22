@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -451,46 +452,62 @@ class ProfileCardAvatarWidget extends StatelessWidget {
             width: 2,
           ),
         ),
-        child: Stack(
-          children: [
-            ClipOval(
-              child: Center(
-                child: SvgPicture.asset(
-                  'assets/icons/avatar.svg',
-                  width: 64,
-                  height: 64,
-                  colorFilter: const ColorFilter.mode(
-                    AppColors.primary,
-                    BlendMode.srcIn,
-                  ),
-                ),
+        child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+          final imageUrl = state.userModel?.imageUrl;
+          return Stack(
+            children: [
+              ClipOval(
+                child: Center(
+                    child: imageUrl != null
+                        ? CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            placeholder: (context, url) => SvgPicture.asset(
+                              'assets/icons/avatar.svg',
+                              width: 64,
+                              height: 64,
+                              colorFilter: const ColorFilter.mode(
+                                AppColors.primary,
+                                BlendMode.srcIn,
+                              ),
+                            ),
+                          )
+                        : SvgPicture.asset(
+                            'assets/icons/avatar.svg',
+                            width: 64,
+                            height: 64,
+                            colorFilter: const ColorFilter.mode(
+                              AppColors.primary,
+                              BlendMode.srcIn,
+                            ),
+                          )),
               ),
-            ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                ),
-                child: ClipOval(
-                  child: Center(
-                    child: SvgPicture.asset(
-                      'assets/icons/plus.svg',
-                      width: 32,
-                      height: 32,
-                      colorFilter: const ColorFilter.mode(
-                        AppColors.primary,
-                        BlendMode.srcIn,
+              if (imageUrl == null)
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: ClipOval(
+                      child: Center(
+                        child: SvgPicture.asset(
+                          'assets/icons/plus.svg',
+                          width: 32,
+                          height: 32,
+                          colorFilter: const ColorFilter.mode(
+                            AppColors.primary,
+                            BlendMode.srcIn,
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          ],
-        ),
+            ],
+          );
+        }),
       ),
     );
   }
