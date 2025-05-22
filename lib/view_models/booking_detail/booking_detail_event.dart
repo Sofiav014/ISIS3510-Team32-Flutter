@@ -9,12 +9,9 @@ abstract class BookingDetailEvent extends Equatable {
 
 final class LoadBookingDetailData extends BookingDetailEvent {
   final BookingModel booking;
-  final bool error;
-  final bool fetching;
 
-  const LoadBookingDetailData(
-      {required this.booking, required this.error, required this.fetching});
+  const LoadBookingDetailData({required this.booking});
 
   @override
-  List<Object> get props => [booking, error, fetching];
+  List<Object> get props => [booking];
 }

@@ -5,7 +5,6 @@ import 'package:equatable/equatable.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
-import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 
 part 'booking_detail_event.dart';
 part 'booking_detail_state.dart';
@@ -15,14 +14,11 @@ class BookingDetailBloc extends Bloc<BookingDetailEvent, BookingDetailState> {
   final ConnectivityRepository connectivityRepository;
   final BookingModel booking;
 
-  final AuthBloc authBloc;
-
-  BookingDetailBloc(
-      {required this.bookingRepository,
-      required this.connectivityRepository,
-      required this.booking,
-      required this.authBloc})
-      : super(BookingDetailInitial()) {
+  BookingDetailBloc({
+    required this.bookingRepository,
+    required this.connectivityRepository,
+    required this.booking,
+  }) : super(BookingDetailInitial()) {
     on<LoadBookingDetailData>(_onLoadBookingDetailData);
   }
 
@@ -36,16 +32,17 @@ class BookingDetailBloc extends Bloc<BookingDetailEvent, BookingDetailState> {
             booking: booking, error: false, fetching: true));
 
         // Fetch the latest booking details from the repository in the background
-        final result = await bookingRepository.fetchBookingIsolate(
-          booking: booking
-        );
+        final result =
+            await bookingRepository.fetchBookingIsolate(booking: booking);
 
         final updatedBooking = result['booking'] as BookingModel?;
         final error = result['error'] as bool? ?? false;
 
         emit(BookingDetailLoaded(
-            booking: updatedBooking ?? booking, error: error, fetching: false));
-
+          booking: updatedBooking ?? booking,
+          error: error,
+          fetching: false,
+        ));
       } else {
         emit(BookingDetailOfflineLoaded(booking: booking));
       }

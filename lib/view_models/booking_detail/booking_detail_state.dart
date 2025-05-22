@@ -16,8 +16,11 @@ class BookingDetailLoaded extends BookingDetailState {
   final bool error;
   final bool fetching;
 
-  const BookingDetailLoaded(
-      {required this.booking, required this.error, required this.fetching});
+  const BookingDetailLoaded({
+    required this.booking,
+    required this.error,
+    required this.fetching,
+  });
 
   @override
   List<Object> get props => [booking];
