@@ -146,7 +146,7 @@ class _CreateBookingContent extends StatelessWidget {
           ),
         ),
         bottomNavigationBar: const BottomNavigationWidget(
-          selectedIndex: 1,
+          selectedIndex: 1, reLoad: true,
         ),
       ),
     );

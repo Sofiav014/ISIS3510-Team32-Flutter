@@ -83,7 +83,7 @@ class HomeView extends StatelessWidget {
           ),
         ),
         bottomNavigationBar: const BottomNavigationWidget(
-          selectedIndex: 2,
+          selectedIndex: 2, reLoad: false,
         ),
       ),
     );
