@@ -60,3 +60,17 @@ void showIncompleteFieldsError(BuildContext context) {
     duration: const Duration(seconds: 5),
   ).show(context);
 }
+
+void showCouldNotLoadImage(BuildContext context) {
+  Flushbar(
+    title: "Could not load image",
+    message: "If you wish to load a new profile picture, please try again",
+    icon: const Icon(
+      Icons.info_rounded,
+      size: 16,
+      color: AppColors.primary,
+    ),
+    leftBarIndicatorColor: AppColors.primary,
+    duration: const Duration(seconds: 5),
+  ).show(context);
+}

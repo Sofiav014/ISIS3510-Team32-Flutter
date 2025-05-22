@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
@@ -428,56 +432,117 @@ class ProfileCardAvatarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 96,
-      height: 96,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: AppColors.primary,
-          width: 2,
+    return GestureDetector(
+      onTap: () async {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) =>
+              const ProfileCardImageSelectorDialog(),
+        );
+      },
+      child: Container(
+        width: 96,
+        height: 96,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.primary,
+            width: 2,
+          ),
         ),
-      ),
-      child: Stack(
-        children: [
-          ClipOval(
-            child: Center(
-              child: SvgPicture.asset(
-                'assets/icons/avatar.svg',
-                width: 64,
-                height: 64,
-                colorFilter: const ColorFilter.mode(
-                  AppColors.primary,
-                  BlendMode.srcIn,
+        child: Stack(
+          children: [
+            ClipOval(
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/icons/avatar.svg',
+                  width: 64,
+                  height: 64,
+                  colorFilter: const ColorFilter.mode(
+                    AppColors.primary,
+                    BlendMode.srcIn,
+                  ),
                 ),
               ),
             ),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: ClipOval(
-                child: Center(
-                  child: SvgPicture.asset(
-                    'assets/icons/plus.svg',
-                    width: 32,
-                    height: 32,
-                    colorFilter: const ColorFilter.mode(
-                      AppColors.primary,
-                      BlendMode.srcIn,
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: ClipOval(
+                  child: Center(
+                    child: SvgPicture.asset(
+                      'assets/icons/plus.svg',
+                      width: 32,
+                      height: 32,
+                      colorFilter: const ColorFilter.mode(
+                        AppColors.primary,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProfileCardImageSelectorDialog extends StatelessWidget {
+  const ProfileCardImageSelectorDialog({
+    super.key,
+  });
+
+  void setNewImage(ImageSource source, BuildContext context) async {
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: source);
+    if (pickedImage == null) {
+      // ignore: use_build_context_synchronously
+      showCouldNotLoadImage(context);
+      return;
+    }
+    final file = File(pickedImage.path);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text(
+        "Select a profile image",
+        style: TextStyle(fontSize: 16),
+      ),
+      content: Padding(
+        padding: const EdgeInsets.all(8),
+        child: SizedBox(
+          width: 200,
+          height: 100,
+          child: Center(
+            child: Column(
+              children: [
+                TextButton(
+                    onPressed: () async {
+                      setNewImage(ImageSource.camera, context);
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("Camera")),
+                TextButton(
+                    onPressed: () async {
+                      setNewImage(ImageSource.gallery, context);
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("Gallery"))
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
