@@ -574,6 +574,34 @@ class BookingRepository {
     return updatedUser;
   }
 
+  Future<Map<String, dynamic>> fetchBookingIsolate({
+    required BookingModel booking,
+  }) async {
+    final receivePort = ReceivePort();
+
+    final rootIsolateToken = RootIsolateToken.instance;
+
+    final bookingJson = jsonEncode(booking.toJsonSerializable());
+
+    if (rootIsolateToken != null) {
+      await Isolate.spawn(_fetchBookingIsolate, {
+        'receivePort': receivePort.sendPort,
+        'rootToken': rootIsolateToken,
+        'booking': bookingJson,
+        'firebaseOptions': Firebase.app().options,
+      });
+    } else {
+      return {
+        'booking': null,
+        'error': true
+      };
+    }
+
+    final Map<String, dynamic> results = await receivePort.first;
+
+    return results;
+  }
+
   void _joinBookingIsolate(Map<String, dynamic> params) async {
     final sendPort = params['receivePort'] as SendPort;
 
@@ -785,6 +813,59 @@ class BookingRepository {
     } catch (e) {
       debugPrint('❗️ Error joining booking from venue in isolate: $e');
       sendPort.send(null);
+    }
+  }
+
+  void _fetchBookingIsolate(Map<String, dynamic> params) async {
+    final sendPort = params['receivePort'] as SendPort;
+
+    final rootIsolateToken = params['rootToken'] as RootIsolateToken;
+
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+
+    try {
+      final firebaseOptions = params['firebaseOptions'] as FirebaseOptions;
+
+      await Firebase.initializeApp(
+        options: firebaseOptions,
+      );
+
+      final bookingJson = params['booking'] as String;
+
+      final booking = BookingModel.fromJson(jsonDecode(bookingJson));
+
+      final firestore = FirebaseService.instance.firestore;
+
+      final bookingRef = firestore.collection('bookings').doc(booking.id);
+
+      final bookingDocSnapshot = await bookingRef.get();
+      if (!bookingDocSnapshot.exists) {
+        final send = {
+          'booking': null,
+          'error': false,
+        };
+        sendPort.send(send);
+        return;
+      }
+
+      final bookingData = bookingDocSnapshot.data() ?? {};
+      final updatedBooking = BookingModel.fromJson(bookingData);
+
+      final send = {
+        'booking': updatedBooking,
+        'error': false,
+      };
+
+      sendPort.send(send);
+    } catch (e) {
+      debugPrint('❗️ Error fetching Booking from isolate: $e');
+
+      final send = {
+        'booking': null,
+        'error': true,
+      };
+
+      sendPort.send(send);
     }
   }
 }
