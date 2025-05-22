@@ -7,9 +7,9 @@ import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/booking_detail/booking_detail_bloc.dart';
+import 'package:isis3510_team32_flutter/widgets/booking_detail_view/venue_detail_image_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
-import 'package:isis3510_team32_flutter/widgets/venue_detail_widgets/venue_detail_image_widget.dart';
 
 class BookingDetailView extends StatelessWidget {
   final BookingModel booking;
