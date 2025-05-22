@@ -7,7 +7,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
@@ -458,28 +457,22 @@ class ProfileCardAvatarWidget extends StatelessWidget {
             children: [
               ClipOval(
                 child: Center(
-                    child: imageUrl != null
-                        ? CachedNetworkImage(
-                            imageUrl: imageUrl,
-                            placeholder: (context, url) => SvgPicture.asset(
-                              'assets/icons/avatar.svg',
-                              width: 64,
-                              height: 64,
-                              colorFilter: const ColorFilter.mode(
-                                AppColors.primary,
-                                BlendMode.srcIn,
-                              ),
-                            ),
-                          )
-                        : SvgPicture.asset(
-                            'assets/icons/avatar.svg',
-                            width: 64,
-                            height: 64,
-                            colorFilter: const ColorFilter.mode(
-                              AppColors.primary,
-                              BlendMode.srcIn,
-                            ),
-                          )),
+                  child: imageUrl != null
+                      ? CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fadeInDuration: Duration.zero,
+                          fadeOutDuration: Duration.zero,
+                        )
+                      : SvgPicture.asset(
+                          'assets/icons/avatar.svg',
+                          width: 64,
+                          height: 64,
+                          colorFilter: const ColorFilter.mode(
+                            AppColors.primary,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                ),
               ),
               if (imageUrl == null)
                 Positioned(

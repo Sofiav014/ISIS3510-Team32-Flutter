@@ -61,12 +61,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthUpdateImageEvent>((event, emit) async {
       final imageUrl =
           await imageRepository.uploadImage(state.user!.uid, event.file);
-      emit(AuthState(
-        isAuthenticated: state.user != null,
-        hasModel: state.userModel != null,
-        user: state.user,
-        userModel: state.userModel?.copyWith(imageUrl: imageUrl),
-      ));
+      final newUserModel = state.userModel?.copyWith(imageUrl: imageUrl);
+      if (newUserModel == null) {
+        return;
+      }
+      add(AuthCreateModelEvent(newUserModel));
     });
     on<AuthLogOutEvent>((event, emit) async {
       await _auth.signOut();
