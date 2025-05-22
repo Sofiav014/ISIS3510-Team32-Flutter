@@ -502,14 +502,15 @@ class ProfileCardImageSelectorDialog extends StatelessWidget {
   });
 
   void setNewImage(ImageSource source, BuildContext context) async {
+    final authBloc = context.read<AuthBloc>();
+
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: source);
     if (pickedImage == null) {
-      // ignore: use_build_context_synchronously
-      showCouldNotLoadImage(context);
       return;
     }
     final file = File(pickedImage.path);
+    authBloc.add(AuthUpdateImageEvent(file));
   }
 
   @override
