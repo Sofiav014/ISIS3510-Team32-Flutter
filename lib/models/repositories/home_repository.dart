@@ -20,7 +20,6 @@ class HomeRepository {
         .collection('bookings')
         .where('venue.sport.id',
             whereIn: user.sportsLiked.map((sport) => sport.id).toList())
-        .limit(20)
         .get();
 
     final recommendedBookings = recommendedBookingsQuery.docs

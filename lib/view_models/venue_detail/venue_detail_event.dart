@@ -9,9 +9,10 @@ abstract class VenueDetailEvent extends Equatable {
 
 final class LoadVenueDetailData extends VenueDetailEvent {
   final String venueId;
+  final bool? refetch;
 
-  const LoadVenueDetailData({required this.venueId});
+  const LoadVenueDetailData({this.refetch, required this.venueId});
 
   @override
-  List<Object> get props => [venueId];
+  List<Object> get props => [venueId, refetch ?? false];
 }

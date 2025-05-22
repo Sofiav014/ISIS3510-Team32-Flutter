@@ -39,7 +39,7 @@ class VenueDetailView extends StatelessWidget {
           backgroundColor: AppColors.background(context),
           appBar: AppBar(
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.primary),
+              icon: Icon(Icons.arrow_back, color: AppColors.titleText(context)),
               onPressed: () {
                 context.push('/venue_list/$sportId');
               },
