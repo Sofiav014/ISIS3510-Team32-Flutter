@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:another_flushbar/flushbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -468,22 +469,37 @@ class ProfileCardAvatarWidget extends StatelessWidget {
                           imageUrl: imageUrl,
                           fadeInDuration: Duration.zero,
                           fadeOutDuration: Duration.zero,
+                          placeholder: (_, __) =>
+                              const ProfileCardAvatarPlaceholderPicture(),
+                          errorWidget: (_, __, ___) =>
+                              const ProfileCardAvatarPlaceholderPicture(),
                         )
-                      : SvgPicture.asset(
-                          'assets/icons/avatar.svg',
-                          width: 64,
-                          height: 64,
-                          colorFilter: const ColorFilter.mode(
-                            AppColors.primary,
-                            BlendMode.srcIn,
-                          ),
-                        ),
+                      : const ProfileCardAvatarPlaceholderPicture(),
                 ),
               ),
               if (imageUrl == null) const ProfileCardAvatarPlusWidget(),
             ],
           );
         }),
+      ),
+    );
+  }
+}
+
+class ProfileCardAvatarPlaceholderPicture extends StatelessWidget {
+  const ProfileCardAvatarPlaceholderPicture({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      'assets/icons/avatar.svg',
+      width: 64,
+      height: 64,
+      colorFilter: const ColorFilter.mode(
+        AppColors.primary,
+        BlendMode.srcIn,
       ),
     );
   }
@@ -555,6 +571,7 @@ class ProfileCardImageSelectorDialog extends StatelessWidget {
     try {
       await setNewImage(source, context);
       Navigator.of(context).pop();
+      showImageUploadedSuccessfully(context);
     } on ImageNotFoundException catch (_) {
       Navigator.of(context).pop();
       showCouldNotLoadImage(context);
@@ -562,6 +579,21 @@ class ProfileCardImageSelectorDialog extends StatelessWidget {
       Navigator.of(context).pop();
       showNoConnectionError(context);
     }
+  }
+
+  void showImageUploadedSuccessfully(BuildContext context) {
+    Flushbar(
+      title: "Image uploaded successfully",
+      message:
+          "If you wish to rewrite it, hit the image icon again to put a new one",
+      icon: const Icon(
+        Icons.info_rounded,
+        size: 16,
+        color: AppColors.primary,
+      ),
+      leftBarIndicatorColor: AppColors.primary,
+      duration: const Duration(seconds: 5),
+    ).show(context);
   }
 
   @override
