@@ -6,7 +6,6 @@ import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/initiation_view/icon_selection_button_widget.dart';
-import 'package:isis3510_team32_flutter/widgets/initiation_view/initiation_date_picker_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/initiation_view/initiation_icon_toggle_button_widget.dart';
 
 class SettingsNameView extends StatefulWidget {
@@ -191,65 +190,104 @@ class SettingsGenderView extends StatelessWidget {
   }
 }
 
-class SettingsAgeView extends StatelessWidget {
+class SettingsAgeView extends StatefulWidget {
   const SettingsAgeView({super.key});
 
   @override
+  State<SettingsAgeView> createState() => _SettingsAgeViewState();
+}
+
+class _SettingsAgeViewState extends State<SettingsAgeView> {
+  DateTime? _dateTime;
+
+  Future<DateTime?> _selectDate() async => showDatePicker(
+        context: context,
+        initialDate: DateTime.now().subtract(const Duration(days: 365 * 14)),
+        firstDate: DateTime(DateTime.now().year - 100),
+        lastDate: DateTime.now().subtract(const Duration(days: 365 * 14)),
+      ).then((DateTime? selected) {
+        return selected;
+      });
+
+  @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final aspectRatio = size.width / size.height;
-
-    final isHorizontal = aspectRatio > 1.2;
-    final double spacingBetweenButton = isHorizontal ? 32 : 128;
-    final double spacingBetweenQuestion = isHorizontal ? 32 : 64;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 192, bottom: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              "Great! Now, let’s move on to the next question",
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 64),
+                  child: Text(
+                    "Update Birth Date",
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 128),
+                  child: Text(
+                    "When were you born?",
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 20,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          final setDateTime = await _selectDate();
+                          setState(() {
+                            _dateTime = setDateTime;
+                          });
+                        },
+                        child: Text(
+                          _dateTime == null
+                              ? 'Select a date'
+                              : "${_dateTime!.year}/${_dateTime!.month}/${_dateTime!.day}",
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
               ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: spacingBetweenQuestion,
-            ),
-            const Text(
-              "When were you born?",
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 20,
+              onPressed: () {
+                debugPrint("$_dateTime");
+                context.go('/profile');
+              },
+              child: const Text(
+                "Continue",
+                style: TextStyle(color: Colors.white),
               ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: spacingBetweenButton,
-            ),
-            const InitiationDatePicker(),
+            )
           ],
         ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
-          ),
-          onPressed: () {},
-          child: const Text(
-            "Continue",
-            style: TextStyle(color: Colors.white),
-          ),
-        )
-      ],
+      ),
     );
   }
 }
