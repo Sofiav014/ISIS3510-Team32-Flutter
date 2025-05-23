@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -7,11 +9,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:isis3510_team32_flutter/constants/errors.dart';
+import 'package:isis3510_team32_flutter/constants/exceptions.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_event.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_state.dart';
@@ -474,33 +480,43 @@ class ProfileCardAvatarWidget extends StatelessWidget {
                         ),
                 ),
               ),
-              if (imageUrl == null)
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                    child: ClipOval(
-                      child: Center(
-                        child: SvgPicture.asset(
-                          'assets/icons/plus.svg',
-                          width: 32,
-                          height: 32,
-                          colorFilter: const ColorFilter.mode(
-                            AppColors.primary,
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              if (imageUrl == null) const ProfileCardAvatarPlusWidget(),
             ],
           );
         }),
+      ),
+    );
+  }
+}
+
+class ProfileCardAvatarPlusWidget extends StatelessWidget {
+  const ProfileCardAvatarPlusWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 0,
+      right: 0,
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+        ),
+        child: ClipOval(
+          child: Center(
+            child: SvgPicture.asset(
+              'assets/icons/plus.svg',
+              width: 32,
+              height: 32,
+              colorFilter: const ColorFilter.mode(
+                AppColors.primary,
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -511,16 +527,41 @@ class ProfileCardImageSelectorDialog extends StatelessWidget {
     super.key,
   });
 
-  void setNewImage(ImageSource source, BuildContext context) async {
+  Future<void> setNewImage(ImageSource source, BuildContext context) async {
     final authBloc = context.read<AuthBloc>();
+    final connectivityBloc = context.read<ConnectivityBloc>();
 
     final picker = ImagePicker();
     final pickedImage = await picker.pickImage(source: source);
     if (pickedImage == null) {
-      return;
+      throw ImageNotFoundException("Could not fetch image");
     }
     final file = File(pickedImage.path);
+
+    if (connectivityBloc.state is ConnectivityOfflineState) {
+      throw ConnectivityException("Could not confirm connectivity status");
+    }
     authBloc.add(AuthUpdateImageEvent(file));
+  }
+
+  Future<void> attemptSetNewImage(
+      ImageSource source, BuildContext context) async {
+    final connectivityBloc = context.read<ConnectivityBloc>();
+    if (connectivityBloc.state is ConnectivityOfflineState) {
+      Navigator.of(context).pop();
+      showNoConnectionError(context);
+      return;
+    }
+    try {
+      await setNewImage(source, context);
+      Navigator.of(context).pop();
+    } on ImageNotFoundException catch (_) {
+      Navigator.of(context).pop();
+      showCouldNotLoadImage(context);
+    } on ConnectivityException catch (_) {
+      Navigator.of(context).pop();
+      showNoConnectionError(context);
+    }
   }
 
   @override
@@ -539,15 +580,13 @@ class ProfileCardImageSelectorDialog extends StatelessWidget {
             child: Column(
               children: [
                 TextButton(
-                    onPressed: () async {
-                      setNewImage(ImageSource.camera, context);
-                      Navigator.of(context).pop();
+                    onPressed: () {
+                      attemptSetNewImage(ImageSource.camera, context);
                     },
                     child: const Text("Camera")),
                 TextButton(
                     onPressed: () async {
-                      setNewImage(ImageSource.gallery, context);
-                      Navigator.of(context).pop();
+                      attemptSetNewImage(ImageSource.gallery, context);
                     },
                     child: const Text("Gallery"))
               ],
