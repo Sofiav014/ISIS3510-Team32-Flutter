@@ -109,6 +109,11 @@ class _SettingsNameViewState extends State<SettingsNameView> {
                           horizontal: 128, vertical: 16),
                     ),
                     onPressed: () {
+                      if (context.read<AuthBloc>().state.userModel?.name ==
+                          _nameController.text) {
+                        context.go('/profile');
+                        return;
+                      }
                       context.read<LoadingBloc>().add(ShowLoadingEvent());
                       context.read<AuthBloc>().add(
                             AuthUpdateModelEvent(name: _nameController.text),
@@ -177,6 +182,11 @@ class SettingsGenderView extends StatelessWidget {
                     text: "Male",
                     imageAsset: "assets/icons/initiation/male.svg",
                     onPressed: () {
+                      if (context.read<AuthBloc>().state.userModel?.gender ==
+                          "Male") {
+                        context.go('/profile');
+                        return;
+                      }
                       context.read<LoadingBloc>().add(ShowLoadingEvent());
                       context.read<AuthBloc>().add(
                             AuthUpdateModelEvent(gender: "Male"),
@@ -188,6 +198,11 @@ class SettingsGenderView extends StatelessWidget {
                     text: "Female",
                     imageAsset: "assets/icons/initiation/female.svg",
                     onPressed: () {
+                      if (context.read<AuthBloc>().state.userModel?.gender ==
+                          "Female") {
+                        context.go('/profile');
+                        return;
+                      }
                       context.read<LoadingBloc>().add(ShowLoadingEvent());
                       context.read<AuthBloc>().add(
                             AuthUpdateModelEvent(gender: "Female"),
@@ -199,6 +214,11 @@ class SettingsGenderView extends StatelessWidget {
                     text: "Other",
                     imageAsset: "assets/icons/initiation/non-binary.svg",
                     onPressed: () {
+                      if (context.read<AuthBloc>().state.userModel?.gender ==
+                          "Other") {
+                        context.go('/profile');
+                        return;
+                      }
                       context.read<LoadingBloc>().add(ShowLoadingEvent());
                       context.read<AuthBloc>().add(
                             AuthUpdateModelEvent(gender: "Other"),
@@ -310,6 +330,11 @@ class _SettingsAgeViewState extends State<SettingsAgeView> {
                       const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
                 ),
                 onPressed: () {
+                  if (context.read<AuthBloc>().state.userModel?.birthDate ==
+                      _dateTime) {
+                    context.go('/profile');
+                    return;
+                  }
                   context.read<LoadingBloc>().add(ShowLoadingEvent());
                   context.read<AuthBloc>().add(
                         AuthUpdateModelEvent(birthDate: _dateTime),
@@ -465,6 +490,15 @@ class _SettingsSportViewState extends State<SettingsSportView> {
                           horizontal: 96, vertical: 16),
                     ),
                     onPressed: () {
+                      if (context
+                              .read<AuthBloc>()
+                              .state
+                              .userModel
+                              ?.sportsLiked ==
+                          _sportModels) {
+                        context.go('/profile');
+                        return;
+                      }
                       context.read<LoadingBloc>().add(ShowLoadingEvent());
                       context.read<AuthBloc>().add(
                             AuthUpdateModelEvent(sportsLiked: _sportModels),
