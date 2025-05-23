@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
+import 'package:isis3510_team32_flutter/models/repositories/auth_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/venue_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
@@ -62,18 +64,21 @@ class VenueDetailView extends StatelessWidget {
             },
             child: BlocBuilder<VenueDetailBloc, VenueDetailState>(
               builder: (context, state) {
+                
                 if (state is VenueDetailLoading) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (state is VenueDetailLoaded) {
                   final VenueModel venue = state.venue;
                   final List<BookingModel> activeBookings =
                       state.activeBookings;
-                  return _buildVenueDetail(context, venue, activeBookings);
+                  final UserModel user = state.user;
+                  return _buildVenueDetail(context, venue, activeBookings, user);
                 } else if (state is VenueDetailOfflineLoaded) {
                   final VenueModel venue = state.venue;
                   final List<BookingModel> activeBookings =
                       state.activeBookings;
-                  return _buildVenueDetail(context, venue, activeBookings);
+                  final UserModel user = state.user;
+                  return _buildVenueDetail(context, venue, activeBookings, user);
                 } else if (state is VenueDetailError) {
                   return Center(child: Text('Error: ${state.message}'));
                 } else {
@@ -89,14 +94,14 @@ class VenueDetailView extends StatelessWidget {
   }
 
   Widget _buildVenueDetail(BuildContext context, VenueModel venue,
-      List<BookingModel> activeBookings) {
+      List<BookingModel> activeBookings, UserModel user) {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            VenueDetailImageWidget(venue: venue),
+            VenueDetailImageWidget(venue: venue, user: user, connectivityRepository: ConnectivityRepository(), authRepository: AuthRepository()),
             const SizedBox(height: 16),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),

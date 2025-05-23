@@ -129,4 +129,42 @@ class UserModel {
   String toString() {
     return "UserModel{${toJson()}}";
   }
+
+
+  void addLikedVenue(VenueModel venue){
+    bool notLiked = true;
+    for(VenueModel likedVenue in venuesLiked){
+      if (likedVenue.id == venue.id) notLiked = false;
+    }
+
+    final venueDoc = {
+      'coords': venue.coords,
+      'id': venue.id,
+      'image': venue.image,
+      'location_name': venue.locationName,
+      'name': venue.name,
+      'rating': venue.rating,
+      'sport': venue.sport.toJson(),
+    };
+
+    if(notLiked) venuesLiked.add(VenueModel.fromJson(venueDoc));
+  }
+
+  void removeLikedVenue(VenueModel venue){
+    int? removeIndex;
+    for(int i = 0; i<venuesLiked.length; i++){
+      if(venuesLiked[i].id == venue.id) removeIndex = i;
+    }
+    if(removeIndex != null) venuesLiked.removeAt(removeIndex);
+  }
+
+  bool containsLikedVenue(VenueModel venue){
+    bool containsVenue = false;
+    for (VenueModel likedVenue in venuesLiked){
+      if(likedVenue.id == venue.id) containsVenue = true;
+    }
+    return containsVenue;
+  }
+
+
 }
