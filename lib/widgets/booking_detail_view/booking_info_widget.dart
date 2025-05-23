@@ -61,7 +61,8 @@ class BookingInfo extends StatelessWidget {
                         'assets/icons/navbar/calendar.svg',
                         width: 20.0,
                         height: 20.0,
-                        color: AppColors.contrast900,
+                        colorFilter: const ColorFilter.mode(
+                            AppColors.contrast900, BlendMode.srcIn),
                       ),
                       const SizedBox(width: 8.0),
                       Text(
@@ -81,7 +82,8 @@ class BookingInfo extends StatelessWidget {
                         'assets/icons/location.svg',
                         width: 20.0,
                         height: 20.0,
-                        color: AppColors.contrast900,
+                        colorFilter: const ColorFilter.mode(
+                            AppColors.contrast900, BlendMode.srcIn),
                       ),
                       const SizedBox(width: 8.0),
                       Text(
@@ -101,7 +103,8 @@ class BookingInfo extends StatelessWidget {
                         'assets/icons/clock.svg',
                         width: 20.0,
                         height: 20.0,
-                        color: AppColors.contrast900,
+                        colorFilter: const ColorFilter.mode(
+                            AppColors.contrast900, BlendMode.srcIn),
                       ),
                       const SizedBox(width: 8.0),
                       Text(
@@ -121,7 +124,8 @@ class BookingInfo extends StatelessWidget {
                         'assets/icons/people.svg',
                         width: 20.0,
                         height: 20.0,
-                        color: AppColors.contrast900,
+                        colorFilter: const ColorFilter.mode(
+                            AppColors.contrast900, BlendMode.srcIn),
                       ),
                       const SizedBox(width: 8.0),
                       Text(

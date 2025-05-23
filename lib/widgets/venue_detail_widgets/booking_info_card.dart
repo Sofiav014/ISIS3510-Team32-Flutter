@@ -23,10 +23,9 @@ class BookingInfoCard extends StatelessWidget {
       return '${text.substring(0, maxLength)}...';
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
-
     return GestureDetector(
       onTap: () {
         context.push(
@@ -65,7 +64,8 @@ class BookingInfoCard extends StatelessWidget {
                       'assets/icons/location.svg',
                       width: 16.0,
                       height: 16.0,
-                      color: AppColors.contrast900,
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.contrast900, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 4.0),
                     Text(
@@ -81,7 +81,8 @@ class BookingInfoCard extends StatelessWidget {
                       'assets/icons/people.svg',
                       width: 16.0,
                       height: 16.0,
-                      color: AppColors.contrast900,
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.contrast900, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 4.0),
                     Text(
@@ -102,7 +103,8 @@ class BookingInfoCard extends StatelessWidget {
                       'assets/icons/clock.svg',
                       width: 16.0,
                       height: 16.0,
-                      color: AppColors.contrast900,
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.contrast900, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 4.0),
                     Text(
@@ -117,7 +119,8 @@ class BookingInfoCard extends StatelessWidget {
                       'assets/icons/navbar/calendar.svg',
                       width: 16.0,
                       height: 16.0,
-                      color: AppColors.contrast900,
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.contrast900, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 4.0),
                     Text(

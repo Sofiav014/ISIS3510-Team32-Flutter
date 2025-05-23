@@ -6,7 +6,6 @@ import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
-import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/booking_detail/booking_detail_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/booking_detail_view/booking_info_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/booking_detail_view/venue_detail_image_widget.dart';

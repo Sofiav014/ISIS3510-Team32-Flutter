@@ -45,7 +45,8 @@ class BottomNavigationWidget extends StatelessWidget {
               selectedIndex == 2
                   ? 'assets/icons/navbar/home-selected.svg'
                   : 'assets/icons/navbar/home.svg',
-              color: AppColors.lighterPurple,
+              colorFilter: const ColorFilter.mode(
+                  AppColors.lighterPurple, BlendMode.srcIn),
             ),
             onPressed: () => _onItemTapped(context, 2),
           ),
@@ -54,7 +55,8 @@ class BottomNavigationWidget extends StatelessWidget {
               selectedIndex == 0
                   ? 'assets/icons/navbar/search-selected.svg'
                   : 'assets/icons/navbar/search.svg',
-              color: AppColors.lighterPurple,
+              colorFilter: const ColorFilter.mode(
+                  AppColors.lighterPurple, BlendMode.srcIn),
             ),
             onPressed: () => _onItemTapped(context, 0),
           ),
@@ -63,7 +65,8 @@ class BottomNavigationWidget extends StatelessWidget {
               selectedIndex == 1
                   ? 'assets/icons/navbar/calendar-selected.svg'
                   : 'assets/icons/navbar/calendar.svg',
-              color: AppColors.lighterPurple,
+              colorFilter: const ColorFilter.mode(
+                  AppColors.lighterPurple, BlendMode.srcIn),
             ),
             onPressed: () => _onItemTapped(context, 1),
           ),
@@ -72,7 +75,8 @@ class BottomNavigationWidget extends StatelessWidget {
               selectedIndex == 4
                   ? 'assets/icons/navbar/profile-selected.svg'
                   : 'assets/icons/navbar/profile.svg',
-              color: AppColors.lighterPurple,
+              colorFilter: const ColorFilter.mode(
+                  AppColors.lighterPurple, BlendMode.srcIn),
             ),
             onPressed: () => _onItemTapped(context, 4),
           ),

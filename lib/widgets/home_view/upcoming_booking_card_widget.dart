@@ -28,11 +28,13 @@ class UpcomingBookingCardWidget extends StatelessWidget {
               child: CachedNetworkImage(
                 imageUrl: booking.venue.image,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(child: SizedBox(
+                placeholder: (context, url) => const Center(
+                    child: SizedBox(
                   width: 250.0,
                   child: CircularProgressIndicator(),
                 )),
-                errorWidget: (context, url, error) => const Center(child: SizedBox(
+                errorWidget: (context, url, error) => const Center(
+                    child: SizedBox(
                   width: 250.0, //
                   child: Icon(Icons.broken_image),
                 )),
@@ -90,7 +92,8 @@ class UpcomingBookingCardWidget extends StatelessWidget {
                           'assets/icons/location.svg',
                           width: 16,
                           height: 16,
-                          color: AppColors.contrast900,
+                          colorFilter: const ColorFilter.mode(
+                              AppColors.contrast900, BlendMode.srcIn),
                         ),
                         const SizedBox(width: 4),
                         Expanded(
@@ -112,7 +115,8 @@ class UpcomingBookingCardWidget extends StatelessWidget {
                           'assets/icons/sport_logo.svg',
                           width: 16,
                           height: 16,
-                          color: AppColors.contrast900,
+                          colorFilter: const ColorFilter.mode(
+                              AppColors.contrast900, BlendMode.srcIn),
                         ),
                         const SizedBox(width: 4),
                         Expanded(

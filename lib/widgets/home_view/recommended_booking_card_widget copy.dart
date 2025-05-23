@@ -157,7 +157,8 @@ class RecommendedBookingCardWidget extends StatelessWidget {
                           'assets/icons/navbar/calendar.svg',
                           width: 16,
                           height: 16,
-                          color: AppColors.contrast900,
+                          colorFilter: const ColorFilter.mode(
+                              AppColors.contrast900, BlendMode.srcIn),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -176,7 +177,8 @@ class RecommendedBookingCardWidget extends StatelessWidget {
                           'assets/icons/clock.svg',
                           width: 16,
                           height: 16,
-                          color: AppColors.contrast900,
+                          colorFilter: const ColorFilter.mode(
+                              AppColors.contrast900, BlendMode.srcIn),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -195,7 +197,8 @@ class RecommendedBookingCardWidget extends StatelessWidget {
                           'assets/icons/people.svg',
                           width: 16,
                           height: 16,
-                          color: AppColors.contrast900,
+                          colorFilter: const ColorFilter.mode(
+                              AppColors.contrast900, BlendMode.srcIn),
                         ),
                         const SizedBox(width: 8),
                         Expanded(

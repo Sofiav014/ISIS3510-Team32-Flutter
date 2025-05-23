@@ -40,7 +40,6 @@ class BookingInfoCard extends StatelessWidget {
       );
 
       if (context.mounted) {
-
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
@@ -59,7 +58,8 @@ class BookingInfoCard extends StatelessWidget {
         }
       }
     } catch (e) {
-      debugPrint('❗️ An error occurred while processing the booking. Error: $e');
+      debugPrint(
+          '❗️ An error occurred while processing the booking. Error: $e');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -151,7 +151,8 @@ class BookingInfoCard extends StatelessWidget {
                       'assets/icons/location.svg',
                       width: 16.0,
                       height: 16.0,
-                      color: AppColors.contrast900,
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.contrast900, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 4.0),
                     Text(
@@ -167,7 +168,8 @@ class BookingInfoCard extends StatelessWidget {
                       'assets/icons/people.svg',
                       width: 16.0,
                       height: 16.0,
-                      color: AppColors.contrast900,
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.contrast900, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 4.0),
                     Text(
@@ -188,7 +190,8 @@ class BookingInfoCard extends StatelessWidget {
                       'assets/icons/clock.svg',
                       width: 16.0,
                       height: 16.0,
-                      color: AppColors.contrast900,
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.contrast900, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 4.0),
                     Text(
@@ -203,7 +206,8 @@ class BookingInfoCard extends StatelessWidget {
                       'assets/icons/navbar/calendar.svg',
                       width: 16.0,
                       height: 16.0,
-                      color: AppColors.contrast900,
+                      colorFilter: const ColorFilter.mode(
+                          AppColors.contrast900, BlendMode.srcIn),
                     ),
                     const SizedBox(width: 4.0),
                     Text(

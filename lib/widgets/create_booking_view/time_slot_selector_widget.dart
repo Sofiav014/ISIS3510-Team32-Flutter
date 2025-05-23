@@ -123,7 +123,8 @@ class TimeSlotSelectorWidget extends StatelessWidget {
                                   SvgPicture.asset(
                                     "assets/icons/people.svg",
                                     height: 20,
-                                    color: AppColors.contrast900,
+                                    colorFilter: const ColorFilter.mode(
+                                        AppColors.contrast900, BlendMode.srcIn),
                                   ),
                                   const SizedBox(width: 8),
                                   const Text(

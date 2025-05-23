@@ -62,7 +62,8 @@ class InitiationIconSelectionToggle extends StatelessWidget {
                 imageAsset,
                 width: size,
                 height: size,
-                color: AppColors.primary,
+                colorFilter:
+                    const ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
               ),
               SizedBox(
                 height: spacing,
