@@ -11,6 +11,7 @@ import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/hive/booking_model_hive.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 
 class BookingRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -275,6 +276,7 @@ class BookingRepository {
   Future<Map<String, dynamic>> joinBooking({
     required BookingModel booking,
     required UserModel user,
+    required AuthBloc authBloc,
   }) async {
     try {
       final venueRef = _firestore.collection('venues').doc(booking.venue.id);
@@ -373,6 +375,7 @@ class BookingRepository {
   Future<Map<String, dynamic>> cancelBooking({
     required BookingModel booking,
     required UserModel user,
+    required AuthBloc authBloc,
   }) async {
     try {
       final venueRef = _firestore.collection('venues').doc(booking.venue.id);

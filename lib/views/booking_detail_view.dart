@@ -35,7 +35,7 @@ class BookingDetailView extends StatelessWidget {
             leading: IconButton(
               icon: Icon(Icons.arrow_back, color: AppColors.titleText(context)),
               onPressed: () {
-                context.pop();
+                context.pop(true);
               },
             ),
             title: Text('Booking Detail',

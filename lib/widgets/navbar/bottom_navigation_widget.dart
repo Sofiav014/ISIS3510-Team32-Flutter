@@ -14,7 +14,7 @@ class BottomNavigationWidget extends StatelessWidget {
   });
 
   void _onItemTapped(BuildContext context, int index) {
-    if (index == selectedIndex && !reLoad) {
+    if (index == selectedIndex && !reLoad && index != 0 && index != 2) {
       return;
     }
     switch (index) {

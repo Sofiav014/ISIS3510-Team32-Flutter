@@ -198,14 +198,18 @@ class BookingInfo extends StatelessWidget {
                         // Cancel booking
                         loadingBloc.add(ShowLoadingEvent());
                         results = await bookingRepository.cancelBooking(
-                            booking: booking, user: authBloc.state.userModel!);
+                            booking: booking,
+                            user: authBloc.state.userModel!,
+                            authBloc: authBloc);
                         loadingBloc.add(HideLoadingEvent());
                       } else {
                         // Join booking
                         loadingBloc.add(ShowLoadingEvent());
 
                         results = await bookingRepository.joinBooking(
-                            booking: booking, user: authBloc.state.userModel!);
+                            booking: booking,
+                            user: authBloc.state.userModel!,
+                            authBloc: authBloc);
 
                         loadingBloc.add(HideLoadingEvent());
                       }
