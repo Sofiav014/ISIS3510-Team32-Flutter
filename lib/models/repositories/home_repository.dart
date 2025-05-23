@@ -31,14 +31,7 @@ class HomeRepository {
 
     recommendedBookings.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-    final x = recommendedBookings.take(3).toList();
-
-    debugPrint(
-        '###Recommended bookings: ${x.map((booking) => booking.id).toList()}');
-
-    return x;
-
-
+    return recommendedBookings.take(3).toList();
   }
 
   List<BookingModel> getUpcomingBookings(UserModel user) {

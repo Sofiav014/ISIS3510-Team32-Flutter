@@ -426,7 +426,6 @@ class BookingRepository {
       // Update all other users' bookings arrays
       for (var userId in booking.users) {
         if (userId != user.id) {
-          debugPrint('Updating user $userId bookings, cancelled by $user.id');
 
           final userRef = _firestore.collection('users').doc(userId);
           final userDocSnapshot = await userRef.get();
@@ -441,7 +440,6 @@ class BookingRepository {
             List<String> updatedUsers = List<String>.from(
                 userBookings[userBookingIndex]['users'] ?? []);
             updatedUsers.remove(user.id);
-            debugPrint('Updated users: $updatedUsers');
             userBookings[userBookingIndex]['users'] = updatedUsers;
             await userRef.update({'bookings': userBookings});
           }
