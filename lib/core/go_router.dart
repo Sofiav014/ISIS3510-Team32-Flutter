@@ -10,6 +10,7 @@ import 'package:isis3510_team32_flutter/views/create_booking_view.dart';
 import 'package:isis3510_team32_flutter/views/initiation_view.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
 import 'package:isis3510_team32_flutter/views/search_view.dart';
+import 'package:isis3510_team32_flutter/views/settings_view.dart';
 import 'package:isis3510_team32_flutter/views/venue_list_view.dart';
 import 'package:isis3510_team32_flutter/views/home_view.dart';
 import 'package:isis3510_team32_flutter/views/profile_view.dart';

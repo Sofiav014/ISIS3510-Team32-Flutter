@@ -9,6 +9,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
@@ -133,19 +134,27 @@ class SettingsProfileDialogWidget extends StatelessWidget {
         child: Column(
           children: [
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                context.go('/profile/settings/name');
+              },
               child: const Text("Edit Profile Name"),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                context.go('/profile/settings/gender');
+              },
               child: const Text("Change Gender"),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                context.go('/profile/settings/birthday');
+              },
               child: const Text("Update Birth Date"),
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                context.go('/profile/settings/favoriteSports');
+              },
               child: const Text("Update Sports"),
             ),
           ],
