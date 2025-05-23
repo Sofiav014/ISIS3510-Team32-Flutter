@@ -123,63 +123,70 @@ class SettingsGenderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    final aspectRatio = size.width / size.height;
-
-    final isHorizontal = aspectRatio > 1.2;
-    final double spacingBetweenButton = isHorizontal ? 32 : 128;
-    final double spacingBetweenQuestion = isHorizontal ? 32 : 64;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        const Text(
-          "Let us begin with a couple of questions",
-          style: TextStyle(
-            color: AppColors.primary,
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(
-          height: spacingBetweenQuestion,
-        ),
-        const Text(
-          "What gender do you identify with?",
-          style: TextStyle(
-            color: AppColors.primary,
-            fontSize: 20,
-          ),
-          textAlign: TextAlign.center,
-        ),
-        SizedBox(
-          height: spacingBetweenButton,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 192),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            IconSelectionButton(
-              text: "Male",
-              imageAsset: "assets/icons/initiation/male.svg",
-              onPressed: () {},
-              size: 64,
+            const Padding(
+              padding: EdgeInsets.only(bottom: 64),
+              child: Text(
+                "Change Gender",
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            IconSelectionButton(
-              text: "Female",
-              imageAsset: "assets/icons/initiation/female.svg",
-              onPressed: () {},
-              size: 64,
+            const Padding(
+              padding: EdgeInsets.only(bottom: 128),
+              child: Text(
+                "What gender do you identify with?",
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 20,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            IconSelectionButton(
-              text: "Other",
-              imageAsset: "assets/icons/initiation/non-binary.svg",
-              onPressed: () {},
-              size: 64,
-            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                IconSelectionButton(
+                  text: "Male",
+                  imageAsset: "assets/icons/initiation/male.svg",
+                  onPressed: () {
+                    debugPrint('male');
+                    context.go('/profile');
+                  },
+                  size: 64,
+                ),
+                IconSelectionButton(
+                  text: "Female",
+                  imageAsset: "assets/icons/initiation/female.svg",
+                  onPressed: () {
+                    debugPrint('female');
+                    context.go('/profile');
+                  },
+                  size: 64,
+                ),
+                IconSelectionButton(
+                  text: "Other",
+                  imageAsset: "assets/icons/initiation/non-binary.svg",
+                  onPressed: () {
+                    debugPrint('other');
+                    context.go('/profile');
+                  },
+                  size: 64,
+                ),
+              ],
+            )
           ],
-        )
-      ],
+        ),
+      ),
     );
   }
 }
