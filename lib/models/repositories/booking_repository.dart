@@ -275,206 +275,7 @@ class BookingRepository {
     }
   }
 
-  Future<UserModel?> joinBooking({
-    required BookingModel booking,
-    required UserModel user,
-  }) async {
-    try {
-      final venueRef = _firestore.collection('venues').doc(booking.venue.id);
-
-      final venueDocSnapshot = await venueRef.get();
-      if (!venueDocSnapshot.exists) {
-        return null;
-      }
-
-      booking.users.add(user.id);
-      DocumentReference bookingRef =
-          _firestore.collection('bookings').doc(booking.id);
-      await bookingRef.update({
-        'users': FieldValue.arrayUnion([user.id]),
-      });
-      await _firestore.collection('users').doc(user.id).update({
-        'bookings': FieldValue.arrayUnion([booking.toJson()]),
-      });
-
-      List<dynamic> venueBookings = venueDocSnapshot.data()?['bookings'] ?? [];
-
-      final bookingIndex = venueBookings.indexWhere(
-        (b) => b['id'] == booking.id,
-      );
-
-      if (bookingIndex != -1) {
-        venueBookings[bookingIndex]['users'] =
-            List<String>.from(venueBookings[bookingIndex]['users'] ?? [])
-              ..add(user.id);
-
-        await venueRef.update({'bookings': venueBookings});
-      }
-
-      for (var userId in booking.users) {
-        if (userId != user.id) {
-          final userRef = _firestore.collection('users').doc(userId);
-          final userDocSnapshot = await userRef.get();
-
-          List<dynamic> userBookings =
-              userDocSnapshot.data()?['bookings'] ?? [];
-
-          final userBookingIndex = userBookings.indexWhere(
-            (b) => b['id'] == booking.id,
-          );
-          if (userBookingIndex != -1) {
-            userBookings[userBookingIndex]['users'] =
-                List<String>.from(userBookings[userBookingIndex]['users'] ?? [])
-                  ..add(user.id);
-            await userRef.update({'bookings': userBookings});
-          }
-        }
-      }
-
-      final bookingModelUpdated = BookingModel(
-        id: booking.id,
-        maxUsers: booking.maxUsers,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        venue: booking.venue,
-        users: List<String>.from(booking.users),
-      );
-      user.bookings.add(bookingModelUpdated);
-
-      final upcomingBookings = user.bookings
-          .where((booking) => booking.startTime.isAfter(DateTime.now()))
-          .toList()
-        ..sort((a, b) => a.startTime.compareTo(b.startTime));
-
-      final upcomingHiveBookings = upcomingBookings
-          .map((booking) => BookingModelHive.fromModel(booking))
-          .toList();
-
-      final box = await Hive.openBox('home_${user.id}');
-
-      await box.put('upcoming_bookings', upcomingHiveBookings);
-
-      return user;
-    } catch (e) {
-      debugPrint('❗️ Error joining booking: $e');
-      return null;
-    }
-  }
-
-  Future<UserModel?> joinBookingFromVenue({
-    required BookingModel booking,
-    required UserModel user,
-    required VenueModel venue,
-  }) async {
-    try {
-      final venueRef = _firestore.collection('venues').doc(venue.id);
-
-      final venueDocSnapshot = await venueRef.get();
-      if (!venueDocSnapshot.exists) {
-        return null;
-      }
-
-      booking.users.add(user.id);
-
-      final venueModel = {
-        'coords': venue.coords,
-        'id': venue.id,
-        'image': venue.image,
-        'location_name': venue.locationName,
-        'name': venue.name,
-        'rating': venue.rating,
-        'sport': {
-          'id': venue.sport.id,
-          'logo': venue.sport.logo,
-          'name': venue.sport.name,
-        }
-      };
-
-      final bookingModel = {
-        'id': booking.id,
-        'maxUsers': booking.maxUsers,
-        'start_time': booking.startTime,
-        'end_time': booking.endTime,
-        'venue': venueModel,
-        'users': booking.users
-      };
-
-      DocumentReference bookingRef =
-          _firestore.collection('bookings').doc(booking.id);
-      await bookingRef.update({
-        'users': FieldValue.arrayUnion([user.id]),
-      });
-
-      await _firestore.collection('users').doc(user.id).update({
-        'bookings': FieldValue.arrayUnion([bookingModel]),
-      });
-
-      List<dynamic> venueBookings = venueDocSnapshot.data()?['bookings'] ?? [];
-
-      final bookingIndex = venueBookings.indexWhere(
-        (b) => b['id'] == booking.id,
-      );
-
-      if (bookingIndex != -1) {
-        venueBookings[bookingIndex]['users'] =
-            List<String>.from(venueBookings[bookingIndex]['users'] ?? [])
-              ..add(user.id);
-
-        await venueRef.update({'bookings': venueBookings});
-      }
-
-      for (var userId in booking.users) {
-        if (userId != user.id) {
-          final userRef = _firestore.collection('users').doc(userId);
-          final userDocSnapshot = await userRef.get();
-
-          List<dynamic> userBookings =
-              userDocSnapshot.data()?['bookings'] ?? [];
-
-          final userBookingIndex = userBookings.indexWhere(
-            (b) => b['id'] == booking.id,
-          );
-          if (userBookingIndex != -1) {
-            userBookings[userBookingIndex]['users'] =
-                List<String>.from(userBookings[userBookingIndex]['users'] ?? [])
-                  ..add(user.id);
-            await userRef.update({'bookings': userBookings});
-          }
-        }
-      }
-
-      final bookingModelUpdated = BookingModel(
-        id: booking.id,
-        maxUsers: booking.maxUsers,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        venue: VenueModel.fromJson(venueModel),
-        users: List<String>.from(booking.users),
-      );
-
-      user.bookings.add(bookingModelUpdated);
-
-      final upcomingBookings = user.bookings
-          .where((booking) => booking.startTime.isAfter(DateTime.now()))
-          .toList()
-        ..sort((a, b) => a.startTime.compareTo(b.startTime));
-
-      final upcomingHiveBookings = upcomingBookings
-          .map((booking) => BookingModelHive.fromModel(booking))
-          .toList();
-
-      final box = await Hive.openBox('home_${user.id}');
-
-      await box.put('upcoming_bookings', upcomingHiveBookings);
-
-      return user;
-    } catch (e) {
-      debugPrint('❗️ Error joining booking: $e');
-      return null;
-    }
-  }
-
-  Future<UserModel?> joinBookingIsolate({
+  Future<Map<String, dynamic>> joinBookingIsolate({
     required BookingModel booking,
     required UserModel user,
     required AuthBloc authBloc,
@@ -482,6 +283,7 @@ class BookingRepository {
     final receivePort = ReceivePort();
 
     final rootIsolateToken = RootIsolateToken.instance;
+
 
     final bookingJson = jsonEncode(booking.toJsonSerializable());
 
@@ -496,10 +298,15 @@ class BookingRepository {
         'firebaseOptions': Firebase.app().options,
       });
     } else {
-      return null;
+      return {
+        'booking': null,
+        'user': null,
+      };
     }
 
-    final UserModel? updatedUser = await receivePort.first;
+    final Map<String, dynamic> results = await receivePort.first;
+
+    final UserModel? updatedUser = results['user'];
 
     if (updatedUser != null) {
       authBloc.add(
@@ -519,117 +326,44 @@ class BookingRepository {
       await box.put('upcoming_bookings', upcomingHiveBookings);
     }
 
-    return updatedUser;
-  }
-
-  Future<UserModel?> joinBookingFromVenueIsolate({
-    required BookingModel booking,
-    required UserModel user,
-    required VenueModel venue,
-    required AuthBloc authBloc,
-  }) async {
-    final receivePort = ReceivePort();
-
-    final rootIsolateToken = RootIsolateToken.instance;
-
-    final bookingJson = jsonEncode(booking.toJsonSerializable());
-
-    final venueJson = jsonEncode(venue.toJsonSerializable());
-
-    final userJson = jsonEncode(user.toJsonSerializable());
-
-    if (rootIsolateToken != null) {
-      await Isolate.spawn(_joinBookingFromVenueIsolate, {
-        'receivePort': receivePort.sendPort,
-        'rootToken': rootIsolateToken,
-        'booking': bookingJson,
-        'user': userJson,
-        'venue': venueJson,
-        'firebaseOptions': Firebase.app().options,
-      });
-    } else {
-      return null;
-    }
-
-    final UserModel? updatedUser = await receivePort.first;
-
-    if (updatedUser != null) {
-      authBloc.add(
-          AuthChangeModelEvent(FirebaseAuth.instance.currentUser, updatedUser));
-
-      final upcomingBookings = updatedUser.bookings
-          .where((booking) => booking.startTime.isAfter(DateTime.now()))
-          .toList()
-        ..sort((a, b) => a.startTime.compareTo(b.startTime));
-
-      final upcomingHiveBookings = upcomingBookings
-          .map((booking) => BookingModelHive.fromModel(booking))
-          .toList();
-
-      final box = await Hive.openBox('home_${updatedUser.id}');
-
-      await box.put('upcoming_bookings', upcomingHiveBookings);
-    }
-
-    return updatedUser;
-  }
-
-  Future<Map<String, dynamic>> fetchBookingIsolate({
-    required BookingModel booking,
-  }) async {
-    final receivePort = ReceivePort();
-
-    final rootIsolateToken = RootIsolateToken.instance;
-
-    final bookingJson = jsonEncode(booking.toJsonSerializable());
-
-    if (rootIsolateToken != null) {
-      await Isolate.spawn(_fetchBookingIsolate, {
-        'receivePort': receivePort.sendPort,
-        'rootToken': rootIsolateToken,
-        'booking': bookingJson,
-        'firebaseOptions': Firebase.app().options,
-      });
-    } else {
-      return {
-        'booking': null,
-        'error': true
-      };
-    }
-
-    final Map<String, dynamic> results = await receivePort.first;
-
     return results;
   }
 
   void _joinBookingIsolate(Map<String, dynamic> params) async {
     final sendPort = params['receivePort'] as SendPort;
-
     final rootIsolateToken = params['rootToken'] as RootIsolateToken;
-
     BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
 
     try {
       final firebaseOptions = params['firebaseOptions'] as FirebaseOptions;
-
-      await Firebase.initializeApp(
-        options: firebaseOptions,
-      );
+      await Firebase.initializeApp(options: firebaseOptions);
 
       final bookingJson = params['booking'] as String;
-
       final userJson = params['user'] as String;
 
       final booking = BookingModel.fromJson(jsonDecode(bookingJson));
-
       final user = UserModel.fromJson(jsonDecode(userJson));
 
       final firestore = FirebaseService.instance.firestore;
+
+      // Add these checks:
+      if (booking.id.isEmpty) {
+        sendPort.send({'booking': null, 'user': null});
+        return;
+      }
+      if (booking.venue.id.isEmpty) {
+        sendPort.send({'booking': null, 'user': null});
+        return;
+      }
+
       final venueRef = firestore.collection('venues').doc(booking.venue.id);
       final venueDocSnapshot = await venueRef.get();
 
       if (!venueDocSnapshot.exists) {
-        sendPort.send(null);
+        sendPort.send({
+          'booking': null,
+          'user': null,
+        });
         return;
       }
 
@@ -688,132 +422,42 @@ class BookingRepository {
       );
       user.bookings.add(bookingModelUpdated);
 
-      sendPort.send(user);
+      sendPort.send({
+        'booking': bookingModelUpdated,
+        'user': user,
+      });
     } catch (e) {
       debugPrint('❗️ Error joining booking in isolate: $e');
-      sendPort.send(null);
+      sendPort.send({
+        'booking': null,
+        'user': null,
+      });
     }
   }
 
-  void _joinBookingFromVenueIsolate(Map<String, dynamic> params) async {
-    final sendPort = params['receivePort'] as SendPort;
+  Future<Map<String, dynamic>> fetchBookingIsolate({
+    required BookingModel booking,
+  }) async {
+    final receivePort = ReceivePort();
 
-    final rootIsolateToken = params['rootToken'] as RootIsolateToken;
+    final rootIsolateToken = RootIsolateToken.instance;
 
-    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+    final bookingJson = jsonEncode(booking.toJsonSerializable());
 
-    try {
-      final firebaseOptions = params['firebaseOptions'] as FirebaseOptions;
-
-      await Firebase.initializeApp(
-        options: firebaseOptions,
-      );
-
-      final bookingJson = params['booking'] as String;
-
-      final userJson = params['user'] as String;
-
-      final venueJson = params['venue'] as String;
-
-      final booking = BookingModel.fromJson(jsonDecode(bookingJson));
-
-      final user = UserModel.fromJson(jsonDecode(userJson));
-
-      final venue = VenueModel.fromJson(jsonDecode(venueJson));
-
-      final firestore = FirebaseService.instance.firestore;
-
-      final venueRef = firestore.collection('venues').doc(venue.id);
-
-      final venueDocSnapshot = await venueRef.get();
-      if (!venueDocSnapshot.exists) {
-        return null;
-      }
-
-      booking.users.add(user.id);
-
-      final venueModel = {
-        'coords': venue.coords,
-        'id': venue.id,
-        'image': venue.image,
-        'location_name': venue.locationName,
-        'name': venue.name,
-        'rating': venue.rating,
-        'sport': {
-          'id': venue.sport.id,
-          'logo': venue.sport.logo,
-          'name': venue.sport.name,
-        }
-      };
-
-      final bookingModel = {
-        'id': booking.id,
-        'maxUsers': booking.maxUsers,
-        'start_time': booking.startTime,
-        'end_time': booking.endTime,
-        'venue': venueModel,
-        'users': booking.users
-      };
-
-      DocumentReference bookingRef =
-          firestore.collection('bookings').doc(booking.id);
-      await bookingRef.update({
-        'users': FieldValue.arrayUnion([user.id]),
+    if (rootIsolateToken != null) {
+      await Isolate.spawn(_fetchBookingIsolate, {
+        'receivePort': receivePort.sendPort,
+        'rootToken': rootIsolateToken,
+        'booking': bookingJson,
+        'firebaseOptions': Firebase.app().options,
       });
-
-      await firestore.collection('users').doc(user.id).update({
-        'bookings': FieldValue.arrayUnion([bookingModel]),
-      });
-
-      List<dynamic> venueBookings = venueDocSnapshot.data()?['bookings'] ?? [];
-
-      final bookingIndex = venueBookings.indexWhere(
-        (b) => b['id'] == booking.id,
-      );
-
-      if (bookingIndex != -1) {
-        venueBookings[bookingIndex]['users'] =
-            List<String>.from(venueBookings[bookingIndex]['users'] ?? [])
-              ..add(user.id);
-
-        await venueRef.update({'bookings': venueBookings});
-      }
-
-      for (var userId in booking.users) {
-        if (userId != user.id) {
-          final userRef = firestore.collection('users').doc(userId);
-          final userDocSnapshot = await userRef.get();
-
-          List<dynamic> userBookings =
-              userDocSnapshot.data()?['bookings'] ?? [];
-
-          final userBookingIndex = userBookings.indexWhere(
-            (b) => b['id'] == booking.id,
-          );
-          if (userBookingIndex != -1) {
-            userBookings[userBookingIndex]['users'] =
-                List<String>.from(userBookings[userBookingIndex]['users'] ?? [])
-                  ..add(user.id);
-            await userRef.update({'bookings': userBookings});
-          }
-        }
-      }
-
-      final bookingModelUpdated = BookingModel(
-        id: booking.id,
-        maxUsers: booking.maxUsers,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        venue: VenueModel.fromJson(venueModel),
-        users: List<String>.from(booking.users),
-      );
-
-      user.bookings.add(bookingModelUpdated);
-      sendPort.send(user);
-    } catch (e) {
-      debugPrint('❗️ Error joining booking from venue in isolate: $e');
-      sendPort.send(null);
+    } else {
+      return {'booking': null, 'error': true};
     }
+
+    final Map<String, dynamic> results = await receivePort.first;
+
+    return results;
   }
 
   void _fetchBookingIsolate(Map<String, dynamic> params) async {
@@ -848,8 +492,11 @@ class BookingRepository {
         return;
       }
 
-      final bookingData = bookingDocSnapshot.data() ?? {};
-      final updatedBooking = BookingModel.fromJson(bookingData);
+      final updatedBooking = BookingModel.fromFirestore(
+        bookingDocSnapshot,
+        null,
+      );
+
 
       final send = {
         'booking': updatedBooking,

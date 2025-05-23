@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
+import 'package:isis3510_team32_flutter/core/booking_view_service.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:intl/intl.dart';
+import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 
 class BookingInfo extends StatelessWidget {
   final BookingModel booking;
+  final int selectedIndex;
 
-  const BookingInfo({super.key, required this.booking});
+  final BookingRepository bookingRepository = BookingRepository();
+  final BookingViewService bookingViewService = BookingViewService();
+
+  BookingInfo({super.key, required this.booking, required this.selectedIndex});
 
   String _truncateText(String text, int? maxLength) {
     if (maxLength == null || text.length <= maxLength) {
@@ -19,9 +26,55 @@ class BookingInfo extends StatelessWidget {
     }
   }
 
+  void _processJoinBookingInBackground(
+      BuildContext context, BookingModel booking) async {
+    try {
+      final result = await bookingRepository.joinBookingIsolate(
+        booking: booking,
+        user: context.read<AuthBloc>().state.userModel!,
+        authBloc: context.read<AuthBloc>(),
+      );
+
+
+      final user = result['user'];
+
+      final bookingUpdated = result['booking'];
+
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              user != null
+                  ? 'Successfully joined the booking!'
+                  : 'Failed to join the booking.',
+            ),
+          ),
+        );
+
+        if (bookingUpdated != null) {
+          bookingViewService.recordView('Booking Detail View');
+          context.push('/booking_detail', extra: {
+            'booking': booking,
+            'selectedIndex': selectedIndex,
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint('❗️ Error: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('An error occurred while processing the booking.')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authBloc = context.read<AuthBloc>();
+
     final userId = authBloc.state.user!.uid;
     final booked = booking.users.contains(userId);
 
@@ -170,7 +223,13 @@ class BookingInfo extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  // TODO: Implement join/cancel logic
+                  if (booked) {
+                    // Cancel booking
+                    // _processCancelBookingInBackground(context, booking);
+                  } else {
+                    // Join booking
+                    _processJoinBookingInBackground(context, booking);
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor:

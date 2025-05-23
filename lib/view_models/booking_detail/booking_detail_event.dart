@@ -15,3 +15,12 @@ final class LoadBookingDetailData extends BookingDetailEvent {
   @override
   List<Object> get props => [booking];
 }
+
+final class UpdateBooking extends BookingDetailEvent {
+  final BookingModel booking;
+
+  const UpdateBooking({required this.booking});
+
+  @override
+  List<Object> get props => [booking];
+}

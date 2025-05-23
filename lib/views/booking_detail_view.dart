@@ -88,7 +88,10 @@ class BookingDetailView extends StatelessWidget {
           children: [
             VenueDetailImageWidget(venue: booking.venue),
             const SizedBox(height: 16),
-            BookingInfo(booking: booking)
+            BookingInfo(
+              booking: booking,
+              selectedIndex: selectedIndex,
+            )
           ],
         ),
       ),
@@ -104,7 +107,7 @@ class BookingDetailView extends StatelessWidget {
           children: [
             VenueDetailImageWidget(venue: booking.venue),
             const SizedBox(height: 16),
-            BookingInfo(booking: booking)
+            BookingInfo(booking: booking, selectedIndex: selectedIndex),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:isis3510_team32_flutter/models/hive/booking_model_hive.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
@@ -30,7 +31,14 @@ class HomeRepository {
 
     recommendedBookings.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-    return recommendedBookings.take(3).toList();
+    final x = recommendedBookings.take(3).toList();
+
+    debugPrint(
+        '###Recommended bookings: ${x.map((booking) => booking.id).toList()}');
+
+    return x;
+
+
   }
 
   List<BookingModel> getUpcomingBookings(UserModel user) {

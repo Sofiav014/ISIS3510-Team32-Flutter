@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
@@ -20,6 +21,7 @@ class BookingDetailBloc extends Bloc<BookingDetailEvent, BookingDetailState> {
     required this.booking,
   }) : super(BookingDetailInitial()) {
     on<LoadBookingDetailData>(_onLoadBookingDetailData);
+    on<UpdateBooking>(_onUpdateBooking);
   }
 
   Future<void> _onLoadBookingDetailData(
@@ -46,6 +48,17 @@ class BookingDetailBloc extends Bloc<BookingDetailEvent, BookingDetailState> {
       } else {
         emit(BookingDetailOfflineLoaded(booking: booking));
       }
+    } catch (e) {
+      emit(BookingDetailError(message: 'Failed to fetch venue details: $e'));
+    }
+  }
+
+  Future<void> _onUpdateBooking(
+      UpdateBooking event, Emitter<BookingDetailState> emit) async {
+    emit(BookingDetailLoading());
+    try {
+      emit(BookingDetailLoaded(
+          booking: event.booking, error: false, fetching: false));
     } catch (e) {
       emit(BookingDetailError(message: 'Failed to fetch venue details: $e'));
     }
