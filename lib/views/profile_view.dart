@@ -1,18 +1,29 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'dart:io';
+
+import 'package:another_flushbar/flushbar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:isis3510_team32_flutter/constants/errors.dart';
+import 'package:isis3510_team32_flutter/constants/exceptions.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_event.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_state.dart';
-import 'package:isis3510_team32_flutter/widgets/search_view_widgets/venue_list_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
+import 'package:isis3510_team32_flutter/widgets/search_view_widgets/venue_list_widget.dart';
 
 class ProfileView extends StatelessWidget {
   const ProfileView({super.key});
@@ -428,26 +439,190 @@ class ProfileCardAvatarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 96,
-      height: 96,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(
-          color: AppColors.primary,
-          width: 2,
+    return GestureDetector(
+      onTap: () async {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) =>
+              const ProfileCardImageSelectorDialog(),
+        );
+      },
+      child: Container(
+        width: 96,
+        height: 96,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.primary,
+            width: 2,
+          ),
+        ),
+        child: BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+          final imageUrl = state.userModel?.imageUrl;
+          return Stack(
+            children: [
+              ClipOval(
+                child: Center(
+                  child: imageUrl != null
+                      ? CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fadeInDuration: Duration.zero,
+                          fadeOutDuration: Duration.zero,
+                          placeholder: (_, __) =>
+                              const CircularProgressIndicator(),
+                          errorWidget: (_, __, ___) {
+                            showNoConnectionError(context);
+                            return const ProfileCardAvatarPlaceholderPicture();
+                          })
+                      : const ProfileCardAvatarPlaceholderPicture(),
+                ),
+              ),
+              if (imageUrl == null) const ProfileCardAvatarPlusWidget(),
+            ],
+          );
+        }),
+      ),
+    );
+  }
+}
+
+class ProfileCardAvatarPlaceholderPicture extends StatelessWidget {
+  const ProfileCardAvatarPlaceholderPicture({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SvgPicture.asset(
+      'assets/icons/avatar.svg',
+      width: 64,
+      height: 64,
+      colorFilter: const ColorFilter.mode(
+        AppColors.primary,
+        BlendMode.srcIn,
+      ),
+    );
+  }
+}
+
+class ProfileCardAvatarPlusWidget extends StatelessWidget {
+  const ProfileCardAvatarPlusWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 0,
+      right: 0,
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+        ),
+        child: ClipOval(
+          child: Center(
+            child: SvgPicture.asset(
+              'assets/icons/plus.svg',
+              width: 32,
+              height: 32,
+              colorFilter: const ColorFilter.mode(
+                AppColors.primary,
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
         ),
       ),
-      child: ClipOval(
-        child: Center(
-          child: SvgPicture.asset(
-            'assets/icons/avatar.svg',
-            width: 64,
-            height: 64,
-            colorFilter: const ColorFilter.mode(
-              AppColors.primary,
-              BlendMode.srcIn,
+    );
+  }
+}
+
+class ProfileCardImageSelectorDialog extends StatelessWidget {
+  const ProfileCardImageSelectorDialog({
+    super.key,
+  });
+
+  Future<void> setNewImage(ImageSource source, BuildContext context) async {
+    final authBloc = context.read<AuthBloc>();
+    final connectivityBloc = context.read<ConnectivityBloc>();
+
+    final picker = ImagePicker();
+    final pickedImage = await picker.pickImage(source: source);
+    if (pickedImage == null) {
+      throw ImageNotFoundException("Could not fetch image");
+    }
+    final file = File(pickedImage.path);
+
+    if (connectivityBloc.state is ConnectivityOfflineState) {
+      throw ConnectivityException("Could not confirm connectivity status");
+    }
+    authBloc.add(AuthUpdateImageEvent(file));
+  }
+
+  Future<void> attemptSetNewImage(
+      ImageSource source, BuildContext context) async {
+    final connectivityBloc = context.read<ConnectivityBloc>();
+    if (connectivityBloc.state is ConnectivityOfflineState) {
+      Navigator.of(context).pop();
+      showNoConnectionError(context);
+      return;
+    }
+    try {
+      await setNewImage(source, context);
+      Navigator.of(context).pop();
+      showImageUploadedSuccessfully(context);
+    } on ImageNotFoundException catch (_) {
+      Navigator.of(context).pop();
+      showCouldNotLoadImage(context);
+    } on ConnectivityException catch (_) {
+      Navigator.of(context).pop();
+      showNoConnectionError(context);
+    }
+  }
+
+  void showImageUploadedSuccessfully(BuildContext context) {
+    Flushbar(
+      title: "Image uploaded successfully",
+      message:
+          "If you wish to rewrite it, hit the image icon again to put a new one",
+      icon: const Icon(
+        Icons.info_rounded,
+        size: 16,
+        color: AppColors.primary,
+      ),
+      leftBarIndicatorColor: AppColors.primary,
+      duration: const Duration(seconds: 5),
+    ).show(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text(
+        "Select a profile image",
+        style: TextStyle(fontSize: 16),
+      ),
+      content: Padding(
+        padding: const EdgeInsets.all(8),
+        child: SizedBox(
+          width: 200,
+          height: 100,
+          child: Center(
+            child: Column(
+              children: [
+                TextButton(
+                    onPressed: () {
+                      attemptSetNewImage(ImageSource.camera, context);
+                    },
+                    child: const Text("Camera")),
+                TextButton(
+                    onPressed: () async {
+                      attemptSetNewImage(ImageSource.gallery, context);
+                    },
+                    child: const Text("Gallery"))
+              ],
             ),
           ),
         ),
