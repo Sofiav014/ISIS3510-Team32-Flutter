@@ -121,6 +121,7 @@ GoRouter setupRouter(AuthBloc authBloc) {
           path: '/booking_detail',
           pageBuilder: (context, state) {
             final extra = state.extra as Map<String, dynamic>;
+
             final booking = extra['booking'] as BookingModel;
             final selectedIndex = extra['selectedIndex'] as int?;
             return buildPageWithNoTransition(
