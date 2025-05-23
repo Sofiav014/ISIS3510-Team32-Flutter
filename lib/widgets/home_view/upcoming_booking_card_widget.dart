@@ -1,9 +1,11 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
 
 class UpcomingBookingCardWidget extends StatelessWidget {
   final BookingModel booking;
@@ -23,7 +25,11 @@ class UpcomingBookingCardWidget extends StatelessWidget {
             'booking': booking,
             'selectedIndex': 2,
           },
-        );
+        ).then((result) {
+          if (result == 'refresh') {
+            context.read<HomeBloc>().add(const LoadHomeData());
+          }
+        });
       },
       child: Container(
         margin: const EdgeInsets.all(8.0),

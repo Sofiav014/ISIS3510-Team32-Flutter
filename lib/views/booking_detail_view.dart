@@ -23,26 +23,34 @@ class BookingDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Booking Detail View');
 
-    return BlocProvider(
+    return WillPopScope(
+      onWillPop: () async {
+        context.pop('refresh'); // Return 'refresh' to previous view
+        return false; // Prevent default pop
+      },
+      child: BlocProvider(
         create: (context) => BookingDetailBloc(
-            bookingRepository: BookingRepository(),
-            connectivityRepository: ConnectivityRepository(),
-            booking: booking)
-          ..add(LoadBookingDetailData(booking: booking)),
+          bookingRepository: BookingRepository(),
+          connectivityRepository: ConnectivityRepository(),
+          booking: booking,
+        )..add(LoadBookingDetailData(booking: booking)),
         child: Scaffold(
           backgroundColor: AppColors.background(context),
           appBar: AppBar(
             leading: IconButton(
               icon: Icon(Icons.arrow_back, color: AppColors.titleText(context)),
               onPressed: () {
-                context.pop(true);
+                context.pop(
+                    'refresh'); // Return 'refresh' when back arrow is tapped
               },
             ),
-            title: Text('Booking Detail',
-                style: TextStyle(
-                  color: AppColors.titleText(context),
-                  fontWeight: FontWeight.w600,
-                )),
+            title: Text(
+              'Booking Detail',
+              style: TextStyle(
+                color: AppColors.titleText(context),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             centerTitle: true,
             backgroundColor: AppColors.appBarBackground(context),
             shadowColor: AppColors.text(context),
@@ -74,8 +82,12 @@ class BookingDetailView extends StatelessWidget {
             ),
           ),
           bottomNavigationBar: BottomNavigationWidget(
-              selectedIndex: selectedIndex, reLoad: true),
-        ));
+            selectedIndex: selectedIndex,
+            reLoad: true,
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _buildBookingDetail(
