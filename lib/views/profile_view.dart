@@ -470,10 +470,11 @@ class ProfileCardAvatarWidget extends StatelessWidget {
                           fadeInDuration: Duration.zero,
                           fadeOutDuration: Duration.zero,
                           placeholder: (_, __) =>
-                              const ProfileCardAvatarPlaceholderPicture(),
-                          errorWidget: (_, __, ___) =>
-                              const ProfileCardAvatarPlaceholderPicture(),
-                        )
+                              const CircularProgressIndicator(),
+                          errorWidget: (_, __, ___) {
+                            showNoConnectionError(context);
+                            return const ProfileCardAvatarPlaceholderPicture();
+                          })
                       : const ProfileCardAvatarPlaceholderPicture(),
                 ),
               ),
