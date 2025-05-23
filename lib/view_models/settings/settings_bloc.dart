@@ -7,9 +7,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     on<StartSettingsEvent>((event, emit) {
       emit(SettingsInProgress());
     });
-
     on<FinishSettingsEvent>((event, emit) {
       emit(SettingsComplete());
+    });
+    on<ResetSettingsEvent>((event, emit) {
+      emit(SettingsInitial());
     });
   }
 }
