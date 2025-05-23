@@ -14,8 +14,10 @@ class VenueDetailLoading extends VenueDetailState {}
 class VenueDetailLoaded extends VenueDetailState {
   final VenueModel venue;
   final List<BookingModel> activeBookings;
+  final UserModel user;
 
-  const VenueDetailLoaded({required this.venue, required this.activeBookings});
+  const VenueDetailLoaded(
+      {required this.venue, required this.activeBookings, required this.user});
 
   @override
   List<Object> get props => [venue];
@@ -24,9 +26,10 @@ class VenueDetailLoaded extends VenueDetailState {
 class VenueDetailOfflineLoaded extends VenueDetailState {
   final VenueModel venue;
   final List<BookingModel> activeBookings;
+  final UserModel user;
 
   const VenueDetailOfflineLoaded(
-      {required this.venue, required this.activeBookings});
+      {required this.venue, required this.activeBookings, required this.user});
 
   @override
   List<Object> get props => [venue];
