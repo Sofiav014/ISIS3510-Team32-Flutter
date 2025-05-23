@@ -59,7 +59,8 @@ class SportPopularityReportCardWidget extends StatelessWidget {
               const SizedBox(height: 10.0),
               SvgPicture.asset(
                 'assets/icons/initiation/${getSportLogo(sport.id)}',
-                color: Colors.white,
+                colorFilter:
+                    const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                 height: 50.0,
               ),
               const SizedBox(height: 10.0),

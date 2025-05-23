@@ -53,7 +53,7 @@ class GoogleSignInButton extends StatelessWidget {
 
     if (gUser == null) {
       loadingBloc.add(HideLoadingEvent());
-      return null;
+      return;
     }
     debugPrint(
         '======================== FINISHED SIGN IN ==================================');

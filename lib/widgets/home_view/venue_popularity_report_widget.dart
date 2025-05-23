@@ -47,7 +47,8 @@ class VenuePopularityReportCardWidget extends StatelessWidget {
               const SizedBox(height: 10.0),
               SvgPicture.asset(
                 'assets/icons/location_star.svg',
-                color: Colors.white,
+                colorFilter:
+                    const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                 height: 30.0,
               ),
               const SizedBox(height: 10.0),

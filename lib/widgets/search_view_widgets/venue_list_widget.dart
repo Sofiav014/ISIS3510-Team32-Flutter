@@ -28,11 +28,13 @@ class VenueListWidget extends StatelessWidget {
               child: AspectRatio(
                 aspectRatio: 16 / 9, // Adjust the aspect ratio as needed
                 child: CachedNetworkImage(
-                imageUrl: venue.image,
-                fit: BoxFit.cover,
-                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => const Center(child: Icon(Icons.broken_image)),
-              ),
+                  imageUrl: venue.image,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) =>
+                      const Center(child: CircularProgressIndicator()),
+                  errorWidget: (context, url, error) =>
+                      const Center(child: Icon(Icons.broken_image)),
+                ),
               ),
             ),
             Positioned(
@@ -87,7 +89,8 @@ class VenueListWidget extends StatelessWidget {
                           'assets/icons/location.svg',
                           width: 16,
                           height: 16,
-                          color: AppColors.contrast900,
+                          colorFilter: const ColorFilter.mode(
+                              AppColors.contrast900, BlendMode.srcIn),
                         ),
                         const SizedBox(width: 4),
                         Expanded(
@@ -109,7 +112,8 @@ class VenueListWidget extends StatelessWidget {
                           'assets/icons/sport_logo.svg',
                           width: 16,
                           height: 16,
-                          color: AppColors.contrast900,
+                          colorFilter: const ColorFilter.mode(
+                              AppColors.contrast900, BlendMode.srcIn),
                         ),
                         const SizedBox(width: 4),
                         Expanded(

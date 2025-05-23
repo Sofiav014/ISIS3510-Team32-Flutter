@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/core/screen_time_service.dart';
 import 'package:isis3510_team32_flutter/core/theme_frecuency_service.dart';
+import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
+import 'package:isis3510_team32_flutter/views/booking_detail_view.dart';
 import 'package:isis3510_team32_flutter/views/create_booking_view.dart';
 import 'package:isis3510_team32_flutter/views/initiation_view.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
@@ -115,6 +117,20 @@ GoRouter setupRouter(AuthBloc authBloc) {
           path: '/profile',
           pageBuilder: (context, state) => buildPageWithNoTransition(
               context: context, state: state, child: const ProfileView())),
+      GoRoute(
+          path: '/booking_detail',
+          pageBuilder: (context, state) {
+            final extra = state.extra as Map<String, dynamic>;
+
+            final booking = extra['booking'] as BookingModel;
+            final selectedIndex = extra['selectedIndex'] as int?;
+            return buildPageWithNoTransition(
+              context: context,
+              state: state,
+              child: BookingDetailView(
+                  booking: booking, selectedIndex: selectedIndex ?? 0),
+            );
+          }),
     ],
   );
 }

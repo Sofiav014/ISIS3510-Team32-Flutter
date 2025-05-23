@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:isolate';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -13,7 +12,6 @@ import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/hive/booking_model_hive.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
-import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 
 class BookingRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -275,16 +273,21 @@ class BookingRepository {
     }
   }
 
-  Future<UserModel?> joinBooking({
+  Future<Map<String, dynamic>> joinBooking({
     required BookingModel booking,
     required UserModel user,
+    required AuthBloc authBloc,
   }) async {
     try {
       final venueRef = _firestore.collection('venues').doc(booking.venue.id);
 
       final venueDocSnapshot = await venueRef.get();
       if (!venueDocSnapshot.exists) {
-        return null;
+        return {
+          'user': null,
+          'booking': null,
+          'status': 'error',
+        };
       }
 
       booking.users.add(user.id);
@@ -354,77 +357,76 @@ class BookingRepository {
 
       await box.put('upcoming_bookings', upcomingHiveBookings);
 
-      return user;
+      return {
+        'user': user,
+        'booking': bookingModelUpdated,
+        'status': 'success',
+      };
     } catch (e) {
       debugPrint('❗️ Error joining booking: $e');
-      return null;
+      return {
+        'user': null,
+        'booking': null,
+        'status': 'error',
+      };
     }
   }
 
-  Future<UserModel?> joinBookingFromVenue({
+  Future<Map<String, dynamic>> cancelBooking({
     required BookingModel booking,
     required UserModel user,
-    required VenueModel venue,
+    required AuthBloc authBloc,
   }) async {
     try {
-      final venueRef = _firestore.collection('venues').doc(venue.id);
+      final venueRef = _firestore.collection('venues').doc(booking.venue.id);
 
       final venueDocSnapshot = await venueRef.get();
       if (!venueDocSnapshot.exists) {
-        return null;
+        return {
+          'user': null,
+          'booking': null,
+          'status': 'error',
+        };
       }
 
-      booking.users.add(user.id);
+      booking.users.remove(user.id);
 
-      final venueModel = {
-        'coords': venue.coords,
-        'id': venue.id,
-        'image': venue.image,
-        'location_name': venue.locationName,
-        'name': venue.name,
-        'rating': venue.rating,
-        'sport': {
-          'id': venue.sport.id,
-          'logo': venue.sport.logo,
-          'name': venue.sport.name,
-        }
-      };
-
-      final bookingModel = {
-        'id': booking.id,
-        'maxUsers': booking.maxUsers,
-        'start_time': booking.startTime,
-        'end_time': booking.endTime,
-        'venue': venueModel,
-        'users': booking.users
-      };
-
+      // Remove user from booking document
       DocumentReference bookingRef =
           _firestore.collection('bookings').doc(booking.id);
       await bookingRef.update({
-        'users': FieldValue.arrayUnion([user.id]),
+        'users': FieldValue.arrayRemove([user.id]),
       });
 
-      await _firestore.collection('users').doc(user.id).update({
-        'bookings': FieldValue.arrayUnion([bookingModel]),
-      });
+      // Remove booking from user's bookings array
+      final userRef = _firestore.collection('users').doc(user.id);
+      final userDocSnapshot = await userRef.get();
+      List<dynamic> userBookings = userDocSnapshot.data()?['bookings'] ?? [];
+      final userBookingIndex = userBookings.indexWhere(
+        (b) => b['id'] == booking.id,
+      );
+      if (userBookingIndex != -1) {
+        userBookings.removeAt(userBookingIndex);
+        await userRef.update({'bookings': userBookings});
+      }
 
+      // Update venue's bookings array
       List<dynamic> venueBookings = venueDocSnapshot.data()?['bookings'] ?? [];
-
       final bookingIndex = venueBookings.indexWhere(
         (b) => b['id'] == booking.id,
       );
-
       if (bookingIndex != -1) {
-        venueBookings[bookingIndex]['users'] =
-            List<String>.from(venueBookings[bookingIndex]['users'] ?? [])
-              ..add(user.id);
-
+        List<String> updatedUsers =
+            List<String>.from(venueBookings[bookingIndex]['users'] ?? []);
+        updatedUsers.remove(user.id);
+        venueBookings[bookingIndex]['users'] = updatedUsers;
         await venueRef.update({'bookings': venueBookings});
       }
 
+      // Update all other users' bookings arrays
       for (var userId in booking.users) {
         if (userId != user.id) {
+
           final userRef = _firestore.collection('users').doc(userId);
           final userDocSnapshot = await userRef.get();
 
@@ -435,25 +437,19 @@ class BookingRepository {
             (b) => b['id'] == booking.id,
           );
           if (userBookingIndex != -1) {
-            userBookings[userBookingIndex]['users'] =
-                List<String>.from(userBookings[userBookingIndex]['users'] ?? [])
-                  ..add(user.id);
+            List<String> updatedUsers = List<String>.from(
+                userBookings[userBookingIndex]['users'] ?? []);
+            updatedUsers.remove(user.id);
+            userBookings[userBookingIndex]['users'] = updatedUsers;
             await userRef.update({'bookings': userBookings});
           }
         }
       }
 
-      final bookingModelUpdated = BookingModel(
-        id: booking.id,
-        maxUsers: booking.maxUsers,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        venue: VenueModel.fromJson(venueModel),
-        users: List<String>.from(booking.users),
-      );
+      // Remove booking from user's local model
+      user.bookings.removeWhere((b) => b.id == booking.id);
 
-      user.bookings.add(bookingModelUpdated);
-
+      // Update Hive cache
       final upcomingBookings = user.bookings
           .where((booking) => booking.startTime.isAfter(DateTime.now()))
           .toList()
@@ -464,20 +460,25 @@ class BookingRepository {
           .toList();
 
       final box = await Hive.openBox('home_${user.id}');
-
       await box.put('upcoming_bookings', upcomingHiveBookings);
 
-      return user;
+      return {
+        'user': user,
+        'booking': booking,
+        'status': 'success',
+      };
     } catch (e) {
-      debugPrint('❗️ Error joining booking: $e');
-      return null;
+      debugPrint('❗️ Error cancelling booking: $e');
+      return {
+        'user': null,
+        'booking': null,
+        'status': 'error',
+      };
     }
   }
 
-  Future<UserModel?> joinBookingIsolate({
+  Future<Map<String, dynamic>> fetchBookingIsolate({
     required BookingModel booking,
-    required UserModel user,
-    required AuthBloc authBloc,
   }) async {
     final receivePort = ReceivePort();
 
@@ -485,96 +486,23 @@ class BookingRepository {
 
     final bookingJson = jsonEncode(booking.toJsonSerializable());
 
-    final userJson = jsonEncode(user.toJsonSerializable());
-
     if (rootIsolateToken != null) {
-      await Isolate.spawn(_joinBookingIsolate, {
+      await Isolate.spawn(_fetchBookingIsolate, {
         'receivePort': receivePort.sendPort,
         'rootToken': rootIsolateToken,
         'booking': bookingJson,
-        'user': userJson,
         'firebaseOptions': Firebase.app().options,
       });
     } else {
-      return null;
+      return {'booking': null, 'error': true};
     }
 
-    final UserModel? updatedUser = await receivePort.first;
+    final Map<String, dynamic> results = await receivePort.first;
 
-    if (updatedUser != null) {
-      authBloc.add(
-          AuthChangeModelEvent(FirebaseAuth.instance.currentUser, updatedUser));
-
-      final upcomingBookings = user.bookings
-          .where((booking) => booking.startTime.isAfter(DateTime.now()))
-          .toList()
-        ..sort((a, b) => a.startTime.compareTo(b.startTime));
-
-      final upcomingHiveBookings = upcomingBookings
-          .map((booking) => BookingModelHive.fromModel(booking))
-          .toList();
-
-      final box = await Hive.openBox('home_${user.id}');
-
-      await box.put('upcoming_bookings', upcomingHiveBookings);
-    }
-
-    return updatedUser;
+    return results;
   }
 
-  Future<UserModel?> joinBookingFromVenueIsolate({
-    required BookingModel booking,
-    required UserModel user,
-    required VenueModel venue,
-    required AuthBloc authBloc,
-  }) async {
-    final receivePort = ReceivePort();
-
-    final rootIsolateToken = RootIsolateToken.instance;
-
-    final bookingJson = jsonEncode(booking.toJsonSerializable());
-
-    final venueJson = jsonEncode(venue.toJsonSerializable());
-
-    final userJson = jsonEncode(user.toJsonSerializable());
-
-    if (rootIsolateToken != null) {
-      await Isolate.spawn(_joinBookingFromVenueIsolate, {
-        'receivePort': receivePort.sendPort,
-        'rootToken': rootIsolateToken,
-        'booking': bookingJson,
-        'user': userJson,
-        'venue': venueJson,
-        'firebaseOptions': Firebase.app().options,
-      });
-    } else {
-      return null;
-    }
-
-    final UserModel? updatedUser = await receivePort.first;
-
-    if (updatedUser != null) {
-      authBloc.add(
-          AuthChangeModelEvent(FirebaseAuth.instance.currentUser, updatedUser));
-
-      final upcomingBookings = updatedUser.bookings
-          .where((booking) => booking.startTime.isAfter(DateTime.now()))
-          .toList()
-        ..sort((a, b) => a.startTime.compareTo(b.startTime));
-
-      final upcomingHiveBookings = upcomingBookings
-          .map((booking) => BookingModelHive.fromModel(booking))
-          .toList();
-
-      final box = await Hive.openBox('home_${updatedUser.id}');
-
-      await box.put('upcoming_bookings', upcomingHiveBookings);
-    }
-
-    return updatedUser;
-  }
-
-  void _joinBookingIsolate(Map<String, dynamic> params) async {
+  void _fetchBookingIsolate(Map<String, dynamic> params) async {
     final sendPort = params['receivePort'] as SendPort;
 
     final rootIsolateToken = params['rootToken'] as RootIsolateToken;
@@ -590,201 +518,42 @@ class BookingRepository {
 
       final bookingJson = params['booking'] as String;
 
-      final userJson = params['user'] as String;
-
       final booking = BookingModel.fromJson(jsonDecode(bookingJson));
 
-      final user = UserModel.fromJson(jsonDecode(userJson));
-
       final firestore = FirebaseService.instance.firestore;
-      final venueRef = firestore.collection('venues').doc(booking.venue.id);
-      final venueDocSnapshot = await venueRef.get();
 
-      if (!venueDocSnapshot.exists) {
-        sendPort.send(null);
+      final bookingRef = firestore.collection('bookings').doc(booking.id);
+
+      final bookingDocSnapshot = await bookingRef.get();
+      if (!bookingDocSnapshot.exists) {
+        final send = {
+          'booking': null,
+          'error': false,
+        };
+        sendPort.send(send);
         return;
       }
 
-      booking.users.add(user.id);
-
-      DocumentReference bookingRef =
-          firestore.collection('bookings').doc(booking.id);
-
-      await bookingRef.update({
-        'users': FieldValue.arrayUnion([user.id]),
-      });
-
-      await firestore.collection('users').doc(user.id).update({
-        'bookings': FieldValue.arrayUnion([booking.toJson()]),
-      });
-
-      List<dynamic> venueBookings = venueDocSnapshot.data()?['bookings'] ?? [];
-      final bookingIndex = venueBookings.indexWhere(
-        (b) => b['id'] == booking.id,
+      final updatedBooking = BookingModel.fromFirestore(
+        bookingDocSnapshot,
+        null,
       );
 
-      if (bookingIndex != -1) {
-        venueBookings[bookingIndex]['users'] =
-            List<String>.from(venueBookings[bookingIndex]['users'] ?? [])
-              ..add(user.id);
-
-        await venueRef.update({'bookings': venueBookings});
-      }
-
-      for (var userId in booking.users) {
-        if (userId != user.id) {
-          final userRef = firestore.collection('users').doc(userId);
-          final userDocSnapshot = await userRef.get();
-
-          List<dynamic> userBookings =
-              userDocSnapshot.data()?['bookings'] ?? [];
-          final userBookingIndex = userBookings.indexWhere(
-            (b) => b['id'] == booking.id,
-          );
-          if (userBookingIndex != -1) {
-            userBookings[userBookingIndex]['users'] =
-                List<String>.from(userBookings[userBookingIndex]['users'] ?? [])
-                  ..add(user.id);
-            await userRef.update({'bookings': userBookings});
-          }
-        }
-      }
-
-      final bookingModelUpdated = BookingModel(
-        id: booking.id,
-        maxUsers: booking.maxUsers,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        venue: booking.venue,
-        users: List<String>.from(booking.users),
-      );
-      user.bookings.add(bookingModelUpdated);
-
-      sendPort.send(user);
-    } catch (e) {
-      debugPrint('❗️ Error joining booking in isolate: $e');
-      sendPort.send(null);
-    }
-  }
-
-  void _joinBookingFromVenueIsolate(Map<String, dynamic> params) async {
-    final sendPort = params['receivePort'] as SendPort;
-
-    final rootIsolateToken = params['rootToken'] as RootIsolateToken;
-
-    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
-
-    try {
-      final firebaseOptions = params['firebaseOptions'] as FirebaseOptions;
-
-      await Firebase.initializeApp(
-        options: firebaseOptions,
-      );
-
-      final bookingJson = params['booking'] as String;
-
-      final userJson = params['user'] as String;
-
-      final venueJson = params['venue'] as String;
-
-      final booking = BookingModel.fromJson(jsonDecode(bookingJson));
-
-      final user = UserModel.fromJson(jsonDecode(userJson));
-
-      final venue = VenueModel.fromJson(jsonDecode(venueJson));
-
-      final firestore = FirebaseService.instance.firestore;
-
-      final venueRef = firestore.collection('venues').doc(venue.id);
-
-      final venueDocSnapshot = await venueRef.get();
-      if (!venueDocSnapshot.exists) {
-        return null;
-      }
-
-      booking.users.add(user.id);
-
-      final venueModel = {
-        'coords': venue.coords,
-        'id': venue.id,
-        'image': venue.image,
-        'location_name': venue.locationName,
-        'name': venue.name,
-        'rating': venue.rating,
-        'sport': {
-          'id': venue.sport.id,
-          'logo': venue.sport.logo,
-          'name': venue.sport.name,
-        }
+      final send = {
+        'booking': updatedBooking,
+        'error': false,
       };
 
-      final bookingModel = {
-        'id': booking.id,
-        'maxUsers': booking.maxUsers,
-        'start_time': booking.startTime,
-        'end_time': booking.endTime,
-        'venue': venueModel,
-        'users': booking.users
+      sendPort.send(send);
+    } catch (e) {
+      debugPrint('❗️ Error fetching Booking from isolate: $e');
+
+      final send = {
+        'booking': null,
+        'error': true,
       };
 
-      DocumentReference bookingRef =
-          firestore.collection('bookings').doc(booking.id);
-      await bookingRef.update({
-        'users': FieldValue.arrayUnion([user.id]),
-      });
-
-      await firestore.collection('users').doc(user.id).update({
-        'bookings': FieldValue.arrayUnion([bookingModel]),
-      });
-
-      List<dynamic> venueBookings = venueDocSnapshot.data()?['bookings'] ?? [];
-
-      final bookingIndex = venueBookings.indexWhere(
-        (b) => b['id'] == booking.id,
-      );
-
-      if (bookingIndex != -1) {
-        venueBookings[bookingIndex]['users'] =
-            List<String>.from(venueBookings[bookingIndex]['users'] ?? [])
-              ..add(user.id);
-
-        await venueRef.update({'bookings': venueBookings});
-      }
-
-      for (var userId in booking.users) {
-        if (userId != user.id) {
-          final userRef = firestore.collection('users').doc(userId);
-          final userDocSnapshot = await userRef.get();
-
-          List<dynamic> userBookings =
-              userDocSnapshot.data()?['bookings'] ?? [];
-
-          final userBookingIndex = userBookings.indexWhere(
-            (b) => b['id'] == booking.id,
-          );
-          if (userBookingIndex != -1) {
-            userBookings[userBookingIndex]['users'] =
-                List<String>.from(userBookings[userBookingIndex]['users'] ?? [])
-                  ..add(user.id);
-            await userRef.update({'bookings': userBookings});
-          }
-        }
-      }
-
-      final bookingModelUpdated = BookingModel(
-        id: booking.id,
-        maxUsers: booking.maxUsers,
-        startTime: booking.startTime,
-        endTime: booking.endTime,
-        venue: VenueModel.fromJson(venueModel),
-        users: List<String>.from(booking.users),
-      );
-
-      user.bookings.add(bookingModelUpdated);
-      sendPort.send(user);
-    } catch (e) {
-      debugPrint('❗️ Error joining booking from venue in isolate: $e');
-      sendPort.send(null);
+      sendPort.send(send);
     }
   }
 }

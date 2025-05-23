@@ -28,19 +28,21 @@ class CreateBookingView extends StatelessWidget {
     required this.venueId,
     required this.screenTimeService,
   });
+
   @override
   Widget build(BuildContext context) {
     final authBloc = context.read<AuthBloc>();
     final loadingBloc = context.read<LoadingBloc>();
 
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Create Booking View');
-
     screenTimeService.startTrackingTime();
 
     return BlocProvider(
       create: (_) => CreateBookingBloc(BookingRepository(), venueId, authBloc),
       child: _CreateBookingContent(
-          loadingBloc: loadingBloc, screenTimeService: screenTimeService),
+        loadingBloc: loadingBloc,
+        screenTimeService: screenTimeService,
+      ),
     );
   }
 }
@@ -49,60 +51,64 @@ class _CreateBookingContent extends StatelessWidget {
   final LoadingBloc loadingBloc;
   final ScreenTimeService screenTimeService;
 
-  const _CreateBookingContent(
-      {required this.loadingBloc, required this.screenTimeService});
+  const _CreateBookingContent({
+    required this.loadingBloc,
+    required this.screenTimeService,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final BookingViewService bookingViewService = BookingViewService();
+    final bookingViewService = BookingViewService();
 
     return MultiBlocListener(
       listeners: [
         BlocListener<CreateBookingBloc, CreateBookingState>(
-          listener: (context, state) {
+          listener: (context, state) async {
             if (state.success == true) {
               bookingViewService.recordView('Create Booking View');
               loadingBloc.add(HideLoadingEvent());
-              showDialog(
+
+              await showDialog(
                 context: context,
                 barrierDismissible: true,
-                builder: (context) => AlertDialog(
+                builder: (dialogContext) => AlertDialog(
                   title: const Text('Booking Created'),
                   content:
                       const Text('Your booking has been successfully created!'),
                   actions: [
                     TextButton(
                       onPressed: () {
-                        context.pop();
+                        Navigator.of(dialogContext).pop();
                       },
                       child: const Text('OK'),
                     ),
                   ],
                 ),
-              ).then((_) {
-                context.pop();
-              });
+              );
+
+              if (context.mounted) context.pop();
             } else if (state.success == false) {
               loadingBloc.add(HideLoadingEvent());
-              showDialog(
+
+              await showDialog(
                 context: context,
                 barrierDismissible: true,
-                builder: (context) => AlertDialog(
+                builder: (dialogContext) => AlertDialog(
                   title: const Text('Booking Failed'),
                   content: const Text(
                       'Failed to create the booking. Please try again.'),
                   actions: [
                     TextButton(
                       onPressed: () {
-                        context.pop();
+                        Navigator.of(dialogContext).pop();
                       },
                       child: const Text('OK'),
                     ),
                   ],
                 ),
-              ).then((_) {
-                context.pop();
-              });
+              );
+
+              if (context.mounted) context.pop();
             }
           },
         ),
@@ -139,14 +145,16 @@ class _CreateBookingContent extends StatelessWidget {
                 const TimeSlotSelectorWidget(),
                 const SizedBox(height: 24),
                 _CreateBookingButton(
-                    loadingBloc: loadingBloc,
-                    screenTimeService: screenTimeService),
+                  loadingBloc: loadingBloc,
+                  screenTimeService: screenTimeService,
+                ),
               ],
             ),
           ),
         ),
         bottomNavigationBar: const BottomNavigationWidget(
           selectedIndex: 1,
+          reLoad: true,
         ),
       ),
     );
@@ -157,8 +165,10 @@ class _CreateBookingButton extends StatelessWidget {
   final LoadingBloc loadingBloc;
   final ScreenTimeService screenTimeService;
 
-  const _CreateBookingButton(
-      {required this.loadingBloc, required this.screenTimeService});
+  const _CreateBookingButton({
+    required this.loadingBloc,
+    required this.screenTimeService,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +191,6 @@ class _CreateBookingButton extends StatelessWidget {
                     ? () async {
                         loadingBloc.add(ShowLoadingEvent());
                         createBookingBloc.add(CreateBookingSubmitEvent());
-
                         await screenTimeService
                             .stopAndRecordTime('Create Booking View');
                       }

@@ -94,7 +94,8 @@ class VenueListWidget extends StatelessWidget {
                               'assets/icons/location.svg',
                               width: 16,
                               height: 16,
-                              color: AppColors.contrast900,
+                              colorFilter: const ColorFilter.mode(
+                                  AppColors.contrast900, BlendMode.srcIn),
                             ),
                             const SizedBox(width: 4),
                             Expanded(
@@ -116,7 +117,8 @@ class VenueListWidget extends StatelessWidget {
                               'assets/icons/sport_logo.svg',
                               width: 16,
                               height: 16,
-                              color: AppColors.contrast900,
+                              colorFilter: const ColorFilter.mode(
+                                  AppColors.contrast900, BlendMode.srcIn),
                             ),
                             const SizedBox(width: 4),
                             Expanded(

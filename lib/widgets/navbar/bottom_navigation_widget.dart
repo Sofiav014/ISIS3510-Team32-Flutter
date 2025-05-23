@@ -5,14 +5,16 @@ import 'package:isis3510_team32_flutter/core/app_colors.dart';
 
 class BottomNavigationWidget extends StatelessWidget {
   final int selectedIndex;
+  final bool reLoad;
 
   const BottomNavigationWidget({
     super.key,
     required this.selectedIndex,
+    required this.reLoad,
   });
 
   void _onItemTapped(BuildContext context, int index) {
-    if (index == selectedIndex && index != 0) {
+    if (index == selectedIndex && !reLoad && index != 0 && index != 2) {
       return;
     }
     switch (index) {
@@ -25,9 +27,6 @@ class BottomNavigationWidget extends StatelessWidget {
       case 2:
         context.push('/home');
         break;
-      // case 3:
-      //   context.push('/add');
-      //   break;
       case 4:
         context.push('/profile');
         break;
@@ -43,10 +42,21 @@ class BottomNavigationWidget extends StatelessWidget {
         children: [
           IconButton(
             icon: SvgPicture.asset(
+              selectedIndex == 2
+                  ? 'assets/icons/navbar/home-selected.svg'
+                  : 'assets/icons/navbar/home.svg',
+              colorFilter: const ColorFilter.mode(
+                  AppColors.lighterPurple, BlendMode.srcIn),
+            ),
+            onPressed: () => _onItemTapped(context, 2),
+          ),
+          IconButton(
+            icon: SvgPicture.asset(
               selectedIndex == 0
                   ? 'assets/icons/navbar/search-selected.svg'
                   : 'assets/icons/navbar/search.svg',
-              color: AppColors.lighterPurple,
+              colorFilter: const ColorFilter.mode(
+                  AppColors.lighterPurple, BlendMode.srcIn),
             ),
             onPressed: () => _onItemTapped(context, 0),
           ),
@@ -55,34 +65,18 @@ class BottomNavigationWidget extends StatelessWidget {
               selectedIndex == 1
                   ? 'assets/icons/navbar/calendar-selected.svg'
                   : 'assets/icons/navbar/calendar.svg',
-              color: AppColors.lighterPurple,
+              colorFilter: const ColorFilter.mode(
+                  AppColors.lighterPurple, BlendMode.srcIn),
             ),
             onPressed: () => _onItemTapped(context, 1),
-          ),
-          IconButton(
-            icon: SvgPicture.asset(
-              selectedIndex == 2
-                  ? 'assets/icons/navbar/home-selected.svg'
-                  : 'assets/icons/navbar/home.svg',
-              color: AppColors.lighterPurple,
-            ),
-            onPressed: () => _onItemTapped(context, 2),
-          ),
-          IconButton(
-            icon: SvgPicture.asset(
-              selectedIndex == 3
-                  ? 'assets/icons/navbar/add-selected.svg'
-                  : 'assets/icons/navbar/add.svg',
-              color: AppColors.lighterPurple,
-            ),
-            onPressed: () => _onItemTapped(context, 3),
           ),
           IconButton(
             icon: SvgPicture.asset(
               selectedIndex == 4
                   ? 'assets/icons/navbar/profile-selected.svg'
                   : 'assets/icons/navbar/profile.svg',
-              color: AppColors.lighterPurple,
+              colorFilter: const ColorFilter.mode(
+                  AppColors.lighterPurple, BlendMode.srcIn),
             ),
             onPressed: () => _onItemTapped(context, 4),
           ),

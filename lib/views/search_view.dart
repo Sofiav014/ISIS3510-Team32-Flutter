@@ -43,7 +43,7 @@ class SearchView extends StatelessWidget {
             }
           },
         ),
-        bottomNavigationBar: const BottomNavigationWidget(selectedIndex: 0),
+        bottomNavigationBar: const BottomNavigationWidget(selectedIndex: 0, reLoad: false,),
       ),
     );
   }

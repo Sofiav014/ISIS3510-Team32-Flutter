@@ -43,7 +43,8 @@ class SportButtonWidget extends StatelessWidget {
               imageAsset,
               width: size,
               height: size,
-              color: Colors.white,
+              colorFilter:
+                  const ColorFilter.mode(Colors.white, BlendMode.srcIn),
             ),
             const SizedBox(height: 10),
             Flexible(

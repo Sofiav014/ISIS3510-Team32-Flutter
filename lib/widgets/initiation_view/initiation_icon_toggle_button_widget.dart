@@ -37,7 +37,7 @@ class InitiationIconSelectionToggle extends StatelessWidget {
       builder: (context, state) => OutlinedButton(
         style: OutlinedButton.styleFrom(
           backgroundColor: sportIsSelected(state)
-              ? AppColors.primary.withOpacity(0.3)
+              ? AppColors.primary.withAlpha((0.3 * 255).round())
               : Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -62,7 +62,8 @@ class InitiationIconSelectionToggle extends StatelessWidget {
                 imageAsset,
                 width: size,
                 height: size,
-                color: AppColors.primary,
+                colorFilter:
+                    const ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
               ),
               SizedBox(
                 height: spacing,
