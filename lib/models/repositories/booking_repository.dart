@@ -370,6 +370,112 @@ class BookingRepository {
     }
   }
 
+  Future<Map<String, dynamic>> cancelBooking({
+    required BookingModel booking,
+    required UserModel user,
+  }) async {
+    try {
+      final venueRef = _firestore.collection('venues').doc(booking.venue.id);
+
+      final venueDocSnapshot = await venueRef.get();
+      if (!venueDocSnapshot.exists) {
+        return {
+          'user': null,
+          'booking': null,
+          'status': 'error',
+        };
+      }
+
+      booking.users.remove(user.id);
+
+      // Remove user from booking document
+      DocumentReference bookingRef =
+          _firestore.collection('bookings').doc(booking.id);
+      await bookingRef.update({
+        'users': FieldValue.arrayRemove([user.id]),
+      });
+
+      // Remove booking from user's bookings array
+      final userRef = _firestore.collection('users').doc(user.id);
+      final userDocSnapshot = await userRef.get();
+      List<dynamic> userBookings = userDocSnapshot.data()?['bookings'] ?? [];
+      final userBookingIndex = userBookings.indexWhere(
+        (b) => b['id'] == booking.id,
+      );
+      if (userBookingIndex != -1) {
+        userBookings.removeAt(userBookingIndex);
+        await userRef.update({'bookings': userBookings});
+      }
+
+      // Update venue's bookings array
+      List<dynamic> venueBookings = venueDocSnapshot.data()?['bookings'] ?? [];
+      final bookingIndex = venueBookings.indexWhere(
+        (b) => b['id'] == booking.id,
+      );
+      if (bookingIndex != -1) {
+        List<String> updatedUsers =
+            List<String>.from(venueBookings[bookingIndex]['users'] ?? []);
+        updatedUsers.remove(user.id);
+        venueBookings[bookingIndex]['users'] = updatedUsers;
+        await venueRef.update({'bookings': venueBookings});
+      }
+
+      // Update all other users' bookings arrays
+      for (var userId in booking.users) {
+        if (userId != user.id) {
+          debugPrint('Updating user $userId bookings, cancelled by $user.id');
+
+          final userRef = _firestore.collection('users').doc(userId);
+          final userDocSnapshot = await userRef.get();
+
+          List<dynamic> userBookings =
+              userDocSnapshot.data()?['bookings'] ?? [];
+
+          final userBookingIndex = userBookings.indexWhere(
+            (b) => b['id'] == booking.id,
+          );
+          if (userBookingIndex != -1) {
+            List<String> updatedUsers = List<String>.from(
+                userBookings[userBookingIndex]['users'] ?? []);
+            updatedUsers.remove(user.id);
+            debugPrint('Updated users: $updatedUsers');
+            userBookings[userBookingIndex]['users'] = updatedUsers;
+            await userRef.update({'bookings': userBookings});
+          }
+        }
+      }
+
+      // Remove booking from user's local model
+      user.bookings.removeWhere((b) => b.id == booking.id);
+
+      // Update Hive cache
+      final upcomingBookings = user.bookings
+          .where((booking) => booking.startTime.isAfter(DateTime.now()))
+          .toList()
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
+      final upcomingHiveBookings = upcomingBookings
+          .map((booking) => BookingModelHive.fromModel(booking))
+          .toList();
+
+      final box = await Hive.openBox('home_${user.id}');
+      await box.put('upcoming_bookings', upcomingHiveBookings);
+
+      return {
+        'user': user,
+        'booking': booking,
+        'status': 'success',
+      };
+    } catch (e) {
+      debugPrint('❗️ Error cancelling booking: $e');
+      return {
+        'user': null,
+        'booking': null,
+        'status': 'error',
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> fetchBookingIsolate({
     required BookingModel booking,
   }) async {

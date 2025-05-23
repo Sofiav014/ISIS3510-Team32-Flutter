@@ -196,7 +196,10 @@ class BookingInfo extends StatelessWidget {
 
                       if (booked) {
                         // Cancel booking
-                        // _processCancelBookingInBackground(context, booking);
+                        loadingBloc.add(ShowLoadingEvent());
+                        results = await bookingRepository.cancelBooking(
+                            booking: booking, user: authBloc.state.userModel!);
+                        loadingBloc.add(HideLoadingEvent());
                       } else {
                         // Join booking
                         loadingBloc.add(ShowLoadingEvent());
