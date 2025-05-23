@@ -2,14 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 import 'package:isis3510_team32_flutter/models/repositories/auth_repository.dart';
+import 'package:isis3510_team32_flutter/models/repositories/image_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final AuthRepository authRepository;
+  final ImageRepository imageRepository;
 
-  AuthBloc(this.authRepository) : super(AuthState()) {
+  AuthBloc(this.authRepository, this.imageRepository) : super(AuthState()) {
     _startAuthListener();
     _registerHandlers();
   }
@@ -55,6 +57,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         user: state.user,
         userModel: userModel,
       ));
+    });
+    on<AuthUpdateImageEvent>((event, emit) async {
+      final imageUrl =
+          await imageRepository.uploadImage(state.user!.uid, event.file);
+      final newUserModel = state.userModel?.copyWith(imageUrl: imageUrl);
+      if (newUserModel == null) {
+        return;
+      }
+      add(AuthCreateModelEvent(newUserModel));
     });
     on<AuthLogOutEvent>((event, emit) async {
       await _auth.signOut();

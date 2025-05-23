@@ -15,6 +15,7 @@ import 'package:isis3510_team32_flutter/models/hive/sport_model_hive.dart';
 import 'package:isis3510_team32_flutter/models/hive/venue_model_hive.dart';
 import 'package:isis3510_team32_flutter/models/repositories/auth_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
+import 'package:isis3510_team32_flutter/models/repositories/image_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
@@ -73,11 +74,12 @@ void _setupRepositories() {
   // Register AuthRepository as a singleton
   sl.registerSingleton(AuthRepository());
   sl.registerSingleton(ConnectivityRepository());
+  sl.registerSingleton(ImageRepository());
 }
 
 void _setupBlocs() {
   // Register BLoCs
-  sl.registerSingleton(AuthBloc(sl<AuthRepository>()));
+  sl.registerSingleton(AuthBloc(sl<AuthRepository>(), sl<ImageRepository>()));
   sl.registerSingleton(ConnectivityBloc(sl<ConnectivityRepository>()));
   sl.registerSingleton(InitiationBloc());
   sl.registerSingleton(LoadingBloc());

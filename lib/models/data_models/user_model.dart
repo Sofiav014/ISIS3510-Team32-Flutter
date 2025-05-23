@@ -8,6 +8,7 @@ class UserModel {
   final String name;
   final DateTime birthDate;
   final String gender;
+  final String? imageUrl;
   final List<SportModel> sportsLiked;
   final List<VenueModel> venuesLiked;
   final List<BookingModel> bookings;
@@ -17,12 +18,35 @@ class UserModel {
     required this.name,
     required this.birthDate,
     required this.gender,
+    this.imageUrl,
     List<SportModel>? sportsLiked,
     List<VenueModel>? venuesLiked,
     List<BookingModel>? bookings,
   })  : sportsLiked = sportsLiked ?? [],
         venuesLiked = venuesLiked ?? [],
         bookings = bookings ?? [];
+
+  UserModel copyWith({
+    String? id,
+    String? name,
+    DateTime? birthDate,
+    String? gender,
+    String? imageUrl,
+    List<SportModel>? sportsLiked,
+    List<VenueModel>? venuesLiked,
+    List<BookingModel>? bookings,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      birthDate: birthDate ?? this.birthDate,
+      gender: gender ?? this.gender,
+      imageUrl: imageUrl ?? this.imageUrl,
+      sportsLiked: sportsLiked ?? this.sportsLiked,
+      venuesLiked: venuesLiked ?? this.venuesLiked,
+      bookings: bookings ?? this.bookings,
+    );
+  }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -34,6 +58,7 @@ class UserModel {
               ? DateTime.parse(json['birth_date'] as String)
               : DateTime.utc(0),
       gender: json['gender'] ?? '',
+      imageUrl: json['image_url'],
       sportsLiked: (json['sports_liked'] as List? ?? [])
           .map((sport) => SportModel.fromJson(sport))
           .toList(),
@@ -56,6 +81,7 @@ class UserModel {
       birthDate:
           (snapshot['birth_date'] as Timestamp?)?.toDate() ?? DateTime.utc(0),
       gender: snapshot['gender'] ?? '',
+      imageUrl: snapshot.data()?["image_url"],
       sportsLiked: (snapshot['sports_liked'] as List? ?? [])
           .map((sport) => SportModel.fromJson(sport))
           .toList(),
@@ -74,6 +100,7 @@ class UserModel {
       'name': name,
       'birth_date': birthDate,
       'gender': gender,
+      if (imageUrl != null) 'image_url': imageUrl,
       'sports_liked': sportsLiked.map((sport) => sport.toJson()).toList(),
       'venues_liked': venuesLiked.map((venue) => venue.toJson()).toList(),
       'bookings': bookings.map((b) => b.toJson()).toList(),
@@ -86,6 +113,7 @@ class UserModel {
       'name': name,
       'birth_date': birthDate.toIso8601String(),
       'gender': gender,
+      if (imageUrl != null) 'image_url': imageUrl,
       'sports_liked': sportsLiked.map((sport) => sport.toJson()).toList(),
       'venues_liked':
           venuesLiked.map((venue) => venue.toJsonSerializable()).toList(),

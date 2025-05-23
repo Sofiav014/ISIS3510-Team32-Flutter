@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
 
@@ -16,5 +18,10 @@ class AuthChangeModelEvent extends AuthEvent {
 }
 
 class AuthRefreshModelEvent extends AuthEvent {}
+
+class AuthUpdateImageEvent extends AuthEvent {
+  final File file;
+  AuthUpdateImageEvent(this.file);
+}
 
 class AuthLogOutEvent extends AuthEvent {}
