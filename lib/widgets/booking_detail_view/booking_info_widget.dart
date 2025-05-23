@@ -219,26 +219,43 @@ class BookingInfo extends StatelessWidget {
                           context: context,
                           barrierDismissible: true,
                           builder: (dialogContext) {
-                            return AlertDialog(
-                              title: const Text('Join Booking'),
-                              content: booked
-                                  ? const Text(
-                                      'You have successfully canceled your booking.')
-                                  : const Text(
-                                      'You have successfully joined the booking.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(dialogContext).pop();
-                                    bookingDetailBloc.add(
-                                      UpdateBooking(
-                                        booking: results['booking'],
-                                      ),
-                                    );
-                                  },
-                                  child: const Text('OK'),
-                                ),
-                              ],
+                            bool updated = false;
+                            return WillPopScope(
+                              onWillPop: () async {
+                                if (!updated) {
+                                  bookingDetailBloc.add(
+                                    UpdateBooking(
+                                      booking: results['booking'],
+                                    ),
+                                  );
+                                  updated = true;
+                                }
+                                return true;
+                              },
+                              child: AlertDialog(
+                                title: const Text('Join Booking'),
+                                content: booked
+                                    ? const Text(
+                                        'You have successfully canceled your booking.')
+                                    : const Text(
+                                        'You have successfully joined the booking.'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(dialogContext).pop();
+                                      if (!updated) {
+                                        bookingDetailBloc.add(
+                                          UpdateBooking(
+                                            booking: results['booking'],
+                                          ),
+                                        );
+                                        updated = true;
+                                      }
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
                             );
                           },
                         );
