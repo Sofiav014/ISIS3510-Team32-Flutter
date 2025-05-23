@@ -1,4 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
+// dont worry i know what im doing /s
 
 import 'dart:io';
 
@@ -88,6 +89,72 @@ class LogoutProfileWidget extends StatelessWidget {
   }
 }
 
+class SettingsProfileWidget extends StatelessWidget {
+  const SettingsProfileWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => const SettingsProfileDialogWidget(),
+          );
+        },
+        child: const Text(
+          'Settings',
+        ),
+      ),
+    );
+  }
+}
+
+class SettingsProfileDialogWidget extends StatelessWidget {
+  const SettingsProfileDialogWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text(
+        "Settings",
+        style: TextStyle(fontSize: 16),
+      ),
+      content: SizedBox(
+        width: 250,
+        height: 200,
+        child: Column(
+          children: [
+            TextButton(
+              onPressed: () {},
+              child: const Text("Edit Profile Name"),
+            ),
+            TextButton(
+              onPressed: () {},
+              child: const Text("Change Gender"),
+            ),
+            TextButton(
+              onPressed: () {},
+              child: const Text("Update Birth Date"),
+            ),
+            TextButton(
+              onPressed: () {},
+              child: const Text("Update Sports"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class FavoriteVenuesWidget extends StatelessWidget {
   const FavoriteVenuesWidget({
     super.key,
@@ -158,6 +225,7 @@ class ProfileCardWidget extends StatelessWidget {
             ),
             ProfileCardFavoriteSportsWidget(),
             ProfileCardLightModeSwitchWidget(),
+            SettingsProfileWidget(),
             LogoutProfileWidget()
           ],
         ),
