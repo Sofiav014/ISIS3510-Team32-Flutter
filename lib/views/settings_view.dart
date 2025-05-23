@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
+import 'package:isis3510_team32_flutter/models/data_models/sport_model.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/initiation_view/icon_selection_button_widget.dart';
-import 'package:isis3510_team32_flutter/widgets/initiation_view/initiation_icon_toggle_button_widget.dart';
 
 class SettingsNameView extends StatefulWidget {
   const SettingsNameView({super.key});
@@ -292,107 +293,223 @@ class _SettingsAgeViewState extends State<SettingsAgeView> {
   }
 }
 
-class SettingsSportView extends StatelessWidget {
+class SettingsSportView extends StatefulWidget {
   const SettingsSportView({super.key});
+
+  @override
+  State<SettingsSportView> createState() => _SettingsSportViewState();
+}
+
+class _SettingsSportViewState extends State<SettingsSportView> {
+  List<SportModel> _sportModels = [];
+
+  void modifySportModels(SportModel model, bool shouldAdd) {
+    final newSportModels = List<SportModel>.from(_sportModels);
+    if (shouldAdd) {
+      newSportModels.add(model);
+    } else {
+      newSportModels.remove(model);
+    }
+    setState(() {
+      _sportModels = newSportModels;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     const double imageSize = 96;
     const double textSize = 16;
     const double iconSpacing = 4;
-    const double spacingBetweenQuestion = 64;
 
-    return Center(
-      child:
-          Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.only(top: 192, bottom: 32),
+        child: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 64),
+                      child: Text(
+                        "Update Sports",
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 32),
+                      child: Text(
+                        "Choose the sports you are interested in",
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 20,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 320,
+                      child: GridView.count(
+                        crossAxisCount: 2,
+                        shrinkWrap: true,
+                        mainAxisSpacing: 10.0, // Spacing between rows
+                        crossAxisSpacing: 10.0, // Spacing between columns
+                        padding: const EdgeInsets.all(
+                            10.0), // Padding around the entire grid
+                        children: [
+                          SettingsIconSelectionToggle(
+                            text: "Basketball",
+                            imageAsset:
+                                "assets/icons/initiation/basketball-logo.svg",
+                            sport: initiationSports["basketball"]!,
+                            size: imageSize,
+                            spacing: iconSpacing,
+                            textSize: textSize,
+                            onPress: (status) => modifySportModels(
+                                initiationSports["basketball"]!, status),
+                          ),
+                          SettingsIconSelectionToggle(
+                            text: "Football",
+                            imageAsset:
+                                "assets/icons/initiation/football-logo.svg",
+                            sport: initiationSports["football"]!,
+                            size: imageSize,
+                            spacing: iconSpacing,
+                            textSize: textSize,
+                            onPress: (status) => modifySportModels(
+                                initiationSports["football"]!, status),
+                          ),
+                          SettingsIconSelectionToggle(
+                            text: "Volleyball",
+                            imageAsset:
+                                "assets/icons/initiation/volleyball-logo.svg",
+                            sport: initiationSports["volleyball"]!,
+                            size: imageSize,
+                            spacing: iconSpacing,
+                            textSize: textSize,
+                            onPress: (status) => modifySportModels(
+                                initiationSports["volleyball"]!, status),
+                          ),
+                          SettingsIconSelectionToggle(
+                            text: "Tennis",
+                            imageAsset:
+                                "assets/icons/initiation/tennis-logo.svg",
+                            sport: initiationSports["tennis"]!,
+                            spacing: iconSpacing,
+                            size: imageSize,
+                            textSize: textSize,
+                            onPress: (status) => modifySportModels(
+                                initiationSports["tennis"]!, status),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 96, vertical: 16),
+                  ),
+                  onPressed: () {
+                    debugPrint("$_sportModels");
+                    context.go('/profile');
+                  },
+                  child: const Text(
+                    "Create an account",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ]),
+        ),
+      ),
+    );
+  }
+}
+
+class SettingsIconSelectionToggle extends StatefulWidget {
+  final String text;
+  final String imageAsset;
+  final double size;
+  final double textSize;
+  final double spacing;
+  final SportModel sport;
+  final Function(bool) onPress;
+
+  const SettingsIconSelectionToggle({
+    required this.text,
+    required this.imageAsset,
+    required this.size,
+    required this.textSize,
+    required this.spacing,
+    required this.sport,
+    required this.onPress,
+    super.key,
+  });
+
+  @override
+  State<SettingsIconSelectionToggle> createState() =>
+      _SettingsIconSelectionToggleState();
+}
+
+class _SettingsIconSelectionToggleState
+    extends State<SettingsIconSelectionToggle> {
+  bool selected = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton(
+      style: OutlinedButton.styleFrom(
+        backgroundColor:
+            selected ? AppColors.primary.withValues(alpha: 0.3) : Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        side: const BorderSide(
+          color: AppColors.primary,
+          width: 2,
+        ),
+      ),
+      onPressed: () {
+        widget.onPress(!selected);
+        setState(() {
+          selected = !selected;
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
+        child: Column(
           children: [
-            const Text(
-              "We want to know you better",
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
+            SvgPicture.asset(
+              widget.imageAsset,
+              width: widget.size,
+              height: widget.size,
+              colorFilter: const ColorFilter.mode(
+                AppColors.primary,
+                BlendMode.srcIn,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(
-              height: spacingBetweenQuestion,
-            ),
-            const Text(
-              "Choose the sports you are interested in",
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 20,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(
-              height: 32,
             ),
             SizedBox(
-              width: 320,
-              child: GridView.count(
-                crossAxisCount: 2,
-                shrinkWrap: true,
-                mainAxisSpacing: 10.0, // Spacing between rows
-                crossAxisSpacing: 10.0, // Spacing between columns
-                padding: const EdgeInsets.all(
-                    10.0), // Padding around the entire grid
-                children: [
-                  InitiationIconSelectionToggle(
-                    text: "Basketball",
-                    imageAsset: "assets/icons/initiation/basketball-logo.svg",
-                    sport: initiationSports["basketball"]!,
-                    size: imageSize,
-                    spacing: iconSpacing,
-                    textSize: textSize,
-                  ),
-                  InitiationIconSelectionToggle(
-                    text: "Football",
-                    imageAsset: "assets/icons/initiation/football-logo.svg",
-                    sport: initiationSports["football"]!,
-                    size: imageSize,
-                    spacing: iconSpacing,
-                    textSize: textSize,
-                  ),
-                  InitiationIconSelectionToggle(
-                    text: "Volleyball",
-                    imageAsset: "assets/icons/initiation/volleyball-logo.svg",
-                    sport: initiationSports["volleyball"]!,
-                    size: imageSize,
-                    spacing: iconSpacing,
-                    textSize: textSize,
-                  ),
-                  InitiationIconSelectionToggle(
-                    text: "Tennis",
-                    imageAsset: "assets/icons/initiation/tennis-logo.svg",
-                    sport: initiationSports["tennis"]!,
-                    spacing: iconSpacing,
-                    size: imageSize,
-                    textSize: textSize,
-                  ),
-                ],
-              ),
+              height: widget.spacing,
+            ),
+            Text(
+              widget.text,
+              style: TextStyle(fontSize: widget.textSize),
             )
           ],
         ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.zero,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 96, vertical: 16),
-          ),
-          onPressed: () {},
-          child: const Text(
-            "Create an account",
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
-      ]),
+      ),
     );
   }
 }
