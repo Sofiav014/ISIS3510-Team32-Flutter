@@ -1,10 +1,10 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
-import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
-import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:isis3510_team32_flutter/core/app_colors.dart';
+import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/home/home_bloc.dart';
 
 class UpcomingBookingCardWidget extends StatelessWidget {
@@ -46,15 +46,17 @@ class UpcomingBookingCardWidget extends StatelessWidget {
                   imageUrl: booking.venue.image,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => const Center(
-                      child: SizedBox(
-                    width: 250.0,
-                    child: CircularProgressIndicator(),
-                  )),
+                    child: SizedBox(
+                      width: 250.0,
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
                   errorWidget: (context, url, error) => const Center(
-                      child: SizedBox(
-                    width: 250.0, //
-                    child: Icon(Icons.broken_image),
-                  )),
+                    child: SizedBox(
+                      width: 250.0,
+                      child: Icon(Icons.broken_image),
+                    ),
+                  ),
                 ),
               ),
               Positioned(
