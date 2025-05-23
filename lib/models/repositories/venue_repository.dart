@@ -40,9 +40,11 @@ class VenueRepository {
         final List<VenueModel>? sportVenues = await receivePort.first;
 
         if (sportVenues != null) {
-          for (VenueModel sportVenue in sportVenues) {
+          for (int i = 0; i < sportVenues.length; i++) {
+            final sportVenue = sportVenues[i];
             _venueCache.put(sportVenue.id, sportVenue);
           }
+
           return sportVenues;
         } else {
           return [];
