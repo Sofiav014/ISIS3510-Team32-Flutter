@@ -74,17 +74,28 @@ class HomeRepository {
       };
     }
 
-    var mostPlayedSport = user.bookings.first.venue.sport;
-    var mostPlayedSportCount = 0;
-    for (var booking in user.bookings) {
-      var count = user.bookings
-          .where((b) => b.venue.sport.id == booking.venue.sport.id)
-          .length;
-      if (count > mostPlayedSportCount) {
-        mostPlayedSport = booking.venue.sport;
-        mostPlayedSportCount = count;
-      }
+    Map<String, int> sportCounts = {};
+    Map<String, dynamic> sportModels = {};
+
+    for (int i = 0; i < user.bookings.length; i++) {
+      final booking = user.bookings[i];
+      final sportId = booking.venue.sport.id;
+      sportCounts[sportId] = (sportCounts[sportId] ?? 0) + 1;
+      sportModels[sportId] = booking.venue.sport;
     }
+
+    String? mostPlayedSportId;
+    int mostPlayedSportCount = 0;
+
+    sportCounts.forEach((sportId, sportCount) {
+      if (sportCount > mostPlayedSportCount) {
+        mostPlayedSportId = sportId;
+        mostPlayedSportCount = sportCount;
+      }
+    });
+
+    final mostPlayedSport =
+        mostPlayedSportId != null ? sportModels[mostPlayedSportId] : null;
 
     return {
       'highestRatedVenue': highestRatedVenueModel,

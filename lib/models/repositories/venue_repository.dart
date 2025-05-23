@@ -62,8 +62,10 @@ class VenueRepository {
     try {
       List<VenueModel> sportVenues = <VenueModel>[];
 
-      for (String venueId in _venueCache.getKeys()) {
-        VenueModel venue = _venueCache.get(venueId)!;
+      final keys = _venueCache.getKeys();
+      for (int i = 0; i < keys.length; i++) {
+        final venueId = keys[i];
+        final venue = _venueCache.get(venueId)!;
         if (venue.sport.name == sportName) {
           sportVenues.add(venue);
         }
@@ -118,14 +120,15 @@ class VenueRepository {
       List<BookingModel> activeBookings = <BookingModel>[];
 
       final DateTime now = DateTime.now();
-      for (BookingModel booking in venue.bookings) {
-        final DateTime startTime = booking.startTime;
-
-        final int numberOfPeople = booking.users.length;
+      for (int i = 0; i < venue.bookings.length; i++) {
+        final booking = venue.bookings[i];
+        final startTime = booking.startTime;
+        final users = booking.users;
+        final numberOfPeople = users.length;
 
         if (startTime.isAfter(now) &&
             numberOfPeople < booking.maxUsers &&
-            !booking.users.contains(userId)) {
+            !users.contains(userId)) {
           activeBookings.add(booking);
         }
       }
