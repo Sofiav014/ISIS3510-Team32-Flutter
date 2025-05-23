@@ -8,6 +8,7 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/settings/settings_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/loading_overlay_widget.dart';
 
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => sl<AuthBloc>()),
+        BlocProvider(create: (_) => sl<SettingsBloc>()),
         BlocProvider(create: (_) => sl<InitiationBloc>()),
         BlocProvider(create: (_) => sl<ConnectivityBloc>()),
         BlocProvider(create: (_) => sl<LoadingBloc>()),

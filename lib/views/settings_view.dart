@@ -33,13 +33,10 @@ class _SettingsNameViewState extends State<SettingsNameView> {
 
   @override
   Widget build(BuildContext context) {
-    const double spacingBetweenButton = 128;
-    const double spacingBetweenQuestion = 64;
-
     final displayName =
-        context.select((AuthBloc bloc) => bloc.state.user?.displayName ?? "");
+        context.select((AuthBloc bloc) => bloc.state.userModel?.name ?? "");
 
-    // Set controller text if it's empty and displayName is available
+    // Set controller text if it's empty and model name is available
     if (_nameController.text.isEmpty && displayName.isNotEmpty) {
       _nameController.text = displayName;
     }
