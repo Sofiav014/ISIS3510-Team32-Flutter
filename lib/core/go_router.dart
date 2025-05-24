@@ -116,8 +116,13 @@ GoRouter setupRouter(AuthBloc authBloc) {
               ))),
       GoRoute(
           path: '/profile',
-          pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context, state: state, child: const ProfileView())),
+          pageBuilder: (context, state) {
+            final param = state.uri.queryParameters['success'];
+            return buildPageWithNoTransition(
+                context: context,
+                state: state,
+                child: ProfileView(success: param));
+          }),
       GoRoute(
           path: '/booking_detail',
           pageBuilder: (context, state) {

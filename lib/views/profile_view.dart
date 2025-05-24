@@ -27,12 +27,45 @@ import 'package:isis3510_team32_flutter/view_models/theme/theme_state.dart';
 import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/search_view_widgets/venue_list_widget.dart';
 
-class ProfileView extends StatelessWidget {
-  const ProfileView({super.key});
+class ProfileView extends StatefulWidget {
+  // String that, if set, renders out a FlushBar on load
+  final String? success;
+
+  const ProfileView({super.key, this.success});
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  bool shownSnackbar = false;
+
+  void showSuccessMessage(BuildContext context, String success) {
+    Flushbar(
+      title: "Successfully edited",
+      message: "Your $success has been successfully modified",
+      icon: const Icon(
+        Icons.check,
+        size: 16,
+        color: Colors.green,
+      ),
+      leftBarIndicatorColor: Colors.greenAccent,
+      duration: const Duration(seconds: 5),
+    ).show(context);
+    setState(() {
+      shownSnackbar = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Profile View');
+
+    if (widget.success != null && !shownSnackbar) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showSuccessMessage(context, widget.success!);
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(

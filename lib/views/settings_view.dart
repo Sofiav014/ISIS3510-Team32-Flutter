@@ -50,7 +50,7 @@ class _SettingsNameViewState extends State<SettingsNameView> {
           previous.userModel?.name != current.userModel?.name,
       listener: (context, state) {
         context.read<LoadingBloc>().add(HideLoadingEvent());
-        context.go('/profile');
+        context.go('/profile?success=name');
       },
       child: Scaffold(
         body: Padding(
@@ -144,7 +144,7 @@ class SettingsGenderView extends StatelessWidget {
           previous.userModel?.gender != current.userModel?.gender,
       listener: (context, state) {
         context.read<LoadingBloc>().add(HideLoadingEvent());
-        context.go('/profile');
+        context.go('/profile?success=gender');
       },
       child: Scaffold(
         body: Padding(
@@ -262,7 +262,7 @@ class _SettingsAgeViewState extends State<SettingsAgeView> {
           previous.userModel?.birthDate != current.userModel?.birthDate,
       listener: (context, state) {
         context.read<LoadingBloc>().add(HideLoadingEvent());
-        context.go('/profile');
+        context.go('/profile?success=birthday');
       },
       child: Scaffold(
         body: Padding(
@@ -386,7 +386,7 @@ class _SettingsSportViewState extends State<SettingsSportView> {
           previous.userModel?.sportsLiked != current.userModel?.sportsLiked,
       listener: (context, state) {
         context.read<LoadingBloc>().add(HideLoadingEvent());
-        context.go('/profile');
+        context.go('/profile?success=favorite%20sports');
       },
       child: Scaffold(
         body: Padding(
