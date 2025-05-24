@@ -495,21 +495,24 @@ class _SettingsSportViewState extends State<SettingsSportView> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 96, vertical: 16),
                     ),
-                    onPressed: () {
-                      if (context
-                              .read<AuthBloc>()
-                              .state
-                              .userModel
-                              ?.sportsLiked ==
-                          _sportModels) {
-                        context.go('/profile');
-                        return;
-                      }
-                      context.read<LoadingBloc>().add(ShowLoadingEvent());
-                      context.read<AuthBloc>().add(
-                            AuthUpdateModelEvent(sportsLiked: _sportModels),
-                          );
-                    },
+                    onPressed: _sportModels.isNotEmpty
+                        ? () {
+                            if (context
+                                    .read<AuthBloc>()
+                                    .state
+                                    .userModel
+                                    ?.sportsLiked ==
+                                _sportModels) {
+                              context.go('/profile');
+                              return;
+                            }
+                            context.read<LoadingBloc>().add(ShowLoadingEvent());
+                            context.read<AuthBloc>().add(
+                                  AuthUpdateModelEvent(
+                                      sportsLiked: _sportModels),
+                                );
+                          }
+                        : null,
                     child: const Text(
                       "Update",
                       style: TextStyle(color: Colors.white),
