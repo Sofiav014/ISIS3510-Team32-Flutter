@@ -1,4 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
+// dont worry i know what im doing /s
 
 import 'dart:io';
 
@@ -8,6 +9,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
@@ -25,12 +27,45 @@ import 'package:isis3510_team32_flutter/view_models/theme/theme_state.dart';
 import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/widgets/search_view_widgets/venue_list_widget.dart';
 
-class ProfileView extends StatelessWidget {
-  const ProfileView({super.key});
+class ProfileView extends StatefulWidget {
+  // String that, if set, renders out a FlushBar on load
+  final String? success;
+
+  const ProfileView({super.key, this.success});
+
+  @override
+  State<ProfileView> createState() => _ProfileViewState();
+}
+
+class _ProfileViewState extends State<ProfileView> {
+  bool shownSnackbar = false;
+
+  void showSuccessMessage(BuildContext context, String success) {
+    Flushbar(
+      title: "Successfully edited",
+      message: "Your $success has been successfully modified",
+      icon: const Icon(
+        Icons.check,
+        size: 16,
+        color: Colors.green,
+      ),
+      leftBarIndicatorColor: Colors.greenAccent,
+      duration: const Duration(seconds: 5),
+    ).show(context);
+    setState(() {
+      shownSnackbar = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     FirebaseCrashlytics.instance.setCustomKey('screen', 'Profile View');
+
+    if (widget.success != null && !shownSnackbar) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showSuccessMessage(context, widget.success!);
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -84,6 +119,97 @@ class LogoutProfileWidget extends StatelessWidget {
           child: const Text(
             'Logout',
           )),
+    );
+  }
+}
+
+class SettingsProfileWidget extends StatelessWidget {
+  const SettingsProfileWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.settings(context),
+            foregroundColor: Colors.white),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => const SettingsProfileDialogWidget(),
+          );
+        },
+        child: const Text(
+          'Settings',
+        ),
+      ),
+    );
+  }
+}
+
+class SettingsProfileDialogWidget extends StatelessWidget {
+  const SettingsProfileDialogWidget({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        "Settings",
+        style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.titleText(context)),
+      ),
+      backgroundColor: AppColors.appBarBackground(context),
+      content: SizedBox(
+        width: 250,
+        height: 200,
+        child: Column(
+          children: [
+            TextButton(
+              onPressed: () {
+                context.go('/profile/settings/name');
+              },
+              child: Text(
+                "Edit Profile Name",
+                style: TextStyle(color: AppColors.titleText(context)),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                context.go('/profile/settings/gender');
+              },
+              child: Text(
+                "Change Gender",
+                style: TextStyle(color: AppColors.titleText(context)),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                context.go('/profile/settings/birthday');
+              },
+              child: Text(
+                "Update Birth Date",
+                style: TextStyle(color: AppColors.titleText(context)),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                context.go('/profile/settings/favoriteSports');
+              },
+              child: Text(
+                "Update Sports",
+                style: TextStyle(color: AppColors.titleText(context)),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -158,6 +284,7 @@ class ProfileCardWidget extends StatelessWidget {
             ),
             ProfileCardFavoriteSportsWidget(),
             ProfileCardLightModeSwitchWidget(),
+            SettingsProfileWidget(),
             LogoutProfileWidget()
           ],
         ),
