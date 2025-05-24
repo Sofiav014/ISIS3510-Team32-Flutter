@@ -124,6 +124,26 @@ GoRouter setupRouter(AuthBloc authBloc) {
                 child: ProfileView(success: param));
           }),
       GoRoute(
+          path: '/profile/settings/name',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context, state: state, child: const SettingsNameView())),
+      GoRoute(
+          path: '/profile/settings/gender',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context,
+              state: state,
+              child: const SettingsGenderView())),
+      GoRoute(
+          path: '/profile/settings/birthday',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context, state: state, child: const SettingsAgeView())),
+      GoRoute(
+          path: '/profile/settings/favoriteSports',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context,
+              state: state,
+              child: const SettingsSportView())),
+      GoRoute(
           path: '/booking_detail',
           pageBuilder: (context, state) {
             final extra = state.extra as Map<String, dynamic>;
