@@ -158,10 +158,14 @@ class SettingsProfileDialogWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text(
+      title: Text(
         "Settings",
-        style: TextStyle(fontSize: 16),
+        style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.titleText(context)),
       ),
+      backgroundColor: AppColors.appBarBackground(context),
       content: SizedBox(
         width: 250,
         height: 200,
@@ -171,25 +175,37 @@ class SettingsProfileDialogWidget extends StatelessWidget {
               onPressed: () {
                 context.go('/profile/settings/name');
               },
-              child: const Text("Edit Profile Name"),
+              child: Text(
+                "Edit Profile Name",
+                style: TextStyle(color: AppColors.titleText(context)),
+              ),
             ),
             TextButton(
               onPressed: () {
                 context.go('/profile/settings/gender');
               },
-              child: const Text("Change Gender"),
+              child: Text(
+                "Change Gender",
+                style: TextStyle(color: AppColors.titleText(context)),
+              ),
             ),
             TextButton(
               onPressed: () {
                 context.go('/profile/settings/birthday');
               },
-              child: const Text("Update Birth Date"),
+              child: Text(
+                "Update Birth Date",
+                style: TextStyle(color: AppColors.titleText(context)),
+              ),
             ),
             TextButton(
               onPressed: () {
                 context.go('/profile/settings/favoriteSports');
               },
-              child: const Text("Update Sports"),
+              child: Text(
+                "Update Sports",
+                style: TextStyle(color: AppColors.titleText(context)),
+              ),
             ),
           ],
         ),
