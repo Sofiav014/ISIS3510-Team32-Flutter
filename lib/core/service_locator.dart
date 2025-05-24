@@ -20,6 +20,7 @@ import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/initiation/initiation_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/settings/settings_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -83,6 +84,7 @@ void _setupBlocs() {
   sl.registerSingleton(ConnectivityBloc(sl<ConnectivityRepository>()));
   sl.registerSingleton(InitiationBloc());
   sl.registerSingleton(LoadingBloc());
+  sl.registerSingleton(SettingsBloc());
   sl.registerSingleton(
       ThemeBloc(themeFrecuencyService: ThemeFrecuencyService()));
 }
