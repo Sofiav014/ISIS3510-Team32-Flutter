@@ -134,7 +134,8 @@ class SettingsProfileWidget extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary, foregroundColor: Colors.white),
+            backgroundColor: AppColors.settings(context),
+            foregroundColor: Colors.white),
         onPressed: () {
           showDialog(
             context: context,
