@@ -557,7 +557,10 @@ class _SettingsIconSelectionToggleState
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
         backgroundColor: selected
-            ? AppColors.appBarBackground(context).withValues(alpha: 0.3)
+            ? Color.lerp(
+                AppColors.appBarBackground(context).withValues(alpha: 0.3),
+                AppColors.primary,
+                0.3)
             : AppColors.appBarBackground(context),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
