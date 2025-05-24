@@ -3,12 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:isis3510_team32_flutter/constants/errors.dart';
 import 'package:isis3510_team32_flutter/constants/sports.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
 import 'package:isis3510_team32_flutter/models/data_models/sport_model.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_event.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/connectivity/connectivity_state.dart';
 import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/loading/loading_event.dart';
 import 'package:isis3510_team32_flutter/widgets/initiation_view/icon_selection_button_widget.dart';
@@ -113,6 +116,11 @@ class _SettingsNameViewState extends State<SettingsNameView> {
                           horizontal: 128, vertical: 16),
                     ),
                     onPressed: () {
+                      if (context.read<ConnectivityBloc>().state
+                          is ConnectivityOfflineState) {
+                        showNoConnectionError(context);
+                        return;
+                      }
                       FocusManager.instance.primaryFocus?.unfocus();
                       if (context.read<AuthBloc>().state.userModel?.name ==
                           _nameController.text) {
@@ -141,6 +149,42 @@ class _SettingsNameViewState extends State<SettingsNameView> {
 
 class SettingsGenderView extends StatelessWidget {
   const SettingsGenderView({super.key});
+
+  static const List<Map<String, String>> genderOptions = [
+    {"text": "Male", "asset": "assets/icons/initiation/male.svg"},
+    {"text": "Female", "asset": "assets/icons/initiation/female.svg"},
+    {"text": "Other", "asset": "assets/icons/initiation/non-binary.svg"},
+  ];
+
+  List<Widget> buildGenderButtons(BuildContext context) {
+    final authState = context.read<AuthBloc>().state;
+    final connectivityState = context.read<ConnectivityBloc>().state;
+
+    return genderOptions.map((option) {
+      final gender = option["text"]!;
+      final imageAsset = option["asset"]!;
+
+      return IconSelectionButton(
+        text: gender,
+        imageAsset: imageAsset,
+        size: 64,
+        onPressed: () {
+          if (connectivityState is ConnectivityOfflineState) {
+            showNoConnectionError(context);
+            return;
+          }
+
+          if (authState.userModel?.gender == gender) {
+            context.go('/profile');
+            return;
+          }
+
+          context.read<LoadingBloc>().add(ShowLoadingEvent());
+          context.read<AuthBloc>().add(AuthUpdateModelEvent(gender: gender));
+        },
+      );
+    }).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -183,56 +227,7 @@ class SettingsGenderView extends StatelessWidget {
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  IconSelectionButton(
-                    text: "Male",
-                    imageAsset: "assets/icons/initiation/male.svg",
-                    onPressed: () {
-                      if (context.read<AuthBloc>().state.userModel?.gender ==
-                          "Male") {
-                        context.go('/profile');
-                        return;
-                      }
-                      context.read<LoadingBloc>().add(ShowLoadingEvent());
-                      context.read<AuthBloc>().add(
-                            AuthUpdateModelEvent(gender: "Male"),
-                          );
-                    },
-                    size: 64,
-                  ),
-                  IconSelectionButton(
-                    text: "Female",
-                    imageAsset: "assets/icons/initiation/female.svg",
-                    onPressed: () {
-                      if (context.read<AuthBloc>().state.userModel?.gender ==
-                          "Female") {
-                        context.go('/profile');
-                        return;
-                      }
-                      context.read<LoadingBloc>().add(ShowLoadingEvent());
-                      context.read<AuthBloc>().add(
-                            AuthUpdateModelEvent(gender: "Female"),
-                          );
-                    },
-                    size: 64,
-                  ),
-                  IconSelectionButton(
-                    text: "Other",
-                    imageAsset: "assets/icons/initiation/non-binary.svg",
-                    onPressed: () {
-                      if (context.read<AuthBloc>().state.userModel?.gender ==
-                          "Other") {
-                        context.go('/profile');
-                        return;
-                      }
-                      context.read<LoadingBloc>().add(ShowLoadingEvent());
-                      context.read<AuthBloc>().add(
-                            AuthUpdateModelEvent(gender: "Other"),
-                          );
-                    },
-                    size: 64,
-                  ),
-                ],
+                children: buildGenderButtons(context),
               )
             ],
           ),
@@ -346,6 +341,12 @@ class _SettingsAgeViewState extends State<SettingsAgeView> {
                       const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
                 ),
                 onPressed: () {
+                  final connectivityState =
+                      context.read<ConnectivityBloc>().state;
+                  if (connectivityState is ConnectivityOfflineState) {
+                    showNoConnectionError(context);
+                    return;
+                  }
                   if (context.read<AuthBloc>().state.userModel?.birthDate ==
                       _dateTime) {
                     context.go('/profile');
@@ -498,11 +499,17 @@ class _SettingsSportViewState extends State<SettingsSportView> {
                     ),
                     onPressed: _sportModels.isNotEmpty
                         ? () {
+                            final connectivityState =
+                                context.read<ConnectivityBloc>().state;
+                            if (connectivityState is ConnectivityOfflineState) {
+                              showNoConnectionError(context);
+                              return;
+                            }
                             if (context
                                     .read<AuthBloc>()
                                     .state
                                     .userModel
-                                    ?.sportsLiked ==
+                                    ?.sportsLiked == // NOTE: Should check this more properly
                                 _sportModels) {
                               context.go('/profile');
                               return;
