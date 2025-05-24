@@ -10,7 +10,6 @@ import 'package:isis3510_team32_flutter/views/create_booking_view.dart';
 import 'package:isis3510_team32_flutter/views/initiation_view.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
 import 'package:isis3510_team32_flutter/views/search_view.dart';
-import 'package:isis3510_team32_flutter/views/settings_view.dart';
 import 'package:isis3510_team32_flutter/views/venue_list_view.dart';
 import 'package:isis3510_team32_flutter/views/home_view.dart';
 import 'package:isis3510_team32_flutter/views/profile_view.dart';
@@ -116,33 +115,8 @@ GoRouter setupRouter(AuthBloc authBloc) {
               ))),
       GoRoute(
           path: '/profile',
-          pageBuilder: (context, state) {
-            final param = state.uri.queryParameters['success'];
-            return buildPageWithNoTransition(
-                context: context,
-                state: state,
-                child: ProfileView(success: param));
-          }),
-      GoRoute(
-          path: '/profile/settings/name',
           pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context, state: state, child: const SettingsNameView())),
-      GoRoute(
-          path: '/profile/settings/gender',
-          pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context,
-              state: state,
-              child: const SettingsGenderView())),
-      GoRoute(
-          path: '/profile/settings/birthday',
-          pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context, state: state, child: const SettingsAgeView())),
-      GoRoute(
-          path: '/profile/settings/favoriteSports',
-          pageBuilder: (context, state) => buildPageWithNoTransition(
-              context: context,
-              state: state,
-              child: const SettingsSportView())),
+              context: context, state: state, child: const ProfileView())),
       GoRoute(
           path: '/booking_detail',
           pageBuilder: (context, state) {

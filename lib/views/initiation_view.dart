@@ -499,7 +499,7 @@ class InitiationSportView extends StatelessWidget {
 
                         loadingBloc.add(ShowLoadingEvent());
                         authBloc.add(
-                          AuthInsertModelEvent(
+                          AuthCreateModelEvent(
                             UserModel(
                               id: authBloc.state.user!.uid,
                               name: initiationBloc.state.name!,

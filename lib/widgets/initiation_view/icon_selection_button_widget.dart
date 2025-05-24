@@ -23,8 +23,8 @@ class IconSelectionButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
-        side: BorderSide(
-          color: AppColors.titleText(context),
+        side: const BorderSide(
+          color: AppColors.primary,
           width: 2,
         ),
       ),
@@ -37,15 +37,13 @@ class IconSelectionButton extends StatelessWidget {
               imageAsset,
               width: size,
               height: size,
-              color: AppColors.titleText(context),
+              colorFilter:
+                  const ColorFilter.mode(AppColors.primary, BlendMode.srcIn),
             ),
             const SizedBox(
               height: 4,
             ),
-            Text(
-              text,
-              style: TextStyle(color: AppColors.titleText(context)),
-            )
+            Text(text)
           ],
         ),
       ),

@@ -84,7 +84,7 @@ class GoogleSignInButton extends StatelessWidget {
     final userModelJson =
         await userModelRecievePort.first as Map<String, dynamic>?;
 
-    authBloc.add(AuthChangeLocalModelEvent(user,
+    authBloc.add(AuthChangeModelEvent(user,
         userModelJson != null ? UserModel.fromJson(userModelJson) : null));
 
     loadingBloc.add(HideLoadingEvent());

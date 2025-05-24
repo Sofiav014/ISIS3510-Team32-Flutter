@@ -22,12 +22,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (user != null) {
         userModel = await authRepository.fetchUser(user.uid);
       }
-      add(AuthChangeLocalModelEvent(user, userModel));
+      add(AuthChangeModelEvent(user, userModel));
     });
   }
 
   void _registerHandlers() {
-    on<AuthChangeLocalModelEvent>((event, emit) {
+    on<AuthChangeModelEvent>((event, emit) {
       emit(AuthState(
         isAuthenticated: event.user != null,
         hasModel: event.userModel != null,
@@ -35,7 +35,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         userModel: event.userModel,
       ));
     });
-    on<AuthInsertModelEvent>((event, emit) async {
+    on<AuthCreateModelEvent>((event, emit) async {
       await authRepository.uploadUser(event.userModel);
       emit(AuthState(
         isAuthenticated: state.user != null,
@@ -43,22 +43,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         user: state.user,
         userModel: event.userModel,
       ));
-    });
-    on<AuthUpdateModelEvent>((event, emit) async {
-      if (state.userModel == null) {
-        return;
-      }
-      final userModel = state.userModel!.copyWith(
-        id: event.id,
-        name: event.name,
-        birthDate: event.birthDate,
-        gender: event.gender,
-        imageUrl: event.imageUrl,
-        sportsLiked: event.sportsLiked,
-        venuesLiked: event.venuesLiked,
-        bookings: event.bookings,
-      );
-      add(AuthInsertModelEvent(userModel));
     });
     on<AuthRefreshModelEvent>((event, emit) async {
       UserModel? userModel;
@@ -81,7 +65,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (newUserModel == null) {
         return;
       }
-      add(AuthInsertModelEvent(newUserModel));
+      add(AuthCreateModelEvent(newUserModel));
     });
     on<AuthLogOutEvent>((event, emit) async {
       await _auth.signOut();
