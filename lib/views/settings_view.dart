@@ -120,7 +120,7 @@ class _SettingsNameViewState extends State<SettingsNameView> {
                           );
                     },
                     child: const Text(
-                      "Continue",
+                      "Update",
                       style: TextStyle(color: Colors.white),
                     ),
                   )
@@ -341,7 +341,7 @@ class _SettingsAgeViewState extends State<SettingsAgeView> {
                       );
                 },
                 child: const Text(
-                  "Continue",
+                  "Update",
                   style: TextStyle(color: Colors.white),
                 ),
               )
@@ -505,7 +505,7 @@ class _SettingsSportViewState extends State<SettingsSportView> {
                           );
                     },
                     child: const Text(
-                      "Create an account",
+                      "Update",
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
