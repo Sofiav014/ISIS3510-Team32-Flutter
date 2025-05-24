@@ -113,6 +113,7 @@ class _SettingsNameViewState extends State<SettingsNameView> {
                           horizontal: 128, vertical: 16),
                     ),
                     onPressed: () {
+                      FocusManager.instance.primaryFocus?.unfocus();
                       if (context.read<AuthBloc>().state.userModel?.name ==
                           _nameController.text) {
                         context.go('/profile');
