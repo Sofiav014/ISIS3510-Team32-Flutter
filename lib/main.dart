@@ -35,8 +35,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    // Log when app starts
-    InteractionTimeService().timeInteractionStats();
   }
 
   @override
@@ -49,7 +47,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       // Log when app comes to foreground
-      InteractionTimeService().timeInteractionStats();
+      InteractionTimeService()
+          .timeInteractionStats(context.read<ConnectivityBloc>().state);
     }
   }
 
@@ -59,6 +58,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (_) => sl<AuthBloc>()),
@@ -70,18 +70,24 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Navigation',
+        title: 'SportHub',
         theme: ThemeData(
           primaryColor: AppColors.primary,
           primarySwatch: Colors.blue,
         ),
         routerConfig: sl<GoRouter>(),
         builder: (context, child) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final connectivityState = context.read<ConnectivityBloc>().state;
+            InteractionTimeService().timeInteractionStats(connectivityState);
+          });
+
           return Container(
-              color: AppColors.background(context),
-              child: LoadingOverlayWidget(
-                child: child ?? const SizedBox(),
-              ));
+            color: AppColors.background(context),
+            child: LoadingOverlayWidget(
+              child: child ?? const SizedBox(),
+            ),
+          );
         },
       ),
     );
