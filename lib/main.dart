@@ -11,6 +11,7 @@ import 'package:isis3510_team32_flutter/view_models/loading/loading_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/settings/settings_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/theme/theme_bloc.dart';
 import 'package:isis3510_team32_flutter/widgets/loading_overlay_widget.dart';
+import 'package:isis3510_team32_flutter/core/interaction_time_service.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +22,36 @@ Future main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+// Change to StatefulWidget
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    // Log when app starts
+    InteractionTimeService().timeInteractionStats();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Log when app comes to foreground
+      InteractionTimeService().timeInteractionStats();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

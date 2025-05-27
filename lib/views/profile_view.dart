@@ -83,20 +83,25 @@ class _ProfileViewState extends State<ProfileView> {
       backgroundColor: AppColors.background(context),
       body: Container(
         padding: const EdgeInsets.all(16),
-        child: const Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ProfileCardWidget(),
-                FavoriteVenuesWidget(),
-              ],
-            )
-          ],
+        child: const SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ProfileCardWidget(),
+                  FavoriteVenuesWidget(),
+                ],
+              )
+            ],
+          ),
         ),
       ),
-      bottomNavigationBar: const BottomNavigationWidget(selectedIndex: 4, reLoad: false,),
+      bottomNavigationBar: const BottomNavigationWidget(
+        selectedIndex: 4,
+        reLoad: false,
+      ),
     );
   }
 }
