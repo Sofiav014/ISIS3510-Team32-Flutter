@@ -256,6 +256,7 @@ class InititationGenderView extends StatelessWidget {
           children: [
             IconSelectionButton(
               text: "Male",
+              changeWithTheme: false,
               imageAsset: "assets/icons/initiation/male.svg",
               onPressed: () {
                 initiationBloc.add(InitiationGenderEvent("Male"));
@@ -265,6 +266,7 @@ class InititationGenderView extends StatelessWidget {
             ),
             IconSelectionButton(
               text: "Female",
+              changeWithTheme: false,
               imageAsset: "assets/icons/initiation/female.svg",
               onPressed: () {
                 initiationBloc.add(InitiationGenderEvent("Female"));
@@ -274,6 +276,7 @@ class InititationGenderView extends StatelessWidget {
             ),
             IconSelectionButton(
               text: "Other",
+              changeWithTheme: false,
               imageAsset: "assets/icons/initiation/non-binary.svg",
               onPressed: () {
                 initiationBloc.add(InitiationGenderEvent("Other"));
