@@ -4,12 +4,14 @@ import 'package:isis3510_team32_flutter/core/app_colors.dart';
 
 class IconSelectionButton extends StatelessWidget {
   final String text;
+  final bool changeWithTheme;
   final String imageAsset;
   final double size;
   final Function()? onPressed;
 
   const IconSelectionButton({
     required this.text,
+    required this.changeWithTheme,
     required this.imageAsset,
     required this.size,
     required this.onPressed,
@@ -24,7 +26,9 @@ class IconSelectionButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
         ),
         side: BorderSide(
-          color: AppColors.titleText(context),
+          color: changeWithTheme
+              ? AppColors.titleText(context)
+              : AppColors.primary,
           width: 2,
         ),
       ),
@@ -37,14 +41,19 @@ class IconSelectionButton extends StatelessWidget {
               imageAsset,
               width: size,
               height: size,
-              color: AppColors.titleText(context),
+              color: changeWithTheme
+                  ? AppColors.titleText(context)
+                  : AppColors.primary,
             ),
             const SizedBox(
               height: 4,
             ),
             Text(
               text,
-              style: TextStyle(color: AppColors.titleText(context)),
+              style: TextStyle(
+                  color: changeWithTheme
+                      ? AppColors.titleText(context)
+                      : AppColors.primary),
             )
           ],
         ),
