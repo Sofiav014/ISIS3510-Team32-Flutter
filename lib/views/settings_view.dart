@@ -53,7 +53,7 @@ class _SettingsNameViewState extends State<SettingsNameView> {
       onPopInvoked: (didPop) async {
         if (!didPop) {
           _nameController.text = displayName;
-          context.go('/profile');
+          context.pop();
         }
       },
       child: BlocListener<AuthBloc, AuthState>(
@@ -208,7 +208,7 @@ class SettingsGenderView extends StatelessWidget {
       canPop: false,
       onPopInvoked: (didPop) async {
         if (!didPop) {
-          context.go('/profile');
+          context.pop();
         }
       },
       child: BlocListener<AuthBloc, AuthState>(
@@ -298,7 +298,7 @@ class _SettingsAgeViewState extends State<SettingsAgeView> {
           setState(() {
             _dateTime = birthday;
           });
-          context.go('/profile');
+          context.pop();
         }
       },
       child: BlocListener<AuthBloc, AuthState>(
@@ -463,7 +463,7 @@ class _SettingsSportViewState extends State<SettingsSportView> {
           setState(() {
             _sportModels = [];
           });
-          context.go('/profile');
+          context.pop();
         }
       },
       child: BlocListener<AuthBloc, AuthState>(
