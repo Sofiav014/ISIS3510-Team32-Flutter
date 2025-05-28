@@ -181,6 +181,7 @@ class SettingsGenderView extends StatelessWidget {
 
       return IconSelectionButton(
         text: gender,
+        changeWithTheme: true,
         imageAsset: imageAsset,
         size: 64,
         onPressed: () {
