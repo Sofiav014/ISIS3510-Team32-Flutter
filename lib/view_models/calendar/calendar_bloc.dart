@@ -49,9 +49,9 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
         final userBookings = await bookingRepository.getBookingsByUserId(userModel.id);
         final bookingsToDisplay = _selectCurrentBookings(userBookings, calendarRepository.getLastDate());
         emit(CalendarLoaded(calendarData: bookingsToDisplay, selectedDate: calendarRepository.getLastDate()));
-      }
-      else {
-        final bookingsToDisplay = _selectCurrentBookings(userModel.bookings, calendarRepository.getLastDate());
+      } else {
+        final userBookings = await bookingRepository.getLocalBookingsByUserId(userModel.id);
+        final bookingsToDisplay = _selectCurrentBookings(userBookings, calendarRepository.getLastDate());
         emit(CalendarOfflineLoaded(calendarData: bookingsToDisplay, selectedDate: calendarRepository.getLastDate()));
       }
 
@@ -82,8 +82,8 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       emit(CalendarLoaded(calendarData: bookingsToDisplay, selectedDate: event.selectedDate));
 
     } else {
-
-      final bookingsToDisplay = _selectCurrentBookings(userModel.bookings, event.selectedDate);
+      final userBookings = await bookingRepository.getLocalBookingsByUserId(userModel.id);
+      final bookingsToDisplay = _selectCurrentBookings(userBookings, event.selectedDate);
 
       emit(CalendarOfflineLoaded( calendarData: bookingsToDisplay, selectedDate: event.selectedDate));
     }

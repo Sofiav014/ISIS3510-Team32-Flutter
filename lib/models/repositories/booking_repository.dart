@@ -609,17 +609,40 @@ class BookingRepository {
 
         final List<BookingModel>? userBookings = await receivePort.first;
 
+
         if (userBookings != null) {
-          /*
-          for (BookingModel userBooking in userBookings) {
-            _venueCache.put(userBooking.id, userBooking);
-          }
-           */
+          final calendarBox = await Hive.openBox('calendar_$userId');
+
+          final userHiveBookings = userBookings
+              .map((booking) => BookingModelHive.fromModel(booking)).toList();
+
+          await calendarBox.put('user_bookings', userHiveBookings);
+
           return userBookings;
         } else {
           return [];
         }
       } else {
+        return [];
+      }
+    } catch (e) {
+      debugPrint('❗️ Error fetching venues: $e');
+      return [];
+    }
+  }
+
+  Future<List<BookingModel>> getLocalBookingsByUserId(String userId) async {
+    try {
+      final calendarBox = await Hive.openBox('calendar_$userId');
+      final userHiveBookings = calendarBox.get('user_bookings') ;
+
+      if (userHiveBookings != null){
+        List<BookingModel> userBookings = [];
+        for (var bookingHiveModel in userHiveBookings){
+          userBookings.add(bookingHiveModel.toModel() as BookingModel);
+        }
+        return userBookings;
+      }else{
         return [];
       }
     } catch (e) {
