@@ -48,96 +48,105 @@ class _SettingsNameViewState extends State<SettingsNameView> {
       _nameController.text = displayName;
     }
 
-    return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (previous, current) =>
-          previous.userModel?.name != current.userModel?.name,
-      listener: (context, state) {
-        context.read<LoadingBloc>().add(HideLoadingEvent());
-        context.go('/profile?success=name');
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (!didPop) {
+          _nameController.text = displayName;
+          context.go('/profile');
+        }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.background(context),
-        body: Padding(
-          padding: const EdgeInsets.only(bottom: 64, top: 192),
-          child: Center(
-            child: Form(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 32),
-                        child: Text(
-                          "Edit Profile Name",
-                          style: TextStyle(
-                            color: AppColors.titleText(context),
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 64),
-                        child: Text(
-                          "Please insert your new name",
-                          style: TextStyle(
-                            color: AppColors.titleText(context),
-                            fontSize: 20,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 256,
-                        child: TextField(
-                          controller: _nameController,
-                          inputFormatters: [
-                            LengthLimitingTextInputFormatter(35),
-                            FilteringTextInputFormatter.allow(
-                                RegExp(r"[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ '\-]"))
-                          ],
-                          style: TextStyle(
-                            color: AppColors.text(context),
+      child: BlocListener<AuthBloc, AuthState>(
+        listenWhen: (previous, current) =>
+            previous.userModel?.name != current.userModel?.name,
+        listener: (context, state) {
+          context.read<LoadingBloc>().add(HideLoadingEvent());
+          context.go('/profile?success=name');
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.background(context),
+          body: Padding(
+            padding: const EdgeInsets.only(bottom: 64, top: 192),
+            child: Center(
+              child: Form(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 32),
+                          child: Text(
+                            "Edit Profile Name",
+                            style: TextStyle(
+                              color: AppColors.titleText(context),
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 128, vertical: 16),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 64),
+                          child: Text(
+                            "Please insert your new name",
+                            style: TextStyle(
+                              color: AppColors.titleText(context),
+                              fontSize: 20,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 256,
+                          child: TextField(
+                            controller: _nameController,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(35),
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r"[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ '\-]"))
+                            ],
+                            style: TextStyle(
+                              color: AppColors.text(context),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    onPressed: () {
-                      if (context.read<ConnectivityBloc>().state
-                          is ConnectivityOfflineState) {
-                        showNoConnectionError(context);
-                        return;
-                      }
-                      FocusManager.instance.primaryFocus?.unfocus();
-                      if (context.read<AuthBloc>().state.userModel?.name ==
-                          _nameController.text) {
-                        context.go('/profile');
-                        return;
-                      }
-                      context.read<LoadingBloc>().add(ShowLoadingEvent());
-                      context.read<AuthBloc>().add(
-                            AuthUpdateModelEvent(name: _nameController.text),
-                          );
-                    },
-                    child: const Text(
-                      "Update",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  )
-                ],
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 128, vertical: 16),
+                      ),
+                      onPressed: () {
+                        if (context.read<ConnectivityBloc>().state
+                            is ConnectivityOfflineState) {
+                          showNoConnectionError(context);
+                          return;
+                        }
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        if (context.read<AuthBloc>().state.userModel?.name ==
+                            _nameController.text) {
+                          context.go('/profile');
+                          return;
+                        }
+                        context.read<LoadingBloc>().add(ShowLoadingEvent());
+                        context.read<AuthBloc>().add(
+                              AuthUpdateModelEvent(name: _nameController.text),
+                            );
+                      },
+                      child: const Text(
+                        "Update",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -188,48 +197,56 @@ class SettingsGenderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (previous, current) =>
-          previous.userModel?.gender != current.userModel?.gender,
-      listener: (context, state) {
-        context.read<LoadingBloc>().add(HideLoadingEvent());
-        context.go('/profile?success=gender');
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (!didPop) {
+          context.go('/profile');
+        }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.background(context),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 192),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 64),
-                child: Text(
-                  "Change Gender",
-                  style: TextStyle(
-                    color: AppColors.titleText(context),
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
+      child: BlocListener<AuthBloc, AuthState>(
+        listenWhen: (previous, current) =>
+            previous.userModel?.gender != current.userModel?.gender,
+        listener: (context, state) {
+          context.read<LoadingBloc>().add(HideLoadingEvent());
+          context.go('/profile?success=gender');
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.background(context),
+          body: Padding(
+            padding: const EdgeInsets.only(top: 192),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 64),
+                  child: Text(
+                    "Change Gender",
+                    style: TextStyle(
+                      color: AppColors.titleText(context),
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 128),
-                child: Text(
-                  "What gender do you identify with?",
-                  style: TextStyle(
-                    color: AppColors.titleText(context),
-                    fontSize: 20,
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 128),
+                  child: Text(
+                    "What gender do you identify with?",
+                    style: TextStyle(
+                      color: AppColors.titleText(context),
+                      fontSize: 20,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: buildGenderButtons(context),
-              )
-            ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: buildGenderButtons(context),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -267,102 +284,113 @@ class _SettingsAgeViewState extends State<SettingsAgeView> {
         _dateTime = birthday;
       });
     }
-    return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (previous, current) =>
-          previous.userModel?.birthDate != current.userModel?.birthDate,
-      listener: (context, state) {
-        context.read<LoadingBloc>().add(HideLoadingEvent());
-        context.go('/profile?success=birthday');
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (!didPop) {
+          setState(() {
+            _dateTime = birthday;
+          });
+          context.go('/profile');
+        }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.background(context),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 192, bottom: 32),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 64),
-                    child: Text(
-                      "Update Birth Date",
-                      style: TextStyle(
-                        color: AppColors.titleText(context),
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 128),
-                    child: Text(
-                      "When were you born?",
-                      style: TextStyle(
-                        color: AppColors.titleText(context),
-                        fontSize: 20,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () async {
-                            final setDateTime = await _selectDate();
-                            setState(() {
-                              _dateTime = setDateTime;
-                            });
-                          },
-                          child: Text(
-                            _dateTime == null
-                                ? 'Select a date'
-                                : "${_dateTime!.year}/${_dateTime!.month}/${_dateTime!.day}",
-                            style: const TextStyle(fontSize: 18),
-                          ),
+      child: BlocListener<AuthBloc, AuthState>(
+        listenWhen: (previous, current) =>
+            previous.userModel?.birthDate != current.userModel?.birthDate,
+        listener: (context, state) {
+          context.read<LoadingBloc>().add(HideLoadingEvent());
+          context.go('/profile?success=birthday');
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.background(context),
+          body: Padding(
+            padding: const EdgeInsets.only(top: 192, bottom: 32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 64),
+                      child: Text(
+                        "Update Birth Date",
+                        style: TextStyle(
+                          color: AppColors.titleText(context),
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: 20),
-                      ],
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.zero,
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 128, vertical: 16),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 128),
+                      child: Text(
+                        "When were you born?",
+                        style: TextStyle(
+                          color: AppColors.titleText(context),
+                          fontSize: 20,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () async {
+                              final setDateTime = await _selectDate();
+                              setState(() {
+                                _dateTime = setDateTime;
+                              });
+                            },
+                            child: Text(
+                              _dateTime == null
+                                  ? 'Select a date'
+                                  : "${_dateTime!.year}/${_dateTime!.month}/${_dateTime!.day}",
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                onPressed: () {
-                  final connectivityState =
-                      context.read<ConnectivityBloc>().state;
-                  if (connectivityState is ConnectivityOfflineState) {
-                    showNoConnectionError(context);
-                    return;
-                  }
-                  if (context.read<AuthBloc>().state.userModel?.birthDate ==
-                      _dateTime) {
-                    context.go('/profile');
-                    return;
-                  }
-                  context.read<LoadingBloc>().add(ShowLoadingEvent());
-                  context.read<AuthBloc>().add(
-                        AuthUpdateModelEvent(birthDate: _dateTime),
-                      );
-                },
-                child: const Text(
-                  "Update",
-                  style: TextStyle(color: Colors.white),
-                ),
-              )
-            ],
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 128, vertical: 16),
+                  ),
+                  onPressed: () {
+                    final connectivityState =
+                        context.read<ConnectivityBloc>().state;
+                    if (connectivityState is ConnectivityOfflineState) {
+                      showNoConnectionError(context);
+                      return;
+                    }
+                    if (context.read<AuthBloc>().state.userModel?.birthDate ==
+                        _dateTime) {
+                      context.go('/profile');
+                      return;
+                    }
+                    context.read<LoadingBloc>().add(ShowLoadingEvent());
+                    context.read<AuthBloc>().add(
+                          AuthUpdateModelEvent(birthDate: _dateTime),
+                        );
+                  },
+                  child: const Text(
+                    "Update",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -421,112 +449,126 @@ class _SettingsSportViewState extends State<SettingsSportView> {
     const double textSize = 16;
     const double iconSpacing = 4;
 
-    return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (previous, current) =>
-          previous.userModel?.sportsLiked != current.userModel?.sportsLiked,
-      listener: (context, state) {
-        context.read<LoadingBloc>().add(HideLoadingEvent());
-        context.go('/profile?success=favorite%20sports');
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) async {
+        if (!didPop) {
+          setState(() {
+            _sportModels = [];
+          });
+          context.go('/profile');
+        }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.background(context),
-        body: Padding(
-          padding: const EdgeInsets.only(top: 192, bottom: 32),
-          child: Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 64),
-                        child: Text(
-                          "Update Sports",
-                          style: TextStyle(
-                            color: AppColors.titleText(context),
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
+      child: BlocListener<AuthBloc, AuthState>(
+        listenWhen: (previous, current) =>
+            previous.userModel?.sportsLiked != current.userModel?.sportsLiked,
+        listener: (context, state) {
+          context.read<LoadingBloc>().add(HideLoadingEvent());
+          context.go('/profile?success=favorite%20sports');
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.background(context),
+          body: Padding(
+            padding: const EdgeInsets.only(top: 192, bottom: 32),
+            child: Center(
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 64),
+                          child: Text(
+                            "Update Sports",
+                            style: TextStyle(
+                              color: AppColors.titleText(context),
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 32),
-                        child: Text(
-                          "Choose the sports you are interested in",
-                          style: TextStyle(
-                            color: AppColors.titleText(context),
-                            fontSize: 20,
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 32),
+                          child: Text(
+                            "Choose the sports you are interested in",
+                            style: TextStyle(
+                              color: AppColors.titleText(context),
+                              fontSize: 20,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
                         ),
-                      ),
-                      SizedBox(
-                        width: 320,
-                        child: GridView.count(
-                          crossAxisCount: 2,
-                          shrinkWrap: true,
-                          mainAxisSpacing: 10.0, // Spacing between rows
-                          crossAxisSpacing: 10.0, // Spacing between columns
-                          padding: const EdgeInsets.all(
-                              10.0), // Padding around the entire grid
-                          children: sportsData.map((sport) {
-                            final key = sport['key']!;
-                            return SettingsIconSelectionToggle(
-                              text: sport['text']!,
-                              imageAsset: sport['icon']!,
-                              sport: initiationSports[key]!,
-                              size: imageSize,
-                              spacing: iconSpacing,
-                              textSize: textSize,
-                              onPress: (status) => modifySportModels(
-                                  initiationSports[key]!, status),
-                            );
-                          }).toList(),
+                        SizedBox(
+                          width: 320,
+                          child: GridView.count(
+                            crossAxisCount: 2,
+                            shrinkWrap: true,
+                            mainAxisSpacing: 10.0, // Spacing between rows
+                            crossAxisSpacing: 10.0, // Spacing between columns
+                            padding: const EdgeInsets.all(
+                                10.0), // Padding around the entire grid
+                            children: sportsData.map((sport) {
+                              final key = sport['key']!;
+                              return SettingsIconSelectionToggle(
+                                text: sport['text']!,
+                                imageAsset: sport['icon']!,
+                                sport: initiationSports[key]!,
+                                size: imageSize,
+                                spacing: iconSpacing,
+                                textSize: textSize,
+                                onPress: (status) => modifySportModels(
+                                    initiationSports[key]!, status),
+                              );
+                            }).toList(),
+                          ),
+                        )
+                      ],
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
                         ),
-                      )
-                    ],
-                  ),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 96, vertical: 16),
                       ),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 96, vertical: 16),
-                    ),
-                    onPressed: _sportModels.isNotEmpty
-                        ? () {
-                            final connectivityState =
-                                context.read<ConnectivityBloc>().state;
-                            if (connectivityState is ConnectivityOfflineState) {
-                              showNoConnectionError(context);
-                              return;
+                      onPressed: _sportModels.isNotEmpty
+                          ? () {
+                              final connectivityState =
+                                  context.read<ConnectivityBloc>().state;
+                              if (connectivityState
+                                  is ConnectivityOfflineState) {
+                                showNoConnectionError(context);
+                                return;
+                              }
+                              if (context
+                                      .read<AuthBloc>()
+                                      .state
+                                      .userModel
+                                      ?.sportsLiked == // NOTE: Should check this more properly
+                                  _sportModels) {
+                                context.go('/profile');
+                                return;
+                              }
+                              context
+                                  .read<LoadingBloc>()
+                                  .add(ShowLoadingEvent());
+                              context.read<AuthBloc>().add(
+                                    AuthUpdateModelEvent(
+                                        sportsLiked: _sportModels),
+                                  );
                             }
-                            if (context
-                                    .read<AuthBloc>()
-                                    .state
-                                    .userModel
-                                    ?.sportsLiked == // NOTE: Should check this more properly
-                                _sportModels) {
-                              context.go('/profile');
-                              return;
-                            }
-                            context.read<LoadingBloc>().add(ShowLoadingEvent());
-                            context.read<AuthBloc>().add(
-                                  AuthUpdateModelEvent(
-                                      sportsLiked: _sportModels),
-                                );
-                          }
-                        : null,
-                    child: const Text(
-                      "Update",
-                      style: TextStyle(color: Colors.white),
+                          : null,
+                      child: const Text(
+                        "Update",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                  ),
-                ]),
+                  ]),
+            ),
           ),
         ),
       ),
