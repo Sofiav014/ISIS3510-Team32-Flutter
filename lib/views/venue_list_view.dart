@@ -2,6 +2,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
+import 'package:isis3510_team32_flutter/core/loading_time_service.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/widgets/navbar/bottom_navigation_widget.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
@@ -24,6 +25,10 @@ class VenueListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final LoadingTimeService loadingTimeService = LoadingTimeService();
+
+    loadingTimeService.startTrackingTime();
+
     final formattedSportName = _formatSportName(sportName);
 
     FirebaseCrashlytics.instance
@@ -57,7 +62,11 @@ class VenueListView extends StatelessWidget {
         ),
         body: BlocListener<VenueListBloc, VenueListState>(
             listener: (context, state) {
-          if (state is VenueListOfflineLoaded) showNoConnectionError(context);
+          if (state is VenueListOfflineLoaded) {
+            showNoConnectionError(context);
+          } else if (state is VenueListLoaded) {
+            loadingTimeService.stopAndRecordTime('$formattedSportName Venues View');
+          }
         }, child: BlocBuilder<VenueListBloc, VenueListState>(
           builder: (context, state) {
             if (state is VenueListLoading) {
