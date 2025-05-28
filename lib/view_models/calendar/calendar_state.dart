@@ -12,7 +12,7 @@ class CalendarInitial extends CalendarState {}
 class CalendarLoading extends CalendarState {}
 
 class CalendarLoaded extends CalendarState {
-  final String calendarData;
+  final List<BookingModel> calendarData;
   final DateTime selectedDate;
 
   const CalendarLoaded({required this.calendarData, required this.selectedDate});
@@ -22,7 +22,7 @@ class CalendarLoaded extends CalendarState {
 }
 
 class CalendarOfflineLoaded extends CalendarState {
-  final String calendarData;
+  final List<BookingModel> calendarData;
   final DateTime selectedDate;
 
   const CalendarOfflineLoaded({required this.calendarData, required this.selectedDate});
@@ -32,10 +32,10 @@ class CalendarOfflineLoaded extends CalendarState {
 }
 
 class CalendarError extends CalendarState {
-  final String error;
+  final String message;
 
-  const CalendarError(this.error);
+  const CalendarError({required this.message});
 
   @override
-  List<Object> get props => [error];
+  List<Object> get props => [message];
 }

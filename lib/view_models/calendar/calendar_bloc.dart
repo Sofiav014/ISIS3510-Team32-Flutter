@@ -1,39 +1,102 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
+import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
+import 'package:isis3510_team32_flutter/models/repositories/calendar_repository.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
+import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
+
+import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 
 part 'calendar_event.dart';
 part 'calendar_state.dart';
 
 class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
-  CalendarBloc() : super(CalendarInitial()) {
+  final AuthBloc authBloc;
+  final CalendarRepository calendarRepository;
+  final ConnectivityRepository connectivityRepository;
+  late final StreamSubscription<bool> _connectivitySubscription;
+
+  CalendarBloc({required this.authBloc, required this.connectivityRepository, required this.calendarRepository}) : super(CalendarInitial()) {
     on<LoadCalendarData>(_onLoadCalendarData);
     on<SelectDate>(_onSelectDate);
+
+    _connectivitySubscription = connectivityRepository.connectivityChanges.listen((isConnected) {
+          if (isConnected) add(const LoadCalendarData());
+        }
+    );
   }
 
   Future<void> _onLoadCalendarData(
       LoadCalendarData event, Emitter<CalendarState> emit) async {
     emit(CalendarLoading());
     try {
-      // Simulate loading, now also initializing with the current date
-      await Future.delayed(const Duration(seconds: 1));
-      final String fetchedCalendarData = "Calendar data loaded!";
-      emit(CalendarLoaded(calendarData: fetchedCalendarData, selectedDate: DateTime.now()));
+
+      final AuthState authState = authBloc.state;
+      final UserModel? userModel = authState.userModel;
+      if (userModel == null) {
+        emit(const CalendarError(message: 'User not found'));
+        return;
+      }
+
+      final isOnline = await connectivityRepository.hasInternet;
+
+      if (isOnline) {
+        final bookingsToDisplay = _selectCurrentBookings(userModel.bookings, calendarRepository.getLastDate());
+        emit(CalendarLoaded(calendarData: bookingsToDisplay, selectedDate: calendarRepository.getLastDate()));
+      }
+      else {
+        final bookingsToDisplay = _selectCurrentBookings(userModel.bookings, calendarRepository.getLastDate());
+        emit(CalendarOfflineLoaded(calendarData: bookingsToDisplay, selectedDate: calendarRepository.getLastDate()));
+      }
+
+
     } catch (e) {
-      emit(CalendarError('Failed to load calendar data: $e'));
+      emit(CalendarError(message: 'Failed to load calendar data: $e'));
     }
   }
 
-  void _onSelectDate(SelectDate event, Emitter<CalendarState> emit) {
-    if (state is CalendarLoaded) {
-      final currentState = state as CalendarLoaded;
-      // It's important to emit a *new* instance of CalendarLoaded
-      // even if calendarData is the same, because selectedDate has changed.
-      emit(CalendarLoaded( calendarData: currentState.calendarData, selectedDate: event.selectedDate));
-    }
-    // Also handle if the current state is CalendarOfflineLoaded
-    else if (state is CalendarOfflineLoaded) {
-      final currentState = state as CalendarOfflineLoaded;
-      emit(CalendarOfflineLoaded(calendarData: currentState.calendarData, selectedDate: event.selectedDate));
+  void _onSelectDate(SelectDate event, Emitter<CalendarState> emit) async {
+    final isOnline = await connectivityRepository.hasInternet;
+    calendarRepository.setLastDate(event.selectedDate);
+
+    if (isOnline) {
+      final AuthState authState = authBloc.state;
+      final UserModel userModel = authState.userModel!;
+
+      final bookingsToDisplay = _selectCurrentBookings(userModel.bookings, event.selectedDate);
+
+      emit(CalendarLoaded( calendarData: bookingsToDisplay, selectedDate: event.selectedDate));
+
+    } else {
+      final AuthState authState = authBloc.state;
+      final UserModel userModel = authState.userModel!;
+
+      final bookingsToDisplay = _selectCurrentBookings(userModel.bookings, event.selectedDate);
+
+      emit(CalendarOfflineLoaded( calendarData: bookingsToDisplay, selectedDate: event.selectedDate));
     }
   }
+
+  List<BookingModel> _selectCurrentBookings(List<BookingModel> userBookings, DateTime dateToFilter){
+    final filterDate = DateTime(dateToFilter.year, dateToFilter.month, dateToFilter.day);
+    List<BookingModel> bookingsSameDate = [];
+
+    for (BookingModel booking in  userBookings){
+      final bookingDate = DateTime(booking.startTime.year, booking.startTime.month, booking.startTime.day);
+      if (bookingDate.isAtSameMomentAs(filterDate)){
+        bookingsSameDate.add(booking);
+      }
+    }
+    return bookingsSameDate;
+  }
+
+  @override
+  Future<void> close() {
+    _connectivitySubscription.cancel();
+    return super.close();
+  }
+
 }
