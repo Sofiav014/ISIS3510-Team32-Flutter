@@ -6,6 +6,7 @@ import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_router_notifier.dart';
 import 'package:isis3510_team32_flutter/views/booking_detail_view.dart';
+import 'package:isis3510_team32_flutter/views/calendar_view.dart';
 import 'package:isis3510_team32_flutter/views/create_booking_view.dart';
 import 'package:isis3510_team32_flutter/views/initiation_view.dart';
 import 'package:isis3510_team32_flutter/views/login_view.dart';
@@ -157,6 +158,10 @@ GoRouter setupRouter(AuthBloc authBloc) {
                   booking: booking, selectedIndex: selectedIndex ?? 0),
             );
           }),
+      GoRoute(
+          path: '/calendar',
+          pageBuilder: (context, state) => buildPageWithNoTransition(
+              context: context, state: state, child: const CalendarView())),
     ],
   );
 }
