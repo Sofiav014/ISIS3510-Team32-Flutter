@@ -279,7 +279,7 @@ class _SettingsAgeViewState extends State<SettingsAgeView> {
         context.select((AuthBloc bloc) => bloc.state.userModel?.birthDate);
 
     // Set controller text if it's empty and model name is available
-    if (birthday != null) {
+    if (birthday != null && _dateTime == null) {
       setState(() {
         _dateTime = birthday;
       });
