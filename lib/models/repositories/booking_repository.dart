@@ -556,4 +556,99 @@ class BookingRepository {
       sendPort.send(send);
     }
   }
+
+  void _bookingsByUserIdIsolate(Map<String, dynamic> params) async {
+    final sendPort = params['sendPort'] as SendPort;
+
+    final rootIsolateToken = params['rootIsolateToken'] as RootIsolateToken;
+
+    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+
+    final userId = params['userId'] as String;
+
+    try {
+      final firebaseOptions = params['firebaseOptions'] as FirebaseOptions;
+
+      await Firebase.initializeApp(options: firebaseOptions);
+
+      final firestore = FirebaseService.instance.firestore;
+
+      QuerySnapshot querySnapshot = await firestore
+          .collection('bookings')
+          .where('users', arrayContains: userId)
+          .get();
+
+      List<BookingModel> userBookings = querySnapshot.docs.map((doc) {
+        Map<String, dynamic> bookingData = doc.data() as Map<String, dynamic>;
+        bookingData['id'] = doc.id;
+        return BookingModel.fromJson(bookingData);
+      }).toList();
+
+      // Send the processed list back to the main isolate
+      sendPort.send(userBookings);
+    } catch (e) {
+      debugPrint('❗️ Error fetching venues in isolate: $e');
+      // If an error occurs, you might want to send an empty list or an error indicator back
+      sendPort.send([]);
+    }
+  }
+
+  Future<List<BookingModel>> getBookingsByUserId(String userId) async {
+    try {
+      final receivePort = ReceivePort();
+      final rootIsolateToken = RootIsolateToken.instance;
+
+      if (rootIsolateToken != null) {
+        Map<String, dynamic> params = {
+          'userId': userId,
+          'rootIsolateToken': rootIsolateToken,
+          'sendPort': receivePort.sendPort,
+          'firebaseOptions': Firebase.app().options
+        };
+        await Isolate.spawn(_bookingsByUserIdIsolate, params);
+
+        final List<BookingModel>? userBookings = await receivePort.first;
+
+
+        if (userBookings != null) {
+          final calendarBox = await Hive.openBox('calendar_$userId');
+
+          final userHiveBookings = userBookings
+              .map((booking) => BookingModelHive.fromModel(booking)).toList();
+
+          await calendarBox.put('user_bookings', userHiveBookings);
+
+          return userBookings;
+        } else {
+          return [];
+        }
+      } else {
+        return [];
+      }
+    } catch (e) {
+      debugPrint('❗️ Error fetching venues: $e');
+      return [];
+    }
+  }
+
+  Future<List<BookingModel>> getLocalBookingsByUserId(String userId) async {
+    try {
+      final calendarBox = await Hive.openBox('calendar_$userId');
+      final userHiveBookings = calendarBox.get('user_bookings') ;
+
+      if (userHiveBookings != null){
+        List<BookingModel> userBookings = [];
+        for (var bookingHiveModel in userHiveBookings){
+          userBookings.add(bookingHiveModel.toModel() as BookingModel);
+        }
+        return userBookings;
+      }else{
+        return [];
+      }
+    } catch (e) {
+      debugPrint('❗️ Error fetching venues: $e');
+      return [];
+    }
+  }
+
 }
