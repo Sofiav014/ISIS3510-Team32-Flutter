@@ -32,7 +32,7 @@ class BookingInfoCard extends StatelessWidget {
           '/booking_detail',
           extra: {
             'booking': booking,
-            'selectedIndex': 0,
+            'selectedIndex': 1,
           },
         );
       },
