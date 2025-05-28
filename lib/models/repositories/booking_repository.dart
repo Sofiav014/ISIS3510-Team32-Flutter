@@ -460,7 +460,9 @@ class BookingRepository {
           .toList();
 
       final box = await Hive.openBox('home_${user.id}');
+      final calendarBox = await Hive.openBox('calendar_${user.id}');
       await box.put('upcoming_bookings', upcomingHiveBookings);
+      await calendarBox.put('user_bookings', upcomingHiveBookings);
 
       return {
         'user': user,
