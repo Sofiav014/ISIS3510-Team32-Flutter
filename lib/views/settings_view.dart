@@ -65,87 +65,93 @@ class _SettingsNameViewState extends State<SettingsNameView> {
         },
         child: Scaffold(
           backgroundColor: AppColors.background(context),
-          body: Padding(
+          body: SingleChildScrollView(
             padding: const EdgeInsets.only(bottom: 64, top: 192),
-            child: Center(
-              child: Form(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 32),
-                          child: Text(
-                            "Edit Profile Name",
-                            style: TextStyle(
-                              color: AppColors.titleText(context),
-                              fontSize: 32,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 64),
-                          child: Text(
-                            "Please insert your new name",
-                            style: TextStyle(
-                              color: AppColors.titleText(context),
-                              fontSize: 20,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 256,
-                          child: TextField(
-                            controller: _nameController,
-                            inputFormatters: [
-                              LengthLimitingTextInputFormatter(35),
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r"[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ '\-]"))
-                            ],
-                            style: TextStyle(
-                              color: AppColors.text(context),
+            child: SafeArea(
+              child: Center(
+                child: Form(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 32),
+                            child: Text(
+                              "Edit Profile Name",
+                              style: TextStyle(
+                                color: AppColors.titleText(context),
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero,
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 128, vertical: 16),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 64),
+                            child: Text(
+                              "Please insert your new name",
+                              style: TextStyle(
+                                color: AppColors.titleText(context),
+                                fontSize: 20,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 196),
+                            child: SizedBox(
+                              width: 256,
+                              child: TextField(
+                                controller: _nameController,
+                                inputFormatters: [
+                                  LengthLimitingTextInputFormatter(35),
+                                  FilteringTextInputFormatter.allow(
+                                      RegExp(r"[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ '\-]"))
+                                ],
+                                style: TextStyle(
+                                  color: AppColors.text(context),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      onPressed: () {
-                        if (context.read<ConnectivityBloc>().state
-                            is ConnectivityOfflineState) {
-                          showNoConnectionError(context);
-                          return;
-                        }
-                        FocusManager.instance.primaryFocus?.unfocus();
-                        if (context.read<AuthBloc>().state.userModel?.name ==
-                            _nameController.text) {
-                          context.go('/profile');
-                          return;
-                        }
-                        context.read<LoadingBloc>().add(ShowLoadingEvent());
-                        context.read<AuthBloc>().add(
-                              AuthUpdateModelEvent(name: _nameController.text),
-                            );
-                      },
-                      child: const Text(
-                        "Update",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    )
-                  ],
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.zero,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 128, vertical: 16),
+                        ),
+                        onPressed: () {
+                          if (context.read<ConnectivityBloc>().state
+                              is ConnectivityOfflineState) {
+                            showNoConnectionError(context);
+                            return;
+                          }
+                          FocusManager.instance.primaryFocus?.unfocus();
+                          if (context.read<AuthBloc>().state.userModel?.name ==
+                              _nameController.text) {
+                            context.go('/profile');
+                            return;
+                          }
+                          context.read<LoadingBloc>().add(ShowLoadingEvent());
+                          context.read<AuthBloc>().add(
+                                AuthUpdateModelEvent(
+                                    name: _nameController.text),
+                              );
+                        },
+                        child: const Text(
+                          "Update",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             ),
