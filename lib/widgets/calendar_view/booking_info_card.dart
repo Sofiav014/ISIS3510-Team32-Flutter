@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:isis3510_team32_flutter/core/app_colors.dart';
@@ -7,6 +8,7 @@ import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/venue_model.dart';
 import 'package:intl/intl.dart';
 import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
+import 'package:isis3510_team32_flutter/view_models/calendar/calendar_bloc.dart';
 
 class BookingInfoCard extends StatelessWidget {
   final VenueModel venue;
@@ -27,14 +29,22 @@ class BookingInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        context.push(
+      onTap: () async {
+
+        final reply = await context.push(
           '/booking_detail',
           extra: {
             'booking': booking,
             'selectedIndex': 1,
           },
         );
+
+       if (reply == 'refresh'){
+         if (context.mounted) {
+           context.read<CalendarBloc>().add(const LoadCalendarData());
+         }
+
+       }
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4.0),

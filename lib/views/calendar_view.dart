@@ -168,7 +168,7 @@ class CalendarView extends StatelessWidget {
             padding: const EdgeInsets.only(bottom: 8.0),
             child: BookingInfoCard(
               venue: booking.venue,
-              booking: booking,
+              booking: booking
             ),
           );
         }).toList(),
