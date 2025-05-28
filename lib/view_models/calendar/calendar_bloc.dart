@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:isis3510_team32_flutter/models/data_models/booking_model.dart';
 import 'package:isis3510_team32_flutter/models/data_models/user_model.dart';
+import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/calendar_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_state.dart';
@@ -17,9 +18,10 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
   final AuthBloc authBloc;
   final CalendarRepository calendarRepository;
   final ConnectivityRepository connectivityRepository;
+  final BookingRepository bookingRepository;
   late final StreamSubscription<bool> _connectivitySubscription;
 
-  CalendarBloc({required this.authBloc, required this.connectivityRepository, required this.calendarRepository}) : super(CalendarInitial()) {
+  CalendarBloc({required this.authBloc, required this.connectivityRepository, required this.calendarRepository, required this.bookingRepository}) : super(CalendarInitial()) {
     on<LoadCalendarData>(_onLoadCalendarData);
     on<SelectDate>(_onSelectDate);
 
@@ -44,7 +46,8 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       final isOnline = await connectivityRepository.hasInternet;
 
       if (isOnline) {
-        final bookingsToDisplay = _selectCurrentBookings(userModel.bookings, calendarRepository.getLastDate());
+        final userBookings = await bookingRepository.getBookingsByUserId(userModel.id);
+        final bookingsToDisplay = _selectCurrentBookings(userBookings, calendarRepository.getLastDate());
         emit(CalendarLoaded(calendarData: bookingsToDisplay, selectedDate: calendarRepository.getLastDate()));
       }
       else {
@@ -59,20 +62,26 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
   }
 
   void _onSelectDate(SelectDate event, Emitter<CalendarState> emit) async {
+    emit(CalendarLoading());
+
+    final AuthState authState = authBloc.state;
+    final UserModel? userModel = authState.userModel;
+    if (userModel == null) {
+      emit(const CalendarError(message: 'User not found'));
+      return;
+    }
+
     final isOnline = await connectivityRepository.hasInternet;
     calendarRepository.setLastDate(event.selectedDate);
 
     if (isOnline) {
-      final AuthState authState = authBloc.state;
-      final UserModel userModel = authState.userModel!;
 
-      final bookingsToDisplay = _selectCurrentBookings(userModel.bookings, event.selectedDate);
+      final userBookings = await bookingRepository.getBookingsByUserId(userModel.id);
+      final bookingsToDisplay = _selectCurrentBookings(userBookings, calendarRepository.getLastDate());
 
-      emit(CalendarLoaded( calendarData: bookingsToDisplay, selectedDate: event.selectedDate));
+      emit(CalendarLoaded(calendarData: bookingsToDisplay, selectedDate: event.selectedDate));
 
     } else {
-      final AuthState authState = authBloc.state;
-      final UserModel userModel = authState.userModel!;
 
       final bookingsToDisplay = _selectCurrentBookings(userModel.bookings, event.selectedDate);
 

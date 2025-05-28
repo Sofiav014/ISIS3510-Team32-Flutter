@@ -2,6 +2,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:isis3510_team32_flutter/constants/errors.dart';
+import 'package:isis3510_team32_flutter/models/repositories/booking_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/calendar_repository.dart';
 import 'package:isis3510_team32_flutter/models/repositories/connectivity_repository.dart';
 import 'package:isis3510_team32_flutter/view_models/auth/auth_bloc.dart';
@@ -23,7 +24,8 @@ class CalendarView extends StatelessWidget {
     final AuthBloc authBloc = context.read<AuthBloc>();
 
     return BlocProvider(
-      create: (context) => CalendarBloc(authBloc: authBloc, connectivityRepository: ConnectivityRepository(), calendarRepository: CalendarRepository())..add(const LoadCalendarData()),
+      create: (context) => CalendarBloc(authBloc: authBloc, connectivityRepository: ConnectivityRepository(),
+          calendarRepository: CalendarRepository(), bookingRepository: BookingRepository())..add(const LoadCalendarData()),
       child: Scaffold(
         backgroundColor: AppColors.background(context),
         appBar: AppBar(
